@@ -7,6 +7,6 @@
   "scripts": {
     "build": "node tools/build.js estimator public",
     "sandbox": "python3 tools/sandbox.py public/checker.html sandbox/estimating-bot.html tools/examples.json",
-    "test": "node --test estimator/engine/test/engine.test.js estimator/engine/test/training.test.js estimator/engine/test/checks.test.js estimator/engine/test/auto.test.js && node tools/smoke.js"
+    "test": "node --test estimator/engine/test/engine.test.js estimator/engine/test/training.test.js estimator/engine/test/checks.test.js estimator/engine/test/auto.test.js && node tools/smoke.js && node tools/passcode-test.mjs"
   }
 }
