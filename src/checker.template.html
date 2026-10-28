@@ -14,7 +14,7 @@ html[data-gc="color"]{--bg:#431407;--card:#fffaf6;--field:#fffdfb;--hover:#fbe9d
 --accent:#9a3412;--accent-strong:#9a3412;--accent-soft:#fbe9d9;--btn:#9a3412;--btn-hover:#b45309;--onbtn:#fff;
 --head:linear-gradient(90deg,#7c2d12,#9a3412);--headsolid:#7c2d12;--headink:#fff4ea;--headmute:rgba(255,244,234,.78);--hbtn:#f2c14e;--hbtnink:#431407;--hbtnline:#d99a1e;
 --block:#750e21;--blockbg:#fde4e4;--ask:#6b4300;--askbg:#fbe7b0;--warn:#7c2d12;--warnbg:#fbe9d9;--ok:#14532d;--okbg:#d1fae5;--chip:#fbe9d9;color-scheme:light}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;background:var(--head);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
 header h1{font-size:16px;margin:0;font-weight:700;color:var(--headink);letter-spacing:.01em}header .opp{color:var(--headmute);font-size:12px}header .sp{flex:1}
 header .hint,header label{color:var(--headmute)}
@@ -50,37 +50,76 @@ aside{position:sticky;top:64px;align-self:start}
 .issue{border-left:4px solid;border-radius:6px;padding:8px 10px;margin-bottom:8px}
 .issue.block{border-color:var(--block);background:var(--blockbg)}.issue.ask{border-color:var(--ask);background:var(--askbg)}.issue.warn{border-color:var(--warn);background:var(--warnbg)}
 .issue .tag{font-size:11px;font-weight:700;letter-spacing:.05em}.issue.block .tag{color:var(--block)}.issue.ask .tag{color:var(--ask)}.issue.warn .tag{color:var(--warn)}
+.fixes{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}.fixes button:not(.link){padding:4px 8px;font-size:13px}.fixes input,.fixes select{width:auto;max-width:200px;padding:4px 6px;font-size:13px}
 .issue .where{color:var(--mute);font-size:12px}.issue .lesson{color:var(--mute);font-size:12px;margin-top:2px}
 .answered{font-size:12px;color:var(--mute)}.answered span{display:inline-block;background:var(--chip);border-radius:10px;padding:1px 8px;margin:2px}
 details summary{cursor:pointer;color:var(--mute);font-size:12px;text-transform:uppercase;letter-spacing:.04em;font-weight:650}
 .hint{color:var(--mute);font-size:12px}
-.drop{border:2px dashed var(--line);border-radius:10px;padding:16px;margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--card)}
+.uploads{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:16px}
+.drop{border:2px dashed var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px;align-items:flex-start;background:var(--card);min-width:0}
+.drop > div{width:100%}.filerow{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;padding:4px 0;border-bottom:1px solid var(--line)}.filerow span{min-width:0;overflow-wrap:anywhere}
 .drop.over{border-color:var(--accent)}.drop b{font-weight:650}.drop .sp{flex:1}
 .comp{display:grid;grid-template-columns:1fr auto;gap:2px 8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}.comp:last-child{border-bottom:0}
 .plan-sheets{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}.plan-sheets span{background:var(--chip);border-radius:10px;padding:1px 8px;font-size:12px}
 .plan-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.progress{font-size:12px;color:var(--mute)}
+.topnav{display:flex;gap:4px;flex-wrap:wrap}.topnav button{background:transparent;border-color:transparent;color:var(--headink);font-weight:600}.topnav button.on{background:var(--hbtn);color:var(--hbtnink);border-color:var(--hbtnline)}
+.whoami{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--headink)}.role-chip{font-size:10px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:8px;background:var(--hbtn);color:var(--hbtnink)}.whoami .link{color:var(--headmute)}
+.tabbar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}.tabs{display:flex;gap:2px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:3px}.tabs button{border:0;background:transparent;font-weight:600;color:var(--mute)}.tabs button.on{background:var(--accent-soft);color:var(--ink)}
+.savestate{font-size:12px;color:var(--mute)}.savestate b{color:var(--ask)}
+.view{max-width:1400px;margin:0 auto;padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.lock{position:fixed;inset:0;z-index:50;background:var(--bg);display:grid;place-items:center;padding:16px}.lock-card{width:100%;max-width:360px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;display:grid;gap:10px}.lock-card h2{margin:0;font-size:18px}.lock-card form{display:grid;gap:8px}
+.toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:60;max-width:calc(100% - 32px)}.toast.show{opacity:1}
+.dt{width:100%;border-collapse:collapse;font-size:13px}.dt th{border-bottom:1px solid var(--line);padding:6px}.dt td{border-bottom:1px solid var(--line);padding:6px;vertical-align:middle}.dt td.num,.dt th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}.dt tfoot td{font-weight:700;border-bottom:0}
+.dt input{padding:4px 6px}.dt .rowno{color:var(--mute);font-size:11px;width:34px}.dt .cat{width:90px;color:var(--mute)}.dt .q{width:80px}.dt .r{width:100px}
+.cs-sec{margin-bottom:16px}.cs-sec h3{margin:0 0 6px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}.merged{font-size:12px;color:var(--ask)}
+.cs-total{display:grid;grid-template-columns:1fr auto;gap:6px 16px;max-width:420px;margin-left:auto;font-variant-numeric:tabular-nums}.cs-total .big{font-size:18px;font-weight:700}.cs-total input{width:110px;text-align:right}
+.toolbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.paper{--pi:#1d1a17;--pm:#6b625b;--pl:#ddd6cf;background:#fffdfb;color:var(--pi);border:1px solid var(--line);border-radius:6px;padding:28px 32px;max-width:860px;margin:0 auto 16px;box-shadow:0 2px 10px rgba(0,0,0,.18);font-family:Georgia,"Times New Roman",serif;font-size:14px;line-height:1.5}
+.paper input,.paper textarea,.paper select{background:transparent;color:var(--pi);border:1px dashed transparent;border-radius:4px;font-family:inherit;padding:2px 4px}.paper input:hover,.paper textarea:hover,.paper select:hover{border-color:var(--pl)}.paper input:focus,.paper textarea:focus{border-color:#c2410c;outline:none;background:#fff7ef}
+.paper .co{text-align:center;margin-bottom:14px}.paper .co b{font-size:18px;letter-spacing:.08em}.paper .co div{font-size:12px;color:var(--pm)}
+.paper .hd{display:grid;grid-template-columns:120px 1fr;gap:2px 10px;margin:12px 0;font-size:13px}.paper .hd span{font-weight:700;letter-spacing:.04em;padding-top:4px}
+.paper h4{margin:16px 0 4px;font-size:14px;letter-spacing:.04em;display:flex;gap:6px;align-items:center}.paper h4 input{font-weight:700;font-size:14px;flex:1}
+.paper textarea{width:100%;resize:vertical;min-height:60px}.paper .amt{display:flex;justify-content:flex-end;gap:8px;align-items:center;font-weight:700}.paper .amt input{width:120px;text-align:right;font-weight:700}
+.paper .grand{display:flex;justify-content:flex-end;gap:12px;font-weight:700;font-size:16px;border-top:2px solid var(--pi);margin-top:14px;padding-top:6px}.paper .lbl{font-size:11px;letter-spacing:.06em;color:var(--pm);text-transform:uppercase;margin-top:14px;font-family:system-ui,sans-serif}
+.paper .x{color:var(--pm)}.paper .addrow{font-family:system-ui,sans-serif;font-size:12px;margin-top:6px;display:flex;gap:8px}.paper button.link{color:#9a3412}
+.list-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.list-head h2{margin:0;font-size:18px}.list-head input{max-width:280px}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px}.pill.draft{background:var(--askbg);color:var(--ask)}.pill.ready{background:var(--okbg);color:var(--ok)}.pill.admin{background:var(--accent-soft);color:var(--ink)}
+.admin-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}.admin-tabs button.on{background:var(--accent-soft);border-color:var(--accent)}
+.health-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}.health-card ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px;font-size:12px}.health-card li{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}.health-card .k{font-weight:600}.health-card .v{color:var(--mute);overflow-wrap:anywhere}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;flex:none}.dot.ok{background:var(--ok)}.dot.warn{background:var(--ask)}.dot.bad{background:var(--block)}
+.health-overall{display:flex;align-items:center;gap:6px;font-weight:700;padding:10px 12px;border-radius:8px;margin-bottom:12px;background:var(--card);border:1px solid var(--line)}
 .comp .meta{color:var(--mute);font-size:12px;grid-column:1/-1}.comp .amt{font-variant-numeric:tabular-nums;font-weight:600}
 </style>
 </head>
 <body>
 <header>
-  <h1>A2Z Estimating Bot</h1><span class="opp" id="opp"></span><span class="sp"></span>
+  <h1>A2Z Estimating Bot</h1><span class="opp" id="opp"></span>
+  <nav class="topnav" id="topnav" hidden><button data-nav="estimate" class="on">Estimate</button><button data-nav="saved">Saved estimates</button><button data-nav="admin" id="navAdmin" hidden>Admin</button></nav>
+  <span class="sp"></span>
+  <span class="whoami" id="whoami" hidden><span id="whoName"></span><span class="role-chip" id="whoRole"></span><button class="link" id="btnSignOut">Sign out</button></span>
   <button id="btnTheme" title="Switch theme">Colorful theme</button>
   <button id="btnNew">New</button>
-  <button id="btnImport">Open estimate.json</button>
-  <button id="btnExport" class="primary">Save estimate.json</button>
+  <button id="btnImport">Open saved estimate</button>
+  <button id="btnExport" class="primary">Save estimate</button>
   <input type="file" id="file" accept=".json,application/json" hidden>
 </header>
-<main>
+<main id="viewEstimate">
 <div style="min-width:0">
-  <div class="drop" id="drop"><div style="min-width:0"><b>Drop the STACK Takeoff Quantity CSV and the plan set PDF</b><div class="hint">The CSV drafts scope lines in A2Z wording, finds the closest past jobs and sets the default markup. The plans get checked against the takeoff: missing demo callouts, new work, by-others items, conditions, ceiling plan and areas. Add crew-days, loads and equipment below.</div></div><span class="sp"></span><button id="btnCsv">Choose CSV</button><button id="btnPdf">Choose plans PDF</button><input type="file" id="csvFile" accept=".csv,text/csv" hidden><input type="file" id="pdfFile" accept=".pdf,application/pdf" hidden></div>
+  <div class="tabbar"><div class="tabs" role="tablist"><button role="tab" data-tab="builder" class="on">Builder</button><button role="tab" data-tab="cost">Cost sheet</button><button role="tab" data-tab="proposal">Proposal</button></div><span class="sp"></span><span class="savestate" id="saveState"></span></div>
+  <div id="tabCost" hidden></div>
+  <div id="tabProposal" hidden></div>
+  <div id="tabBuilder">
+  <div class="uploads">
+    <section class="drop" id="dropTakeoff"><b>1. Takeoff</b><div class="hint">STACK Takeoff Quantity CSV. Drop it here.</div><button id="btnCsv">Choose CSV</button><input type="file" id="csvFile" accept=".csv,text/csv" hidden><div id="takeoffBody"></div></section>
+    <section class="drop" id="dropPlans"><b>2. Plans</b><div class="hint">Plan set PDFs. Drop one or several here.</div><button id="btnPdf">Choose plan PDFs</button><input type="file" id="pdfFile" accept=".pdf,application/pdf" multiple hidden><div id="plansBody"></div></section>
+  </div>
   <section class="card"><h2>Job</h2>
     <div class="grid">
       <div><label>Job name</label><input data-f="job.name"></div>
       <div><label>Customer</label><input data-f="job.customer"></div>
       <div><label>Location</label><input data-f="job.location"></div>
       <div><label>Estimator</label><input data-f="job.estimator"></div>
-      <div><label>Access</label><input data-f="job.access" placeholder="single man door, roll-up..."></div>
+      <div><label>Access</label><select data-f="job.access"><option value="">Not set</option><option>Roll-up door / storefront</option><option>Single man door</option><option>Double doors</option><option>Loading dock</option><option>Stairs only (upper floor)</option><option>Elevator</option><option>Open site / yard</option></select></div>
       <div><label>Ceiling height (ft)</label><input data-f="job.ceiling_height_ft" type="number" step="0.5"></div>
     </div>
   </section>
@@ -116,23 +155,40 @@ details summary{cursor:pointer;color:var(--mute);font-size:12px;text-transform:u
     <div class="tablewrap"><table><thead><tr><th>Item</th><th>Takeoff qty</th><th>Plan qty</th><th>Unit</th><th>Source / sheet</th><th></th></tr></thead><tbody id="qcs"></tbody></table></div>
     <label class="chk" style="margin-top:8px"><input type="checkbox" data-f="has_takeoff" data-bool> This job has a STACK takeoff</label>
   </details></section>
+  </div>
 </div>
 
 <aside>
+  <section class="card" id="apCard" hidden><h2>Autopilot</h2><div id="apBody"></div></section>
   <section class="card" id="planCard" hidden><h2>Plan check</h2><div id="planBody"></div></section>
   <section class="card" id="compsCard" hidden><h2>Closest past jobs</h2><div id="comps"></div><p class="hint" id="compRange"></p></section>
   <section class="card"><h2>Totals</h2><div class="totals" id="totals"></div></section>
   <section class="card"><h2>Checks</h2><div id="status"></div><div id="issues"></div><div class="answered" id="answered"></div></section>
 </aside>
 </main>
+<section class="view" id="viewSaved" hidden></section>
+<section class="view" id="viewAdmin" hidden></section>
+<div class="lock" id="lock" hidden><div class="lock-card" role="dialog" aria-modal="true" aria-labelledby="lockTitle">
+  <h2 id="lockTitle">Signing in...</h2><p id="lockText" class="hint">One moment.</p>
+  <form id="pcForm" hidden><label for="pcName">Your name</label><input id="pcName" autocomplete="name" maxlength="60" required>
+    <label for="pcCode">Passcode</label><input id="pcCode" type="password" autocomplete="current-password" required>
+    <button class="primary" type="submit">Sign in</button><p class="hint">Inside GHL you're signed in automatically. The passcode is for using the bot outside GHL.</p></form>
+  <button id="lockRetry" hidden>Try again</button>
+</div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 /*__ENGINE__*/
 </script>
 <script>
-const RATES = /*__RATES__*/null;
-const LIBRARY = /*__LIBRARY__*/null;
-const DEFAULTS = /*__DEFAULTS__*/null || { markup: 1.3 };
+let RATES = /*__RATES__*/null;
+let LIBRARY = /*__LIBRARY__*/null;
+let STYLE = /*__STYLE__*/null;
+const INLINE_DATA = !!LIBRARY; // sandbox: data built in, no sign-in. Live site: data loads after sign-in.
+let DEFAULTS = /*__DEFAULTS__*/null || { markup: 1.3 };
+let PRODUCTION = /*__PRODUCTION__*/null;
+const LIVE_DOCS = location.protocol === "https:" || location.hostname === "localhost"; // the Netlify site (or netlify dev) makes the .docx / .xlsx
+let LAST_DOCS_EST = "";
 let COMPS = null;
 const E = window.A2ZEstimator;
 const THEME_KEY = "a2z-bot-theme";
@@ -176,6 +232,7 @@ function setLines(flat) {
 function renderForm() {
   document.querySelectorAll("[data-f]").forEach((el) => {
     const v = get(est, el.dataset.f);
+    if (el.tagName === "SELECT" && v && ![...el.options].some((o) => o.value === v)) el.add(new Option(v, v));
     if (el.dataset.bool !== undefined) el.checked = !!v; else el.value = v == null ? "" : v;
   });
   document.getElementById("markupPct").value = est.markup == null || est.markup === "" ? "" : Math.round(est.markup * 10000) / 100;
@@ -218,6 +275,8 @@ function run() {
     <div class="big"><span>Final bid</span><span>${money(p.final_price)}</span></div>` : `<div class="hint">Add cost lines and a markup or final price.</div>`;
   renderComps(p);
   renderPlans();
+  if (DOCS && !DOCS.error && !DOCS_BUSY && est._autopilot && JSON.stringify(est) !== LAST_DOCS_EST) DOCS_STALE = true;
+  renderAutopilot();
   const n = (l) => res.issues.filter((i) => i.level === l).length;
   const st = document.getElementById("status");
   if (!res.issues.length) { st.className = "status ok"; st.textContent = "All checks pass. Ready to build the proposal."; }
@@ -226,8 +285,9 @@ function run() {
   document.getElementById("issues").innerHTML = res.issues.map((i) => `<div class="issue ${i.level}">
     <div class="tag">${{ block: "FIX", ask: "QUESTION", warn: "CHECK" }[i.level]}</div>
     <div>${esc(i.message)}</div><div class="where">${esc(i.where)}</div><div class="lesson">${esc(i.lesson)}</div>
-    ${i.level !== "block" ? `<button class="link" data-confirm="${i.id}">Mark answered</button>` : ""}</div>`).join("");
-  document.getElementById("answered").innerHTML = est.confirmed.length ? "Answered: " + est.confirmed.map((c) => `<span>${esc(c)} <button class="x" data-unconfirm="${esc(c)}" title="Undo">&times;</button></span>`).join("") : "";
+    <div class="fixes">${fixActions(i)}${i.level !== "block" ? `<button class="link" data-confirm="${i.id}" title="I checked this and it's right as is">Mark answered</button>` : ""}</div></div>`).join("");
+  const notes = est.answered_notes || {};
+  document.getElementById("answered").innerHTML = est.confirmed.length ? "Answered (click × to undo): " + est.confirmed.map((c) => `<span>${esc(notes[c] || c)} <button class="x" data-unconfirm="${esc(c)}" title="Undo">&times;</button></span>`).join("") : "";
   // refresh extended cells without re-rendering inputs
   const fl = flatLines();
   document.querySelectorAll("#lines tr").forEach((tr, i) => { const l = fl[i]; if (l) tr.querySelector("[data-ext]").textContent = money(Number(l.qty) * Number(l.rate)); });
@@ -245,41 +305,13 @@ function renderComps(p) {
   if (p && p.final_price) { const r = p.final_price / med; t += ` This bid is ${r >= 1 ? Math.round((r - 1) * 100) + "% above" : Math.round((1 - r) * 100) + "% below"} it.`; }
   document.getElementById("compRange").textContent = t + " Comps are a sanity check, not the price.";
 }
-function loadTakeoff(text, fileName) {
-  const items = E.parseStackCsv(text);
-  if (!items.length) throw new Error("No takeoff lines found. Export it from STACK as Reports, Takeoff Quantity, CSV.");
-  const lib = E.prepareLibrary(JSON.parse(JSON.stringify(LIBRARY)));
-  const res = E.findComps(items, lib, { top: 5 });
-  COMPS = res.comps.map((x) => ({ name: x.name, sentTotal: x.sentTotal, outcome: x.outcome, score: x.score, onlyInNew: x.onlyInNew }));
-  const draft = E.autoEstimate({ items, rates: RATES, defaults: DEFAULTS, job: { name: String(fileName || "").replace(/\.csv$/i, "").replace(/[_-]+/g, " ").trim() } });
-  est = normalize(Object.assign(draft, { sections: [], _comps: COMPS }));
-  delete est.auto;
-  est._takeoff = items.map((i) => ({ item: i.item, qty: i.qty, unit: i.unit, plan: i.plan, group: i.group }));
-  if (PLAN_PAGES) applyPlans();
-  document.getElementById("exPick") && (document.getElementById("exPick").value = "");
-  renderForm(); run();
-}
-async function takeCsv(f) {
-  try { loadTakeoff(await f.text(), f.name); }
-  catch (e) { const st = document.getElementById("status"); st.className = "status bad"; st.textContent = e.message; }
-}
-document.getElementById("btnCsv").addEventListener("click", () => document.getElementById("csvFile").click());
-document.getElementById("csvFile").addEventListener("change", (ev) => { const f = ev.target.files[0]; if (f) takeCsv(f); ev.target.value = ""; });
-const dz = document.getElementById("drop");
-["dragenter", "dragover"].forEach((t) => document.addEventListener(t, (ev) => { ev.preventDefault(); dz.classList.add("over"); }));
-["dragleave", "drop"].forEach((t) => document.addEventListener(t, (ev) => { ev.preventDefault(); if (t === "dragleave" && ev.relatedTarget) return; dz.classList.remove("over"); }));
-document.addEventListener("drop", async (ev) => {
-  const files = [...(ev.dataTransfer.files || [])];
-  const csv = files.find((x) => /\.csv$/i.test(x.name)), pdf = files.find((x) => /\.pdf$/i.test(x.name));
-  if (csv) await takeCsv(csv);
-  if (pdf) takePdf(pdf);
-});
-document.getElementById("btnPdf").addEventListener("click", () => document.getElementById("pdfFile").click());
-document.getElementById("pdfFile").addEventListener("change", (ev) => { const f = ev.target.files[0]; if (f) takePdf(f); ev.target.value = ""; });
-
-// ---- plan check: read the PDF text in this browser (pdf.js), then A2Z's rules in lib/plans.js ----
+// ---- AUTOPILOT: every upload rebuilds the whole draft by code (no AI) ----
 const PDFJS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
-let PLAN_PAGES = null, PLAN_BUSY = "";
+let TAKEOFF = null;            // { name, items }
+let PLAN_FILES = [];           // [ { id, name, pages: [{n, lines}], total } ]
+let PLAN_BUSY = "", DOCS = null, DOCS_BUSY = "", DOCS_STALE = false;
+const PLAN_PAGES_ALL = () => { let n = 0; return PLAN_FILES.flatMap((f) => f.pages.map((p) => ({ n: ++n, lines: p.lines }))); };
+let PLAN_PAGES = null;         // kept for older code paths (New / examples reset it)
 function loadScript(src) { return new Promise((ok, bad) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = () => bad(new Error("Couldn't load the PDF reader. Check the internet connection and try again.")); document.head.appendChild(s); }); }
 async function loadPdfJs() {
   if (window.pdfjsLib) return;
@@ -316,65 +348,188 @@ async function readPdf(buf, onPage) {
   }
   return { pages, total: pdf.numPages };
 }
-async function takePdf(f, buf) {
-  PLAN_BUSY = `Reading ${f.name || "plans"}...`; renderPlans();
+
+function setStatusError(msg) { const st = document.getElementById("status"); st.className = "status bad"; st.textContent = msg; }
+async function takeCsv(f, text) {
   try {
-    const res = await readPdf(buf || await f.arrayBuffer(), (n, N) => { PLAN_BUSY = `Reading page ${n} of ${N}...`; renderPlans(); });
-    PLAN_PAGES = res.pages; est._planFile = f.name || "plans.pdf"; est._planTotal = res.total;
-    PLAN_BUSY = ""; applyPlans();
-  } catch (e) { PLAN_BUSY = ""; est.plan_qc = { error: e.message || String(e) }; renderPlans(); }
+    const raw = text != null ? text : await f.text();
+    const items = E.parseStackCsv(raw);
+    if (!items.length) throw new Error("No takeoff lines found in " + (f.name || "that file") + ". Export it from STACK as Reports, Takeoff Quantity, CSV.");
+    TAKEOFF = { name: f.name || "takeoff.csv", items, text: raw };
+    est.job = {}; // a new takeoff starts a new job (plans added later keep what you typed)
+    autopilotRun();
+  } catch (e) { setStatusError(e.message); }
 }
-function applyPlans() {
-  const r = E.analyzePlans(PLAN_PAGES, est._takeoff || []);
-  const f = r.facts;
-  est.plan_flags = r.flags;
-  est.plan_qc = { file: est._planFile, total: est._planTotal, stats: r.stats, sheets: r.sheets.map((s) => ({ code: s.code, kind: s.kind })),
-    missing: r.flags.filter((x) => x.kind === "missing").map((x) => ({ key: x.key, callout: x.callout, sheet: x.sheet })), exclusions: f.exclusions, sources: f.sources };
-  est.quantity_checks = (est.quantity_checks || []).filter((q) => !q.from_plans).concat((f.quantity_checks || []).map((q) => ({ ...q, from_plans: true })));
-  est.job = est.job || {};
-  if (f.job.ceiling_height_ft && !est.job.ceiling_height_ft) est.job.ceiling_height_ft = f.job.ceiling_height_ft;
-  if (f.job.floor_level && !est.job.floor_level) est.job.floor_level = f.job.floor_level;
-  if (f.excavation && f.excavation.depth_ft && !(est.excavation && est.excavation.depth_ft)) est.excavation = Object.assign(est.excavation || {}, f.excavation);
-  if (f.recompaction_required) est.recompaction_required = true;
-  if (est.scopes && est.scopes.length && f.ceiling && f.ceiling.grid === "remain") {
-    const s0 = est.scopes[0]; s0.lines = (s0.lines || []).map((l) => (/ceiling|\bact\b/i.test(l) && !/grid/i.test(l) ? l + ", leave existing ceiling grid in place" : l));
+async function takePdfs(files, bufs) {
+  for (let k = 0; k < files.length; k++) {
+    const f = files[k];
+    PLAN_BUSY = `Reading ${f.name || "plans"}...`; renderUploads();
+    try {
+      const res = await readPdf(bufs ? bufs[k] : await f.arrayBuffer(), (n, N) => { PLAN_BUSY = `Reading ${f.name || "plans"}: page ${n} of ${N}...`; renderUploads(); });
+      PLAN_FILES.push({ id: Date.now() + "-" + k, name: f.name || "plans.pdf", pages: res.pages, total: res.total });
+    } catch (e) { PLAN_BUSY = ""; renderUploads(); setStatusError(`Couldn't read ${f.name || "that PDF"}: ${e.message || e}`); }
   }
-  renderForm(); run();
+  PLAN_BUSY = "";
+  autopilotRun();
+}
+function autopilotRun() {
+  const pages = PLAN_FILES.length ? PLAN_PAGES_ALL() : null;
+  PLAN_PAGES = pages;
+  const keepJob = Object.assign({}, est.job || {});
+  if (!TAKEOFF) {
+    // plans only: run the plan check so the sheets and flags still show
+    if (pages) { const r = E.analyzePlans(pages, []); est.plan_flags = r.flags; est.plan_qc = { stats: r.stats, sheets: r.sheets }; }
+    renderUploads(); renderForm(); run(); return;
+  }
+  const lib = E.prepareLibrary(JSON.parse(JSON.stringify(LIBRARY)));
+  const job = Object.assign({ name: TAKEOFF.name.replace(/\.csv$/i, "").replace(/[_-]+/g, " ").trim() }, keepJob.name ? keepJob : {});
+  const ap = E.autopilot({ items: TAKEOFF.items, pages, library: lib, rates: RATES, defaults: DEFAULTS, production: PRODUCTION, job });
+  est = normalize(ap.estimate);
+  delete est.auto;
+  COMPS = ap.comps ? ap.comps.comps.map((x) => ({ name: x.name, sentTotal: x.sentTotal, outcome: x.outcome, score: x.score, onlyInNew: x.onlyInNew })) : null;
+  est._comps = COMPS;
+  est.plan_qc = ap.planCheck ? { stats: ap.planCheck.stats, sheets: ap.planCheck.sheets.map((x) => ({ code: x.code, kind: x.kind })) } : null;
+  est._autopilot = { takeoff: TAKEOFF.name, plans: PLAN_FILES.map((f) => f.name), pages: pages ? pages.length : 0, at: new Date().toLocaleString() };
+  document.getElementById("exPick") && (document.getElementById("exPick").value = "");
+  DOCS = null; DOCS_STALE = false;
+  renderUploads(); renderForm(); run();
+  if (LIVE_DOCS) makeDocs();
+}
+async function makeDocs() {
+  if (!LIVE_DOCS) return;
+  DOCS_BUSY = "Making the proposal and job costing files..."; renderAutopilot();
+  try {
+    const headers = { "Content-Type": "application/json" };
+    const key = new URLSearchParams(location.search).get("key"); if (key) headers["x-bot-passcode"] = key;
+    const snapshot = JSON.stringify(est);
+    const res = await fetch("/.netlify/functions/estimate-docs", { method: "POST", headers, body: JSON.stringify({ estimate: est, takeoffCsv: TAKEOFF ? TAKEOFF.text : null, force: true }) });
+    const out = await res.json();
+    if (!res.ok) throw new Error(out.error || ("HTTP " + res.status));
+    DOCS = out; DOCS_STALE = false; LAST_DOCS_EST = snapshot;
+  } catch (e) { DOCS = { error: e.message || String(e) }; }
+  DOCS_BUSY = ""; renderAutopilot();
+}
+function downloadB64(b64, name, type) {
+  const bin = atob(b64), buf = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([buf], { type })); a.download = name; a.click();
+}
+function renderUploads() {
+  const t = document.getElementById("takeoffBody"), pl = document.getElementById("plansBody");
+  t.innerHTML = TAKEOFF ? `<div class="filerow"><span>${esc(TAKEOFF.name)} · ${TAKEOFF.items.length} lines</span><button class="x" data-rm-takeoff title="Remove">&times;</button></div>` : '<div class="hint">No takeoff yet.</div>';
+  pl.innerHTML = (PLAN_FILES.length ? PLAN_FILES.map((f) => `<div class="filerow"><span>${esc(f.name)} · ${f.total} page${f.total === 1 ? "" : "s"}</span><button class="x" data-rm-plan="${esc(f.id)}" title="Remove">&times;</button></div>`).join("") : '<div class="hint">No plans yet. You can add several PDFs.</div>')
+    + (PLAN_BUSY ? `<div class="progress">${esc(PLAN_BUSY)}</div>` : "");
+}
+function renderAutopilot() {
+  const card = document.getElementById("apCard"), body = document.getElementById("apBody"), a = est._autopilot;
+  if (!a) { card.hidden = true; return; }
+  card.hidden = false;
+  const res = E.checkEstimate(est, { rates: RATES }), p = res.priced;
+  const n = (l) => res.issues.filter((i) => i.level === l).length;
+  let files = "";
+  if (!LIVE_DOCS) files = '<div class="hint">The proposal and job costing files are made on the live site.</div>';
+  else if (DOCS_BUSY) files = `<div class="progress">${esc(DOCS_BUSY)}</div>`;
+  else if (DOCS && DOCS.error) files = `<div class="status bad">Files not made: ${esc(DOCS.error)}</div><button id="apDocs">Try again</button>`;
+  else if (DOCS) files = `<div class="plan-actions"><button id="apDlProp">${DOCS.draft ? "DRAFT " : ""}Proposal (.docx)</button><button id="apDlCost">${DOCS.draft ? "DRAFT " : ""}Job costing (.xlsx)</button>${DOCS_STALE ? '<button id="apDocs" class="primary">Rebuild files with my edits</button>' : ""}</div>`;
+  else files = '<button id="apDocs">Make the proposal and job costing</button>';
+  body.innerHTML = `<div class="hint">Drafted ${esc(a.at)} from ${esc(a.takeoff)}${a.plans.length ? ` and ${a.plans.length} plan file${a.plans.length === 1 ? "" : "s"} (${a.pages} pages)` : " (no plans)"}. Crew-days, loads and equipment come from the starter production table; everything is marked DRAFT until confirmed.</div>
+    ${p ? `<div class="totals"><div class="big"><span>Draft bid</span><span>${money(p.final_price)}</span></div></div>` : ""}
+    <div class="hint">${n("block")} to fix, ${n("ask")} question${n("ask") === 1 ? "" : "s"}, ${n("warn")} check${n("warn") === 1 ? "" : "s"} in Checks below. Dropping new files rebuilds the draft and replaces edits.</div>
+    ${files}`;
 }
 function renderPlans() {
   const card = document.getElementById("planCard"), body = document.getElementById("planBody"), q = est.plan_qc;
-  if (!PLAN_BUSY && !q) { card.hidden = true; return; }
+  if (!q || !q.stats) { card.hidden = true; return; }
   card.hidden = false;
-  if (PLAN_BUSY) { body.innerHTML = `<div class="progress">${esc(PLAN_BUSY)}</div>`; return; }
-  if (q.error) { body.innerHTML = `<div class="status bad">${esc(q.error)}</div>`; return; }
   const kindName = { demo: "demo", rcp: "ceiling plan", site: "site", cover: "cover", other: "" };
-  const open = (est.plan_flags || []).filter((x) => !(est.confirmed || []).includes(x.key));
-  body.innerHTML = `<div class="hint">${esc(q.file || "Plans")}: read ${q.stats.readable} of ${q.total || q.stats.pages} pages. ${q.stats.callouts} demo callouts, ${q.stats.matched} matched to the takeoff${(est._takeoff || []).length ? "" : " (drop the CSV to match them)"}.</div>
-    <div class="plan-sheets">${q.sheets.map((s) => `<span>${esc(s.code)}${kindName[s.kind] ? " · " + kindName[s.kind] : ""}</span>`).join("")}</div>
-    <div class="hint">${open.length} plan item${open.length === 1 ? "" : "s"} in Checks below. Code reads the plan text only: scanned sheets, symbol counts and what a drawing means still need a person.</div>
-    <div class="plan-actions">${q.missing.some((m) => !(est.confirmed || []).includes(m.key)) && est.scopes && est.scopes.length ? '<button id="planAddScope">Add missing callouts to scope</button>' : ""}${(q.exclusions || []).length && !(est.extra_exclusions || []).length ? '<button id="planAddExcl">Add by-others items to exclusions</button>' : ""}</div>`;
+  body.innerHTML = `<div class="hint">Read ${q.stats.readable} of ${q.stats.pages} pages. ${q.stats.callouts} demo callouts, ${q.stats.matched} matched to the takeoff; the rest were added to scope.</div>
+    <div class="plan-sheets">${q.sheets.map((x) => `<span>${esc(x.code)}${kindName[x.kind] ? " · " + kindName[x.kind] : ""}</span>`).join("")}</div>
+    <div class="hint">Code reads the plan text only: scanned sheets, symbol counts and what a drawing means still need a person.</div>`;
 }
+// uploads: separate places for the takeoff and the plans; dropping anywhere on the page also works
+function wireDrop(id, accept, onFiles) {
+  const z = document.getElementById(id);
+  z.addEventListener("dragover", (ev) => { ev.preventDefault(); ev.stopPropagation(); z.classList.add("over"); });
+  z.addEventListener("dragleave", () => z.classList.remove("over"));
+  z.addEventListener("drop", (ev) => { ev.preventDefault(); ev.stopPropagation(); z.classList.remove("over"); const fs = [...(ev.dataTransfer.files || [])].filter((f) => accept.test(f.name)); if (fs.length) onFiles(fs); else setStatusError(id === "dropTakeoff" ? "Drop a .csv file here (STACK Takeoff Quantity export)." : "Drop .pdf plan files here."); });
+}
+wireDrop("dropTakeoff", /\.csv$/i, (fs) => takeCsv(fs[0]));
+wireDrop("dropPlans", /\.pdf$/i, (fs) => takePdfs(fs));
+document.addEventListener("dragover", (ev) => ev.preventDefault());
+document.addEventListener("drop", (ev) => {
+  ev.preventDefault();
+  const fs = [...(ev.dataTransfer.files || [])];
+  const csv = fs.find((x) => /\.csv$/i.test(x.name)), pdfs = fs.filter((x) => /\.pdf$/i.test(x.name));
+  (async () => { if (csv) await takeCsv(csv); if (pdfs.length) await takePdfs(pdfs); })();
+});
+document.getElementById("btnCsv").addEventListener("click", () => document.getElementById("csvFile").click());
+document.getElementById("csvFile").addEventListener("change", (ev) => { const f = ev.target.files[0]; if (f) takeCsv(f); ev.target.value = ""; });
+document.getElementById("btnPdf").addEventListener("click", () => document.getElementById("pdfFile").click());
+document.getElementById("pdfFile").addEventListener("change", (ev) => { const fs = [...ev.target.files]; if (fs.length) takePdfs(fs); ev.target.value = ""; });
 document.addEventListener("click", (ev) => {
   const b = ev.target.closest("button"); if (!b) return;
-  if (b.id === "planAddScope") {
-    const s0 = est.scopes[0]; s0.lines = s0.lines || [];
-    for (const m of est.plan_qc.missing) {
-      if ((est.confirmed || []).includes(m.key)) continue;
-      const txt = m.callout.replace(/^(CUT\s*(&|AND)\s*)?(DEMO(LISH)?|REMOVE)\s+/i, "").toLowerCase().replace(/\((e|n)\)/g, (x) => x.toUpperCase()).replace(/\b(act|vct|lvt|cmu|hvac|rtu|gwb|mep)\b/g, (x) => x.toUpperCase());
-      s0.lines.push(`Properly remove ${txt}${m.sheet ? ` (per plans ${m.sheet})` : ""}`);
-      est.confirmed.push(m.key);
-    }
-    renderForm(); run();
-  } else if (b.id === "planAddExcl") {
-    est.extra_exclusions = (est.plan_qc.exclusions || []).slice();
-    for (const x of est.plan_flags || []) if (x.kind === "by_others" && !est.confirmed.includes(x.key)) est.confirmed.push(x.key);
-    run();
+  if (b.dataset.rmTakeoff !== undefined) { TAKEOFF = null; autopilotRun(); }
+  else if (b.dataset.rmPlan) { PLAN_FILES = PLAN_FILES.filter((f) => f.id !== b.dataset.rmPlan); autopilotRun(); }
+  else if (b.id === "apDocs") makeDocs();
+  else if (b.id === "apDlProp" && DOCS) downloadB64(DOCS.proposalBase64, DOCS.proposalFileName, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+  else if (b.id === "apDlCost" && DOCS) downloadB64(DOCS.costingBase64, DOCS.costingFileName, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+});
+
+// ---- one-click fixes on the Checks cards ----
+const ACCESS_OPTIONS = ["Roll-up door / storefront","Single man door","Double doors","Loading dock","Stairs only (upper floor)","Elevator","Open site / yard"];
+const btn = (act, label, primary) => `<button data-act="${act}"${primary ? ' class="primary"' : ""}>${label}</button>`;
+function fixActions(i) {
+  const id = i.id;
+  if (id === "unconfirmed_price") return btn("price:proposal", "Checked against the proposal", 1) + btn("price:costing_sheet", "Checked against the costing sheet");
+  if (id === "lift_delivery") return btn("lift_delivery", "Add delivery + pickup ($300)", 1);
+  if (id === "ceiling_grid") return btn("grid:remain", "Grid stays", 1) + btn("grid:remove", "Grid comes out");
+  if (id === "ceiling_devices") return btn("devices:others", "Devices are by others");
+  if (id === "ceiling_height") return `<input type="number" step="0.5" min="7" max="60" placeholder="ft" data-inline="job.ceiling_height_ft" aria-label="Ceiling height in feet">` + btn("save_inline", "Save", 1);
+  if (id === "access") return `<select data-inline="job.access" aria-label="Access"><option value="">Pick access...</option>${ACCESS_OPTIONS.map((a) => `<option>${a}</option>`).join("")}</select>`;
+  if (id === "work_order") return btn("work_order", "Put scope lines in work order", 1);
+  if (id === "draft_inputs") return btn("confirm_drafts", "Crew-days, loads and equipment are right", 1);
+  if (id === "bid_vs_markup" || id === "low_markup") return `<input type="text" placeholder="Why? e.g. bid lower to stay competitive" data-inline="pricing_note" aria-label="Pricing note" style="max-width:260px">` + btn("save_inline", "Save", 1);
+  if (id.startsWith("plan_by_others")) return btn("plan_excl:" + id, "Add to exclusions", 1);
+  if (id === "auto_no_plans") return btn("upload_plans", "Upload plans", 1);
+  return "";
+}
+const ORDER_RX = [/millwork|cabinet|casework|counter/i, /carpet|flooring|\bbase\b|vct|tile floor/i, /\bdoors?\b|\bwalls?\b|partition/i, /ceiling|\bact\b/i];
+function workRank(line) { const k = ORDER_RX.findIndex((re) => re.test(line)); return k < 0 ? 99 : k; }
+function remember(id, text) { est.answered_notes = est.answered_notes || {}; est.answered_notes[id] = text; if (!est.confirmed.includes(id)) est.confirmed.push(id); }
+document.addEventListener("change", (ev) => {
+  const el = ev.target;
+  if (el.dataset && el.dataset.inline === "job.access" && el.value) { est.job.access = el.value; renderForm(); run(); }
+});
+document.addEventListener("click", (ev) => {
+  const b = ev.target.closest("button[data-act]"); if (!b) return;
+  const act = b.dataset.act, card = b.closest(".issue");
+  const firstScope = () => { if (!est.scopes.length) est.scopes.push({ name: "Demolition", lines: [] }); return est.scopes[0]; };
+  if (act.startsWith("price:")) { est.price_source = act.split(":")[1]; }
+  else if (act === "lift_delivery") {
+    const fl = flatLines(); const lift = fl.find((l) => /lift|excavator|skid|scraper/i.test(l.description || "")) || { section: "Interior" };
+    fl.push({ section: lift.section, category: "Equipment", description: "Equipment delivery and pickup", qty: 2, rate: 150 }); setLines(fl);
   }
+  else if (act === "grid:remain") { const s0 = firstScope(); let hit = false; s0.lines = s0.lines.map((l) => (/ceiling|\bact\b/i.test(l) && !/grid/i.test(l) && !hit ? (hit = true, l + ", leave existing ceiling grid in place") : l)); if (!hit) s0.lines.push("Leave existing ceiling grid in place"); }
+  else if (act === "grid:remove") { firstScope().lines.push("Properly remove ceiling grid"); }
+  else if (act === "devices:others") { est.extra_exclusions = (est.extra_exclusions || []).concat(["Ceiling devices (lights, diffusers, speakers, security) by others"]); remember("ceiling_devices", "Ceiling devices by others"); }
+  else if (act === "save_inline") {
+    const inp = card.querySelector("[data-inline]"); if (!inp || inp.value === "") return;
+    const path = inp.dataset.inline; set(est, path, inp.type === "number" ? Number(inp.value) : inp.value);
+  }
+  else if (act === "work_order") { for (const sc of est.scopes) sc.lines = (sc.lines || []).map((l, k) => [l, k]).sort((a, b) => workRank(a[0]) - workRank(b[0]) || a[1] - b[1]).map((x) => x[0]); }
+  else if (act === "confirm_drafts") { for (const sec of est.sections) for (const l of sec.lines) delete l.draft; }
+  else if (act.startsWith("plan_excl:")) {
+    const id = act.slice(10), f = (est.plan_flags || []).find((x) => x.key === id);
+    const m = f && f.message.match(/"([^"]+)"/); if (m) est.extra_exclusions = (est.extra_exclusions || []).concat([(m[1].charAt(0) + m[1].slice(1).toLowerCase()).replace(/\.$/, "")]);
+    remember(id, "Added to exclusions");
+  }
+  else if (act === "upload_plans") { document.getElementById("pdfFile").click(); return; }
+  renderForm(); run();
 });
 
 // ---- events ----
 document.addEventListener("input", (ev) => {
   const el = ev.target;
+  if (el.dataset.inline) return; // typing in a Checks card: wait for Save
   if (el.dataset.f) {
     let v = el.dataset.bool !== undefined ? el.checked : el.type === "number" ? numOrNull(el.value) : el.value;
     set(est, el.dataset.f, v === "" ? null : v);
@@ -409,9 +564,11 @@ document.addEventListener("click", (ev) => {
     else if (b.closest("#scopes")) { est.scopes.splice(+b.closest(".scope").dataset.i, 1); renderScopes(); }
     else if (b.closest("#qcs")) { est.quantity_checks.splice(+b.closest("tr").dataset.i, 1); renderQcs(); }
   }
-  else if (b.dataset.confirm) { if (!est.confirmed.includes(b.dataset.confirm)) est.confirmed.push(b.dataset.confirm); }
-  else if (b.dataset.unconfirm) { est.confirmed = est.confirmed.filter((c) => c !== b.dataset.unconfirm); }
-  else if (b.id === "btnNew") { if (!confirm("Clear this estimate?")) return; est = blank(); COMPS = null; PLAN_PAGES = null; renderForm(); }
+  else if (b.dataset.confirm) { const card = b.closest(".issue"); const msg = card ? card.children[1].textContent : b.dataset.confirm; remember(b.dataset.confirm, msg.length > 60 ? msg.slice(0, 57) + "..." : msg); }
+  else if (b.dataset.unconfirm) { est.confirmed = est.confirmed.filter((c) => c !== b.dataset.unconfirm); if (est.answered_notes) delete est.answered_notes[b.dataset.unconfirm]; }
+  else if (b.id === "btnNew") { if (!confirm("Clear this estimate?")) return; est = blank(); COMPS = null; PLAN_PAGES = null; TAKEOFF = null; PLAN_FILES = []; DOCS = null; renderUploads(); renderForm(); }
+  else if (b.id === "btnImport" && LIVE_SAVE) { showView("saved"); return; }
+  else if (b.id === "btnExport" && LIVE_SAVE) { saveEstimate(); return; }
   else if (b.id === "btnImport") { document.getElementById("file").click(); return; }
   else if (b.id === "btnExport") {
     const name = (est.job.name || "estimate").replace(/[^A-Za-z0-9 _-]+/g, "").trim() || "estimate";
@@ -433,8 +590,529 @@ const opp = q.get("opportunityId") || q.get("opportunity_id");
 if (opp) document.getElementById("opp").textContent = "Opportunity " + opp;
 if (q.get("job") && !est.job.name) est.job.name = q.get("job");
 
-if (RATES) document.getElementById("rateItems").innerHTML = RATES.rate_sheet.map((r) => `<option value="${esc(r.item)} (${esc(r.per)})">${money(r.rate)} per ${esc(r.per)}</option>`).join("");
-renderForm(); run();
+// ---- start (sandbox: right away; live site: after sign-in, see the shell script below) ----
+function startApp() {
+  if (RATES) document.getElementById("rateItems").innerHTML = RATES.rate_sheet.map((r) => `<option value="${esc(r.item)} (${esc(r.per)})">${money(r.rate)} per ${esc(r.per)}</option>`).join("");
+  renderUploads();
+  renderForm(); run();
+}
+if (INLINE_DATA) startApp();
+</script>
+<script>
+/* ===================== APP SHELL =====================
+   Live site: GHL auto sign-in (same as the Estimating Desk) or the passcode, then the data loads.
+   Views: Estimate (Builder / Cost sheet / Proposal tabs), Saved estimates, Admin (admins only).
+   Sandbox: data is built in, no sign-in, no Saved/Admin. */
+const LIVE_SAVE = !INLINE_DATA;
+const SESSION_KEY = "a2z-bot-session";
+let SESSION = { signedIn: false, user: null, isAdmin: false, isSenior: false };
+let sessionToken = (() => { try { return sessionStorage.getItem(SESSION_KEY) || localStorage.getItem(SESSION_KEY) || ""; } catch (e) { return ""; } })();
+function setToken(t) {
+  sessionToken = t || "";
+  try { if (t) { localStorage.setItem(SESSION_KEY, t); sessionStorage.setItem(SESSION_KEY, t); } else { localStorage.removeItem(SESSION_KEY); sessionStorage.removeItem(SESSION_KEY); } } catch (e) {}
+}
+let onAuthLost = null;
+(() => {
+  const nativeFetch = window.fetch.bind(window);
+  window.fetch = async (input, init = {}) => {
+    const url = typeof input === "string" ? input : (input && input.url) || "";
+    if (!(url.startsWith("/.netlify/functions/") || url.startsWith(location.origin + "/.netlify/functions/"))) return nativeFetch(input, init);
+    const headers = new Headers(init.headers || {});
+    if (sessionToken) headers.set("X-A2Z-Session", sessionToken);
+    const res = await nativeFetch(input, { ...init, headers, credentials: "same-origin" });
+    if ((res.status === 401 || res.status === 403) && !url.includes("/functions/session") && onAuthLost) {
+      res.clone().json().then((d) => { if (d && ["signin", "no_access"].includes(d.auth)) onAuthLost(d); }).catch(() => {});
+    }
+    return res;
+  };
+})();
+
+function toast(msg) { const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 2600); }
+async function api(path, opts = {}) {
+  const res = await fetch("/.netlify/functions/" + path, { cache: "no-store", ...opts, headers: { "Content-Type": "application/json", ...(opts.headers || {}) } });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) { const e = new Error(data.error || `HTTP ${res.status}`); e.auth = data.auth; e.status = res.status; e.user = data.user; throw e; }
+  return data;
+}
+
+/* ---------- sign-in ---------- */
+function lock(title, text, { passcode = false, retry = false } = {}) {
+  document.getElementById("lockTitle").textContent = title;
+  document.getElementById("lockText").textContent = text;
+  document.getElementById("pcForm").hidden = !passcode;
+  document.getElementById("lockRetry").hidden = !retry;
+  document.getElementById("lock").hidden = false;
+}
+const unlock = () => { document.getElementById("lock").hidden = true; };
+function requestGhlUser() {
+  return new Promise((resolve, reject) => {
+    if (window.parent === window) return reject(new Error("Not inside GHL"));
+    const to = setTimeout(() => { window.removeEventListener("message", on); reject(new Error("GHL didn't answer the sign-in request")); }, 8000);
+    function on(ev) {
+      if (ev.source !== window.parent || !ev.data || ev.data.message !== "REQUEST_USER_DATA_RESPONSE" || !ev.data.payload) return;
+      clearTimeout(to); window.removeEventListener("message", on); resolve(ev.data.payload);
+    }
+    window.addEventListener("message", on);
+    window.parent.postMessage({ message: "REQUEST_USER_DATA" }, "*");
+  });
+}
+function applySession(info) {
+  SESSION = { signedIn: !!info.signedIn, user: info.user || null, role: info.role, isAdmin: !!info.isAdmin, isSenior: !!info.isSenior, via: info.via, passcodeOn: info.passcodeOn };
+  if (info.token) setToken(info.token);
+  const who = document.getElementById("whoami");
+  who.hidden = !SESSION.signedIn;
+  if (SESSION.signedIn) {
+    document.getElementById("whoName").textContent = SESSION.user.name || SESSION.user.email;
+    document.getElementById("whoRole").textContent = SESSION.isSenior ? "SENIOR ADMIN" : SESSION.isAdmin ? "ADMIN" : SESSION.via === "passcode" ? "PASSCODE" : "ESTIMATOR";
+  }
+  document.getElementById("navAdmin").hidden = !SESSION.isAdmin;
+  document.getElementById("topnav").hidden = !SESSION.signedIn;
+}
+async function initSession() {
+  const embedded = window.parent !== window;
+  lock("Signing in...", embedded ? "Checking who you are in GHL." : "One moment.");
+  let ghlErr = null;
+  if (embedded) {
+    try { applySession(await api("session", { method: "POST", body: JSON.stringify({ action: "ghl", encryptedData: await requestGhlUser() }) })); return true; }
+    catch (e) {
+      ghlErr = e;
+      if (e.auth === "no_access") { setToken(""); lock("No Estimating Bot access", `You're signed in to GHL as ${(e.user && (e.user.name || e.user.email)) || "this user"}, but you're not on the access list. Ask an A2Z admin to add you, then reload.`, { retry: true }); return false; }
+    }
+  }
+  let info = null;
+  try { info = await api("session"); } catch (e) { info = null; }
+  if (info && info.signedIn && info.hasAccess) { applySession(info); return true; }
+  if (info && info.authEnforced === false && !info.signedIn) { applySession({ ...info, signedIn: true, user: { name: "Unsigned (AUTH_ENFORCE=off)" } }); return true; }
+  setToken("");
+  const pc = !info || info.passcodeOn !== false;
+  lock(embedded ? "Couldn't sign you in through GHL" : "A2Z Estimating Bot",
+    (embedded && ghlErr ? ghlErr.message + ". " : "") + (pc ? "Enter your name and the passcode. Inside GHL you're signed in automatically." : "Open the bot from GHL's left menu to sign in. (Passcode sign-in is off.)"),
+    { passcode: pc, retry: embedded });
+  return false;
+}
+document.getElementById("pcForm").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const name = document.getElementById("pcName").value, passcode = document.getElementById("pcCode").value;
+  try {
+    applySession(await api("session", { method: "POST", body: JSON.stringify({ action: "passcode", name, passcode }) }));
+    document.getElementById("pcCode").value = "";
+    await afterSignIn();
+  } catch (e) { document.getElementById("lockText").textContent = e.message; }
+});
+document.getElementById("lockRetry").addEventListener("click", () => location.reload());
+document.getElementById("btnSignOut").addEventListener("click", async () => {
+  try { await api("session", { method: "POST", body: JSON.stringify({ action: "signout" }) }); } catch (e) {}
+  setToken(""); location.reload();
+});
+onAuthLost = (d) => { setToken(""); applySession({ signedIn: false }); lock(d.auth === "no_access" ? "No Estimating Bot access" : "Signed out", (d.error || "Sign in again.") + "", { passcode: true, retry: window.parent !== window }); };
+
+async function afterSignIn() {
+  lock("Loading...", "Getting the past jobs, rates and templates.");
+  try {
+    const d = await api("bot-data");
+    LIBRARY = d.library; RATES = d.rates; DEFAULTS = d.defaults || DEFAULTS; PRODUCTION = d.production; STYLE = d.style;
+    unlock(); startApp(); showView("estimate");
+    const qs = new URLSearchParams(location.search);
+    if (qs.get("estimate")) openSaved(qs.get("estimate"));
+  } catch (e) { lock("Couldn't load the bot", e.message, { retry: true }); }
+}
+
+/* ---------- views + tabs ---------- */
+let VIEW = "estimate", TAB = "builder";
+function showView(v) {
+  VIEW = v;
+  document.getElementById("viewEstimate").hidden = v !== "estimate";
+  document.getElementById("viewSaved").hidden = v !== "saved";
+  document.getElementById("viewAdmin").hidden = v !== "admin";
+  document.querySelectorAll("#topnav button").forEach((b) => b.classList.toggle("on", b.dataset.nav === v));
+  if (v === "saved") loadSaved();
+  if (v === "admin") renderAdmin();
+}
+function showTab(t) {
+  TAB = t;
+  document.querySelectorAll(".tabs button").forEach((b) => b.classList.toggle("on", b.dataset.tab === t));
+  document.getElementById("tabBuilder").hidden = t !== "builder";
+  document.getElementById("tabCost").hidden = t !== "cost";
+  document.getElementById("tabProposal").hidden = t !== "proposal";
+  renderActiveTab();
+}
+function renderActiveTab() { if (TAB === "cost") renderCost(); else if (TAB === "proposal") renderProposal(); renderSaveState(); }
+document.getElementById("topnav").addEventListener("click", (ev) => { const b = ev.target.closest("button[data-nav]"); if (b) showView(b.dataset.nav); });
+document.querySelector(".tabs").addEventListener("click", (ev) => { const b = ev.target.closest("button[data-tab]"); if (b) showTab(b.dataset.tab); });
+// keep the open document tab in step when the builder or autopilot changes the estimate
+const _renderForm = renderForm;
+renderForm = function () { _renderForm(); if (TAB !== "builder") renderActiveTab(); else renderSaveState(); };
+
+/* ---------- saving ---------- */
+let LAST_SAVED = "";
+const snapshot = () => JSON.stringify({ ...est, _savedAt: undefined });
+function renderSaveState() {
+  const el = document.getElementById("saveState"); if (!el) return;
+  if (!LIVE_SAVE) { el.textContent = "Sandbox: edits stay in this browser"; return; }
+  if (!est._id) { el.innerHTML = "<b>Not saved yet</b>"; return; }
+  const dirty = snapshot() !== LAST_SAVED;
+  el.innerHTML = `${dirty ? "<b>Unsaved changes</b> · " : ""}Saved v${est._version}${est._savedAt ? " · " + esc(fmtWhen(est._savedAt)) : ""}`;
+}
+async function saveEstimate() {
+  try {
+    const note = "";
+    const out = await api("estimates", { method: "POST", body: JSON.stringify({ action: "save", id: est._id || undefined, estimate: est, note }) });
+    est._id = out.id; est._version = out.version; est._savedAt = out.record.updatedAt;
+    LAST_SAVED = snapshot(); save(); renderSaveState();
+    toast(`Saved v${out.version}`);
+  } catch (e) { toast("Not saved: " + e.message); }
+}
+const fmtWhen = (iso) => (iso ? new Date(iso).toLocaleString("en-US", { timeZone: "America/Los_Angeles", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "-");
+document.addEventListener("input", () => setTimeout(renderSaveState, 0));
+if (LIVE_SAVE) {
+  // Ctrl/Cmd+S saves
+  document.addEventListener("keydown", (ev) => { if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === "s" && SESSION.signedIn) { ev.preventDefault(); saveEstimate(); } });
+}
+
+/* ---------- Saved estimates view ---------- */
+let SAVED = null, SAVED_Q = "";
+async function loadSaved() {
+  const v = document.getElementById("viewSaved");
+  v.innerHTML = `<div class="list-head"><h2>Saved estimates</h2></div><div class="card"><div class="hint">Loading...</div></div>`;
+  try { SAVED = (await api("estimates")).estimates; } catch (e) { v.innerHTML = `<div class="card"><div class="status bad">Couldn't load: ${esc(e.message)}</div></div>`; return; }
+  renderSaved();
+}
+function renderSaved() {
+  const v = document.getElementById("viewSaved"), q = SAVED_Q.trim().toLowerCase();
+  const rows = (SAVED || []).filter((r) => !q || [r.name, r.customer, r.location, r.estimator, r.estimateNumber, r.updatedBy && r.updatedBy.name].join(" ").toLowerCase().includes(q));
+  v.innerHTML = `<div class="list-head"><h2>Saved estimates</h2><input type="search" id="savedQ" placeholder="Search job, customer, estimator..." value="${esc(SAVED_Q)}" aria-label="Search saved estimates"><span class="sp" style="flex:1"></span>
+      <button id="svImport">Open estimate file</button><button id="svExport">Download current estimate file</button><button class="primary" id="svNew">New estimate</button></div>
+    <div class="card tablewrap">${rows.length ? `<table class="dt"><thead><tr><th>Job</th><th>Customer</th><th class="num">Bid</th><th>Status</th><th>Saved</th><th>Version</th><th></th></tr></thead><tbody>${rows.map((r) => `<tr>
+      <td><b>${esc(r.name)}</b><div class="hint">${esc(r.estimateNumber || "")}${r.location ? " · " + esc(r.location) : ""}</div></td>
+      <td>${esc(r.customer || "")}<div class="hint">${esc(r.estimator || "")}</div></td>
+      <td class="num">${r.bid != null ? money(r.bid) : "-"}</td>
+      <td>${r.draft ? `<span class="pill draft">DRAFT</span><div class="hint">${r.fix ? r.fix + " to fix, " : ""}${r.questions} question${r.questions === 1 ? "" : "s"}</div>` : '<span class="pill ready">READY</span>'}</td>
+      <td>${esc(fmtWhen(r.updatedAt))}<div class="hint">${esc((r.updatedBy && r.updatedBy.name) || "")}</div></td>
+      <td><select data-sv-ver="${esc(r.id)}" aria-label="Version">${Array.from({ length: r.version }, (_, k) => r.version - k).map((n) => `<option value="${n}">v${n}${n === r.version ? " (latest)" : ""}</option>`).join("")}</select></td>
+      <td><button class="primary" data-sv-open="${esc(r.id)}">Open</button>${SESSION.isAdmin ? ` <button class="link" data-sv-del="${esc(r.id)}" data-name="${esc(r.name)}">Delete</button>` : ""}</td></tr>`).join("")}</tbody></table>`
+      : `<div class="hint">${SAVED && SAVED.length ? "No matches." : "Nothing saved yet. Build an estimate and click Save estimate."}</div>`}</div>
+    <p class="hint">Plan PDFs and the takeoff CSV aren't stored, only the estimate built from them. Opening an older version and saving makes it the newest version.</p>`;
+}
+async function openSaved(id, ver) {
+  try {
+    const d = await api("estimates?id=" + encodeURIComponent(id) + (ver ? "&v=" + ver : ""));
+    est = normalize(d.estimate); est._id = d.record.id; est._version = d.record.version; est._savedAt = d.record.updatedAt;
+    TAKEOFF = null; PLAN_FILES = []; COMPS = est._comps || null; DOCS = null;
+    LAST_SAVED = ver && Number(ver) !== d.record.version ? "" : snapshot();
+    renderUploads(); renderForm(); run(); showView("estimate");
+    toast(`Opened ${d.record.name}${ver && Number(ver) !== d.record.version ? " (v" + ver + ")" : ""}`);
+  } catch (e) { toast("Couldn't open: " + e.message); }
+}
+document.getElementById("viewSaved").addEventListener("input", (ev) => { if (ev.target.id === "savedQ") { SAVED_Q = ev.target.value; const pos = ev.target.selectionStart; renderSaved(); const el = document.getElementById("savedQ"); el.focus(); el.setSelectionRange(pos, pos); } });
+document.getElementById("viewSaved").addEventListener("click", async (ev) => {
+  const b = ev.target.closest("button"); if (!b) return;
+  if (b.dataset.svOpen) { const sel = document.querySelector(`[data-sv-ver="${b.dataset.svOpen}"]`); openSaved(b.dataset.svOpen, sel ? sel.value : ""); }
+  else if (b.dataset.svDel) {
+    if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Click again to delete"; setTimeout(() => { b.dataset.armed = ""; b.textContent = "Delete"; }, 3000); return; }
+    try { await api("estimates", { method: "POST", body: JSON.stringify({ action: "delete", id: b.dataset.svDel }) }); toast("Deleted " + b.dataset.name); if (est._id === b.dataset.svDel) { delete est._id; delete est._version; } loadSaved(); } catch (e) { toast(e.message); }
+  }
+  else if (b.id === "svNew") { est = blank(); COMPS = null; TAKEOFF = null; PLAN_FILES = []; DOCS = null; LAST_SAVED = ""; renderUploads(); renderForm(); run(); showView("estimate"); }
+  else if (b.id === "svImport") document.getElementById("file").click();
+  else if (b.id === "svExport") {
+    const name = (est.job.name || "estimate").replace(/[^A-Za-z0-9 _-]+/g, "").trim() || "estimate";
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(est, null, 1)], { type: "application/json" })); a.download = name + ".estimate.json"; a.click();
+  }
+});
+
+// Redraw a tab after focus has moved to the next field, then put the cursor back,
+// so leaving one field never swallows the click or typing in the next one.
+function keepFocus(fn) {
+  setTimeout(() => {
+    const a = document.activeElement;
+    const attr = a && a.dataset ? (a.dataset.cs ? "data-cs" : a.dataset.pf ? "data-pf" : a.dataset.ps ? "data-ps" : a.id === "csMk" || a.id === "csFinal" ? "id" : null) : null;
+    const key = attr === "id" ? a.id : attr ? a.getAttribute(attr) : null;
+    let st = null; try { st = a.selectionStart; } catch (e) {}
+    fn();
+    if (attr) {
+      const n = attr === "id" ? document.getElementById(key) : document.querySelector(`[${attr}="${CSS.escape(key)}"]`);
+      if (n) { n.focus(); try { if (st != null) n.setSelectionRange(st, st); } catch (e) {} }
+    }
+  }, 0);
+}
+
+/* ---------- Cost sheet tab (Job Costing Worksheet V3) ---------- */
+function secByName(name, create) {
+  let s = est.sections.find((x) => String(x.name).toLowerCase() === name.toLowerCase());
+  if (!s && create) { s = { name, lines: [] }; est.sections.push(s); est.sections.sort((a, b) => ["Interior", "Exterior", "Grading"].indexOf(a.name) - ["Interior", "Exterior", "Grading"].indexOf(b.name)); }
+  return s;
+}
+function renderCost() {
+  const el = document.getElementById("tabCost");
+  const map = E.slotMap(est.sections);
+  const chk = E.checkEstimate(est, { rates: RATES });
+  let total = 0;
+  const secs = map.map((m) => {
+    const sec = secByName(m.section, false);
+    let sub = 0;
+    const rows = m.rows.map((r, i) => {
+      const ln = r.line !== null && sec ? sec.lines[r.line] : null;
+      const merged = r.merged.map((k) => sec.lines[k]);
+      let ext = ln ? Number(ln.qty) * Number(ln.rate) || 0 : 0;
+      merged.forEach((x) => { ext += Number(x.qty) * Number(x.rate) || 0; });
+      sub += ext;
+      const v = (f) => (ln && ln[f] != null ? esc(ln[f]) : "");
+      return `<tr>
+        <td class="rowno">${r.row}</td><td class="cat">${r.cat}</td>
+        <td><input data-cs="${m.section}|${i}|description" value="${v("description")}" placeholder="${r.cat === "Labor" ? "e.g. 4 workers x 2 days" : ""}" aria-label="${m.section} ${r.cat} description">${merged.length ? `<div class="merged">+ ${merged.map((x) => esc(x.description)).join(", ")} (combined on this row in the .xlsx; edit them in Builder)</div>` : ""}</td>
+        <td class="q"><input type="number" step="any" data-cs="${m.section}|${i}|qty" value="${v("qty")}" aria-label="Qty"></td>
+        <td class="r"><input type="number" step="any" data-cs="${m.section}|${i}|rate" value="${v("rate")}" aria-label="Rate"></td>
+        <td class="num">${ext ? money(ext) : ""}</td>
+        <td>${ln ? `<button class="x" data-cs-del="${m.section}|${r.line}" title="Clear this row">&times;</button>` : ""}</td></tr>`;
+    }).join("");
+    total += sub;
+    return `<div class="cs-sec card"><h3>${m.section}</h3><div class="tablewrap"><table class="dt"><thead><tr><th>Row</th><th>Type</th><th>Description</th><th>Qty</th><th>Rate</th><th class="num">Extended</th><th></th></tr></thead><tbody>${rows}</tbody>
+      <tfoot><tr><td></td><td colspan="4">${m.section} subtotal (E${m.sub})</td><td class="num">${money(sub)}</td><td></td></tr></tfoot></table></div></div>`;
+  }).join("");
+  const p = chk.priced, mk = est.markup != null ? Math.round(est.markup * 10000) / 100 : "";
+  el.innerHTML = `${docToolbar("cost")}
+    <div class="hint" style="margin-bottom:8px">The Job Costing Worksheet V3 rows, filled the same way the .xlsx is. Edit any row here or in Builder; both stay in step.</div>
+    ${secs}
+    <div class="card"><div class="cs-total">
+      <span>Total cost (E37)</span><b>${money(total)}</b>
+      <label for="csMk">Markup % (E38)</label><input id="csMk" type="number" step="1" data-cs-mk value="${mk}">
+      <span>Price at markup (E39)</span><span>${money(total * (1 + (Number(est.markup) || 0)))}</span>
+      <label for="csFinal">Final bid (leave blank to use E39)</label><input id="csFinal" type="number" step="1" data-cs-final value="${est.final_price != null ? esc(est.final_price) : ""}">
+      <span class="big">Total price to customer</span><span class="big">${p ? money(p.final_price) : "-"}</span>
+      <span>Margin</span><span>${p ? Math.round(p.margin * 100) + "%" : "-"}</span>
+    </div><p class="hint" style="text-align:right">${est.pricing_auto ? "The bid follows cost x markup automatically. Typing a final bid or a scope total switches that off." : 'The bid is set by hand. <button class="link" data-autoprice>Go back to automatic pricing</button>'}</p></div>`;
+}
+document.getElementById("tabCost").addEventListener("input", (ev) => {
+  const el = ev.target;
+  if (el.dataset.cs) {
+    const [name, i, f] = el.dataset.cs.split("|");
+    const m = E.slotMap(est.sections).find((x) => x.section === name), r = m.rows[Number(i)];
+    const sec = secByName(name, true);
+    let ln = r.line !== null ? sec.lines[r.line] : null;
+    if (!ln) { ln = { category: r.cat, description: "", qty: null, rate: null }; sec.lines.push(ln); }
+    ln[f] = f === "description" ? el.value : (el.value === "" ? null : Number(el.value));
+    if (f === "description" && ln.rate == null && RATES) {
+      const hit = RATES.rate_sheet.find((x) => x.per === "Day" && el.value.toLowerCase().includes(x.item.toLowerCase().slice(0, 14)));
+      if (hit) ln.rate = hit.rate;
+    }
+    delete ln.draft;
+  } else if (el.dataset.csMk !== undefined) est.markup = el.value === "" ? null : Number(el.value) / 100;
+  else if (el.dataset.csFinal !== undefined) est.final_price = el.value === "" ? null : Number(el.value);
+  run();
+});
+document.getElementById("tabCost").addEventListener("change", () => keepFocus(() => { _renderForm(); renderCost(); }));
+document.getElementById("tabCost").addEventListener("click", (ev) => {
+  const b = ev.target.closest("button[data-cs-del]"); if (!b) return;
+  const [name, idx] = b.dataset.csDel.split("|"); const sec = secByName(name, false);
+  if (sec) { sec.lines.splice(Number(idx), 1); if (!sec.lines.length) est.sections = est.sections.filter((x) => x !== sec); }
+  renderForm(); run();
+});
+
+/* ---------- Proposal tab (Make master proposal v17) ---------- */
+const today = () => new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+function initials(name) { const w = String(name || "").trim().split(/\s+/); return w.length ? (w[0][0] + (w.length > 1 ? w[w.length - 1][0] : "")).toUpperCase() : ""; }
+function estNumber(name) { const d = new Date(); const mm = String(d.getMonth() + 1).padStart(2, "0"), dd = String(d.getDate()).padStart(2, "0"), yy = String(d.getFullYear()).slice(2); return mm + dd + yy + ((STYLE && STYLE.estimators[name] && STYLE.estimators[name].initials) || initials(name)); }
+function defaultExclusions() {
+  const base = est.exclusions || (STYLE && STYLE.exclusions) || "";
+  const extra = (est.extra_exclusions || []).filter((x) => !base.toLowerCase().includes(String(x).toLowerCase()));
+  return extra.length ? `${base.replace(/\s+$/, "")} ${extra.join(", ")}.` : base;
+}
+function renderProposal() {
+  const el = document.getElementById("tabProposal");
+  if (!STYLE) { el.innerHTML = '<div class="card hint">Loading the house style...</div>'; return; }
+  const j = est.job;
+  if (!j.date) j.date = today();
+  if (!j.estimator && SESSION.user && STYLE.estimators[SESSION.user.name]) j.estimator = SESSION.user.name;
+  if (!j.estimate_number && j.estimator) j.estimate_number = estNumber(j.estimator);
+  const ei = STYLE.estimators[j.estimator] || {};
+  const chk = E.checkEstimate(est, { rates: RATES }), p = chk.priced;
+  const base = est.scopes.filter((x) => !x.alternate);
+  const multi = base.length > 1;
+  const co = STYLE.company;
+  const scopes = est.scopes.map((sc, i) => `
+    <h4><input data-ps="${i}|name" value="${esc(sc.name)}" aria-label="Scope heading"><button class="link x" data-ps-del="${i}" title="Remove this scope">Remove</button></h4>
+    <textarea data-ps="${i}|lines" rows="${Math.max(3, (sc.lines || []).length + 1)}" aria-label="Scope lines, one per line">${esc((sc.lines || []).join("\n"))}</textarea>
+    <div class="amt"><span>${esc((sc.alternate ? String(sc.name).split(" - ")[0] : sc.name).toUpperCase())} TOTAL:</span>${multi || sc.alternate ? `<input type="number" step="1" data-ps="${i}|price" value="${sc.price != null ? esc(sc.price) : ""}" aria-label="Scope total">` : `<span>${p ? money(p.final_price) : "-"}</span>`}</div>`).join("");
+  el.innerHTML = `${docToolbar("proposal")}
+    <div class="paper">
+      <div class="co"><b>${esc(co.name)}</b><div>${esc(co.taglines.join(" · "))}</div><div>${esc(co.address.join(", "))} · TEL ${esc(co.tel)} · ${esc(co.license)}</div></div>
+      <div class="hd">
+        <span>ESTIMATE #</span><input data-pf="job.estimate_number" value="${esc(j.estimate_number || "")}" aria-label="Estimate number">
+        <span>DATE</span><input data-pf="job.date" value="${esc(j.date || "")}" aria-label="Date">
+        <span>CUSTOMER</span><input data-pf="job.customer" value="${esc(j.customer || "")}" placeholder="Customer company" aria-label="Customer">
+        <span>JOB LOCATION</span><input data-pf="job.location" value="${esc(j.location || "")}" placeholder="Job address" aria-label="Job location">
+        <span>ESTIMATOR</span><span style="font-weight:400"><select data-pf="job.estimator" aria-label="Estimator"><option value="">Pick...</option>${Object.keys(STYLE.estimators).map((n) => `<option ${n === j.estimator ? "selected" : ""}>${esc(n)}</option>`).join("")}</select> ${esc(ei.phone || "")} ${esc(ei.email || "")}</span>
+      </div>
+      <textarea data-pf="opening_paragraph" rows="2" aria-label="Opening paragraph">${esc(est.opening_paragraph || STYLE.intro)}</textarea>
+      ${scopes}
+      <div class="addrow"><button class="link" data-ps-add="scope">+ Add scope</button><button class="link" data-ps-add="alt">+ Add alternate</button></div>
+      <div class="grand"><span>TOTAL:</span><span>${p ? money(p.final_price) : "-"}</span></div>
+      <div class="lbl">Notes (one per line)</div><textarea data-pf="notes" rows="${(est.notes || STYLE.notes).length + 1}" aria-label="Notes">${esc((est.notes || STYLE.notes).join("\n"))}</textarea>
+      <div class="lbl">Exclusions</div><textarea data-pf="exclusions" rows="3" aria-label="Exclusions">${esc(defaultExclusions())}</textarea>
+      <div class="lbl">Validity</div><textarea data-pf="validity_text" rows="1" aria-label="Validity">${esc(est.validity_text || STYLE.terms[0])}</textarea>
+      <div class="lbl">Payment terms</div><textarea data-pf="payment_terms" rows="3" aria-label="Payment terms">${esc(est.payment_terms || STYLE.terms[1])}</textarea>
+      <div class="lbl">Legal</div><textarea data-pf="legal_footer" rows="3" aria-label="Legal footer">${esc(est.legal_footer || STYLE.terms[2])}</textarea>
+    </div>`;
+}
+document.getElementById("tabProposal").addEventListener("input", (ev) => {
+  const el = ev.target;
+  if (el.dataset.pf) {
+    const k = el.dataset.pf;
+    if (k === "notes") est.notes = el.value.split("\n").map((x) => x.trim()).filter(Boolean);
+    else if (k === "exclusions") { est.exclusions = el.value; est.extra_exclusions = []; }
+    else set(est, k, el.value);
+    if (k === "job.estimator" && el.value && (!est.job.estimate_number || /^\d{6}[A-Z]*$/.test(est.job.estimate_number))) est.job.estimate_number = estNumber(el.value);
+  } else if (el.dataset.ps) {
+    const [i, f] = el.dataset.ps.split("|"); const sc = est.scopes[Number(i)];
+    if (f === "lines") sc.lines = el.value.split("\n").map((x) => x.trim()).filter(Boolean);
+    else if (f === "price") sc.price = el.value === "" ? null : Number(el.value);
+    else sc[f] = el.value;
+  }
+  run();
+});
+document.getElementById("tabProposal").addEventListener("change", () => keepFocus(() => { _renderForm(); renderProposal(); }));
+document.getElementById("tabProposal").addEventListener("click", (ev) => {
+  const b = ev.target.closest("button"); if (!b) return;
+  if (b.dataset.psAdd) { est.scopes.push(b.dataset.psAdd === "alt" ? { name: `ALTERNATE #${est.scopes.filter((x) => x.alternate).length + 1} - `, lines: [], price: null, alternate: true } : { name: "", lines: [], price: null }); renderProposal(); renderForm(); run(); }
+  else if (b.dataset.psDel !== undefined) { est.scopes.splice(Number(b.dataset.psDel), 1); renderProposal(); renderForm(); run(); }
+});
+
+function docToolbar(which) {
+  const fileBtns = LIVE_DOCS
+    ? `<button data-doc="proposal">${which === "proposal" ? "Download this proposal (.docx)" : "Download proposal (.docx)"}</button><button data-doc="costing">${which === "cost" ? "Download this cost sheet (.xlsx)" : "Download job costing (.xlsx)"}</button>`
+    : `<span class="hint">Downloads are made on the live site.</span>`;
+  return `<div class="toolbar">${fileBtns}${LIVE_SAVE ? '<button class="primary" data-doc="save">Save estimate</button>' : ""}<span class="hint">Files are built from what you see here, in A2Z's own templates. They're named DRAFT while questions are open.</span></div>`;
+}
+document.addEventListener("click", async (ev) => {
+  const b = ev.target.closest("button[data-doc]"); if (!b) return;
+  if (b.dataset.doc === "save") return saveEstimate();
+  if (!DOCS || DOCS.error || DOCS_STALE || LAST_DOCS_EST !== JSON.stringify(est)) await makeDocs();
+  if (!DOCS || DOCS.error) return toast("Files not made: " + ((DOCS && DOCS.error) || "unknown error"));
+  if (b.dataset.doc === "proposal") downloadB64(DOCS.proposalBase64, DOCS.proposalFileName, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+  else downloadB64(DOCS.costingBase64, DOCS.costingFileName, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+});
+
+/* ---------- Admin (same views as the Estimating Desk) ---------- */
+const ADMIN = { tab: "access", data: {}, loading: {}, error: {}, auditQ: "", days: 30, addUserId: "", addRole: "estimator" };
+const ADMIN_DATA = { access: "access", health: "health", audit: "audit", team: "activity", signins: "activity" };
+async function loadAdmin(which, force) {
+  if (ADMIN.loading[which] || (ADMIN.data[which] && !force)) return;
+  ADMIN.loading[which] = true; ADMIN.error[which] = ""; renderAdmin();
+  try { ADMIN.data[which] = await api("admin?view=" + which + (which === "activity" ? "&days=" + ADMIN.days : which === "audit" ? "&limit=300" : "")); }
+  catch (e) { ADMIN.error[which] = e.message; }
+  ADMIN.loading[which] = false; renderAdmin();
+}
+async function adminPost(body, ok) {
+  try { await api("admin", { method: "POST", body: JSON.stringify(body) }); toast(ok); ADMIN.data.audit = null; await loadAdmin("access", true); if (ADMIN.tab === "health") loadAdmin("health", true); }
+  catch (e) { toast(e.message); }
+}
+function renderAdmin() {
+  const v = document.getElementById("viewAdmin");
+  if (!SESSION.isAdmin) { v.innerHTML = '<div class="card">Admins only.</div>'; return; }
+  const key = ADMIN_DATA[ADMIN.tab];
+  if (!ADMIN.data[key] && !ADMIN.loading[key] && !ADMIN.error[key]) setTimeout(() => loadAdmin(key), 0);
+  const tabs = [["access", "Access"], ["health", "Health"], ["audit", "Audit log"], ["team", "Team activity"], ["signins", "Sign-ins"]].map(([k, l]) => `<button data-at="${k}" class="${ADMIN.tab === k ? "on" : ""}">${l}</button>`).join("");
+  const d = ADMIN.data[key];
+  let body = "";
+  if (ADMIN.error[key]) body = `<div class="card"><div class="status bad">Couldn't load: ${esc(ADMIN.error[key])}</div></div>`;
+  else if (!d) body = '<div class="card hint">Loading...</div>';
+  else if (ADMIN.tab === "access") body = adminAccess(d);
+  else if (ADMIN.tab === "health") body = adminHealth(d);
+  else if (ADMIN.tab === "audit") body = adminAudit(d);
+  else if (ADMIN.tab === "team") body = adminTeam(d);
+  else body = adminSignins(d);
+  v.innerHTML = `<div class="list-head"><h2>Admin</h2><span class="hint">Signed in as ${esc(SESSION.user ? SESSION.user.name : "")}${SESSION.isSenior ? " · senior admin" : ""}</span><span class="sp" style="flex:1"></span>
+    ${key === "activity" ? `<select data-adays aria-label="Date range">${[7, 30, 90].map((n) => `<option value="${n}" ${ADMIN.days === n ? "selected" : ""}>Last ${n} days</option>`).join("")}</select>` : ""}
+    <button data-areload>${ADMIN.loading[key] ? "Loading..." : "Reload"}</button></div><div class="admin-tabs">${tabs}</div>${body}`;
+}
+function adminAccess(d) {
+  const me = SESSION.user ? SESSION.user.email : "", senior = SESSION.isSenior;
+  const cand = (d.ghlUsers || []).filter((u) => !u.hasAccess && u.email).sort((a, b) => a.name.localeCompare(b.name));
+  const rows = (d.users || []).map((u) => {
+    const acts = [];
+    if (senior && !u.senior) acts.push(u.role === "admin" ? `<button data-arole="${esc(u.email)}" data-role="estimator">Remove admin</button>` : `<button data-arole="${esc(u.email)}" data-role="admin">Make admin</button>`);
+    if (!u.senior && u.email !== me && (u.role !== "admin" || senior)) acts.push(`<button data-aremove="${esc(u.email)}" data-name="${esc(u.name)}">Remove access</button>`);
+    return `<tr><td><b>${esc(u.name || u.email)}</b>${u.email === me ? " (you)" : ""}<div class="hint">${esc(u.email)}</div></td>
+      <td><span class="pill ${u.role === "admin" ? "admin" : "ready"}">${u.senior ? "Senior admin" : u.role === "admin" ? "Admin" : "Estimator"}</span></td>
+      <td>${esc(fmtWhen(u.lastSeenAt))}</td><td class="hint">${esc(u.addedBy || "-")}${u.addedAt ? " · " + esc(fmtWhen(u.addedAt)) : ""}</td><td>${acts.join(" ")}</td></tr>`;
+  }).join("");
+  return `<div class="card tablewrap"><div class="toolbar"><select data-aadd aria-label="GHL user to add"><option value="">${d.ghlError ? "GHL users unavailable" : cand.length ? "Add a GHL user..." : "Everyone on the location has access"}</option>${cand.map((u) => `<option value="${esc(u.id)}" ${ADMIN.addUserId === u.id ? "selected" : ""}>${esc(u.name)} · ${esc(u.email)}</option>`).join("")}</select>
+    <select data-aaddrole aria-label="Role"><option value="estimator">Estimator</option>${senior ? `<option value="admin" ${ADMIN.addRole === "admin" ? "selected" : ""}>Admin</option>` : ""}</select><button class="primary" data-aaddgo>Give access</button></div>
+    <table class="dt"><thead><tr><th>Person</th><th>Role</th><th>Last signed in</th><th>Added by</th><th></th></tr></thead><tbody>${rows}</tbody></table>
+    <p class="hint">Only people on this list can sign in through GHL. Removing someone signs them out within a minute. Passcode sign-ins (outside GHL) don't need to be on the list and never get Admin. ${senior ? "Senior admins can't be removed." : "Only a senior admin can add or remove admins."}${d.ghlError ? " GHL user list: " + esc(d.ghlError) : ""}</p></div>`;
+}
+function adminHealth(h) {
+  const word = { ok: "All systems working", warn: "Working, with warnings", bad: "Something is broken" }[h.overall] || h.overall;
+  return `<div class="health-overall"><span class="dot ${h.overall}"></span>${esc(word)}<span class="hint" style="margin-left:auto">Checked ${esc(fmtWhen(h.checkedAt))}</span></div>
+    <div class="health-grid">${(h.checks || []).map((c) => `<div class="card health-card"><h2 style="display:flex;align-items:center"><span class="dot ${c.status}"></span>${esc(c.label)}${c.ackable && c.items.length ? '<button style="margin-left:auto" data-aackall>Acknowledge all</button>' : ""}</h2>
+      <div>${esc(c.summary)}</div>${c.items && c.items.length ? `<ul>${c.items.map((i) => `<li><span class="dot ${i.status}"></span><span class="k">${esc(i.label)}</span><span class="v">${esc(i.value)}</span>${i.key ? `<button class="link" data-aack="${esc(i.key)}">Acknowledge</button>` : ""}</li>`).join("")}</ul>` : ""}</div>`).join("")}</div>`;
+}
+function adminAudit(d) {
+  const q = ADMIN.auditQ.trim().toLowerCase();
+  const rows = (d.entries || []).filter((e) => !q || [e.actor && e.actor.name, e.action, e.target, e.error, JSON.stringify(e.detail || {})].join(" ").toLowerCase().includes(q));
+  const det = (x) => Object.entries(x || {}).filter(([, v]) => v !== "" && v != null).map(([k, v]) => `${k}: ${typeof v === "object" ? JSON.stringify(v) : v}`).join(" · ");
+  return `<div class="card tablewrap"><div class="toolbar"><input type="search" data-aq placeholder="Search who, what, job..." value="${esc(ADMIN.auditQ)}" aria-label="Search audit log"><span class="hint">${rows.length} of ${(d.entries || []).length}</span></div>
+    ${rows.length ? `<table class="dt"><thead><tr><th>When (Pacific)</th><th>Who</th><th>Action</th><th>Job / target</th><th>Result</th><th>Details</th></tr></thead><tbody>${rows.map((e) => `<tr><td>${esc(fmtWhen(e.at))}</td><td>${esc((e.actor && e.actor.name) || "-")}</td><td>${esc(e.action)}</td><td>${esc(e.target || "")}</td>
+      <td>${e.ok ? "OK" : `<span style="color:var(--block);font-weight:700">Failed</span><div class="hint">${esc(e.error || "")}</div>${e.ack ? `<div class="hint">Acknowledged by ${esc(e.ack.name || "admin")}</div>` : `<button class="link" data-aack="${esc(e.key)}">Acknowledge</button>`}`}</td><td class="hint">${esc(det(e.detail))}</td></tr>`).join("")}</tbody></table>` : '<div class="hint">No matching entries.</div>'}</div>`;
+}
+function adminTeam(d) {
+  const cols = [["autopilots", "Autopilot drafts"], ["files", "Files made"], ["saves", "Estimates saved"], ["signins", "Sign-ins"]];
+  const tot = (k) => d.byUser.reduce((n, r) => n + (r[k] || 0), 0);
+  return `<div class="card tablewrap"><table class="dt"><thead><tr><th>Person</th>${cols.map(([, l]) => `<th class="num">${l}</th>`).join("")}</tr></thead><tbody>${d.byUser.map((r) => `<tr><td><b>${esc(r.name || r.email)}</b><div class="hint">${String(r.email).startsWith("passcode") ? "Passcode sign-in" : esc(r.email)}${r.lastSignin ? " · last in " + esc(fmtWhen(r.lastSignin)) : ""}</div></td>${cols.map(([k]) => `<td class="num">${r[k] || 0}</td>`).join("")}</tr>`).join("")}</tbody>
+    <tfoot><tr><td>Team total</td>${cols.map(([k]) => `<td class="num">${tot(k)}</td>`).join("")}</tr></tfoot></table><p class="hint">Last ${d.days} days. Passcode users show under the name they typed.</p></div>`;
+}
+function adminSignins(d) {
+  const label = { ok: "Signed in", denied: "Denied - no access", rejected: "Rejected" };
+  return `<div class="card tablewrap">${d.signins.length ? `<table class="dt"><thead><tr><th>When (Pacific)</th><th>Who</th><th>How</th><th>Result</th></tr></thead><tbody>${d.signins.map((e) => `<tr><td>${esc(fmtWhen(e.at))}</td><td><b>${esc((e.user && e.user.name) || "Unknown")}</b><div class="hint">${esc(e.user && e.user.email !== "passcode" ? e.user.email : "")}</div></td><td>${e.user && e.user.email === "passcode" || (e.error || "").includes("passcode") ? "Passcode" : "GHL"}</td>
+    <td>${e.result === "ok" ? "Signed in" : `<span style="color:var(--block);font-weight:700">${esc(label[e.result] || e.result)}</span><div class="hint">${esc(e.error || "")}</div>`}</td></tr>`).join("")}</tbody></table>` : '<div class="hint">No sign-ins yet.</div>'}<p class="hint">GHL sign-ins (including people turned away) and passcode sign-ins. Reloads within 30 minutes count once.</p></div>`;
+}
+document.getElementById("viewAdmin").addEventListener("click", (ev) => {
+  const b = ev.target.closest("button"); if (!b) return;
+  if (b.dataset.at) { ADMIN.tab = b.dataset.at; renderAdmin(); }
+  else if (b.dataset.areload !== undefined) loadAdmin(ADMIN_DATA[ADMIN.tab], true);
+  else if (b.dataset.aaddgo !== undefined) { if (!ADMIN.addUserId) return toast("Pick a GHL user first"); adminPost({ action: "add", userId: ADMIN.addUserId, role: ADMIN.addRole }, "Access given"); ADMIN.addUserId = ""; }
+  else if (b.dataset.arole) adminPost({ action: "set_role", email: b.dataset.arole, role: b.dataset.role }, "Role updated");
+  else if (b.dataset.aremove) {
+    if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Click again to remove " + b.dataset.name; setTimeout(() => { b.dataset.armed = ""; b.textContent = "Remove access"; }, 3000); return; }
+    adminPost({ action: "remove", email: b.dataset.aremove }, "Access removed");
+  }
+  else if (b.dataset.aack) api("admin", { method: "POST", body: JSON.stringify({ action: "ack", keys: [b.dataset.aack] }) }).then(() => { toast("Acknowledged"); ADMIN.data.audit = null; loadAdmin(ADMIN_DATA[ADMIN.tab], true); }).catch((e) => toast(e.message));
+  else if (b.dataset.aackall !== undefined) api("admin", { method: "POST", body: JSON.stringify({ action: "ack_all" }) }).then(() => { toast("All acknowledged"); loadAdmin("health", true); }).catch((e) => toast(e.message));
+});
+document.getElementById("viewAdmin").addEventListener("change", (ev) => {
+  const el = ev.target;
+  if (el.dataset.aadd !== undefined) ADMIN.addUserId = el.value;
+  else if (el.dataset.aaddrole !== undefined) ADMIN.addRole = el.value;
+  else if (el.dataset.adays !== undefined) { ADMIN.days = Number(el.value) || 30; loadAdmin("activity", true); }
+});
+document.getElementById("viewAdmin").addEventListener("input", (ev) => {
+  if (ev.target.dataset.aq !== undefined) { ADMIN.auditQ = ev.target.value; const pos = ev.target.selectionStart; renderAdmin(); const el = document.querySelector("[data-aq]"); el.focus(); el.setSelectionRange(pos, pos); }
+});
+
+/* ---------- automatic pricing ----------
+   Autopilot prices the bid from cost x markup and keeps re-splitting it as lines change.
+   Typing a bid or a scope total by hand switches that off (capture phase, before the edit is applied). */
+document.addEventListener("input", (ev) => {
+  const el = ev.target;
+  if (el.matches('[data-f="final_price"], [data-cs-final], #scopes [data-k="price"], [data-ps$="|price"]')) est.pricing_auto = false;
+}, true);
+document.addEventListener("click", (ev) => {
+  const b = ev.target.closest("button[data-autoprice]"); if (!b) return;
+  est.pricing_auto = true; delete est.final_price; renderForm(); run(); toast("Bid follows cost x markup again");
+});
+
+/* ---------- boot ---------- */
+if (LIVE_SAVE) {
+  // log page-side autopilot runs to the audit log / team activity
+  const _ap = autopilotRun;
+  autopilotRun = function () { _ap(); if (TAKEOFF && SESSION.signedIn) api("admin", { method: "POST", body: JSON.stringify({ action: "client_event", name: "Ran autopilot", target: (est.job && est.job.name) || TAKEOFF.name, detail: { plans: PLAN_FILES.length, bid: (E.checkEstimate(est, { rates: RATES }).priced || {}).final_price || "" } }) }).catch(() => {}); };
+  const qs = new URLSearchParams(location.search);
+  if (qs.get("opportunityId")) est.opportunityId = qs.get("opportunityId");
+  initSession().then((ok) => { if (ok) afterSignIn(); });
+} else {
+  document.getElementById("topnav").hidden = false;
+  document.querySelector('#topnav [data-nav="saved"]').hidden = true;
+  renderSaveState();
+}
 </script>
 </body>
 </html>

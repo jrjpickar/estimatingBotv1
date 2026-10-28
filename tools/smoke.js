@@ -1,5 +1,6 @@
 // Calls the three Netlify functions directly (no Netlify needed) to prove they work end to end.
 "use strict";
+require("../tests/helpers.cjs"); // in-memory Blobs + test env (sessions, passcode)
 const assert = require("assert");
 const CSV = [
   '"Takeoff Name","Takeoff Description","Sq Ft","Ln Ft","Cu Yd","EA","Marker Count","Drop Count","Takeoff Quantity","Takeoff Unit","Scale","Plan Name"',
@@ -7,7 +8,7 @@ const CSV = [
   '"cut and demo floor carpet","","1783.81","384.41","0","1","0","0","1783.81","Sq Ft","","A101 - DEMO FLOOR PLAN"',
   '"remove millwork","","66.61","60.01","0","1","0","0","66.61","Sq Ft","","A101 - DEMO FLOOR PLAN"',
 ].join("\n");
-const post = (body) => ({ httpMethod: "POST", body: JSON.stringify(body) });
+const post = (body) => ({ httpMethod: "POST", headers: { "x-bot-passcode": process.env.ESTIMATING_BOT_PASSCODE }, body: JSON.stringify(body) });
 (async () => {
   const auto = require("../netlify/functions/estimate-auto").handler;
   const check = require("../netlify/functions/estimate-check").handler;
@@ -29,6 +30,14 @@ const post = (body) => ({ httpMethod: "POST", body: JSON.stringify(body) });
   assert.strictEqual(pl.planCheck.stats.readable, 3);
   assert.ok(pl.issues.some((i) => i.id.startsWith("plan_missing")) && pl.estimate.job.ceiling_height_ft === 9);
 
+  // autopilot: no inputs at all
+  r = await auto(post({ takeoffCsv: CSV, planPages: pages, job: { name: "Autopilot" } }));
+  assert.strictEqual(r.statusCode, 200, r.body);
+  const ap = JSON.parse(r.body);
+  assert.ok(ap.priced.final_price > 0 && ap.estimate.sections[0].lines.every((l) => l.draft));
+  r = await docs(post({ estimate: ap.estimate, force: true }));
+  assert.ok(/^DRAFT - /.test(JSON.parse(r.body).proposalFileName), "autopilot files are DRAFT while questions are open");
+
   r = await check(post(a.estimate));
   assert.strictEqual(r.statusCode, 200);
   assert.ok(JSON.parse(r.body).issues.some((i) => i.id === "draft_inputs"));
@@ -38,7 +47,7 @@ const post = (body) => ({ httpMethod: "POST", body: JSON.stringify(body) });
   const d = JSON.parse(r.body);
   assert.ok(d.proposalBase64.length > 1000 && d.costingBase64.length > 1000 && /Proposal\.docx$/.test(d.proposalFileName));
 
-  r = await check({ httpMethod: "GET" });
-  assert.strictEqual(r.statusCode, 405);
+  r = await check({ httpMethod: "POST", headers: {}, body: "{}" });
+  assert.strictEqual(r.statusCode, 401, "no session, no passcode header -> locked");
   console.log("smoke: estimate-auto (with plan check), estimate-check, estimate-docs all OK");
 })().catch((e) => { console.error(e); process.exit(1); });

@@ -68,6 +68,7 @@ const lc = (s) => String(s || "").toLowerCase();
 
 function checkEstimate(est, opts = {}) {
   const rates = opts.rates || null;
+  if (est.pricing_auto) require("./auto").reprice(est);
   const confirmed = new Set((est.confirmed || []).map(String));
   const issues = [];
   const add = (id, where, message) => {
@@ -110,12 +111,12 @@ function checkEstimate(est, opts = {}) {
   if (priced) {
     if (priced.final_price < priced.total_cost) add("below_cost", "pricing", `Final ${money(priced.final_price)} is below cost ${money(priced.total_cost)}.`);
     if (priced.computed_price != null && Math.abs(priced.final_price - priced.computed_price) > 0.5 && !est.pricing_note)
-      add("bid_vs_markup", "pricing", `Price at markup is ${money(priced.computed_price)} but the bid is ${money(priced.final_price)}. Add a pricing_note saying why.`);
+      add("bid_vs_markup", "pricing", `Price at markup is ${money(priced.computed_price)} but the bid is ${money(priced.final_price)}. Add a pricing note saying why.`);
     if (priced.effective_markup != null && priced.effective_markup < 1 && priced.final_price >= priced.total_cost && !est.pricing_note)
-      add("low_markup", "pricing", `Effective markup is ${Math.round(priced.effective_markup * 100)}% (margin ${Math.round(priced.margin * 100)}%). Add a pricing_note saying why.`);
+      add("low_markup", "pricing", `Effective markup is ${Math.round(priced.effective_markup * 100)}% (margin ${Math.round(priced.margin * 100)}%). Add a pricing note saying why.`);
   }
   if (["transcript", "notes", "memory", "verbal"].includes(lc(est.price_source)))
-    add("unconfirmed_price", "pricing", `Price came from ${est.price_source}. Check it against the proposal or costing sheet, then set price_source to "proposal" or "costing_sheet".`);
+    add("unconfirmed_price", "pricing", `Price came from ${est.price_source === "transcript" ? "a transcript" : est.price_source}. Check it against the proposal or costing sheet, then mark which one you checked.`);
 
   const demoWords = /\bdemo|demolition|demolish/;
   const gradeWords = /grading|excavat|export|import|over.?ex/;
@@ -163,7 +164,7 @@ function checkEstimate(est, opts = {}) {
   if (ceiling) {
     if (!/grid/.test(lc(scopeText))) add("ceiling_grid", "scope", "Ceiling work but no mention of the grid. Does it stay or go?");
     if (/light|diffuser|grille|speaker|security|sensor|detector/.test(lc(scopeText))) add("ceiling_devices", "scope", "Ceiling devices listed. Confirm counts for each, or mark them by others.");
-    if (!(est.job && est.job.ceiling_height_ft)) add("ceiling_height", "job", "Ceiling work but no ceiling height (job.ceiling_height_ft). Needed to size the lift.");
+    if (!(est.job && est.job.ceiling_height_ft)) add("ceiling_height", "job", "Ceiling work but no ceiling height. Needed to size the lift.");
   }
   const interior = scopes.length && /interior|millwork|carpet|ceiling|walls?|doors?/.test(lc(scopeText)) && !gradeWords.test(lc(scopeText));
   if (interior) {
@@ -173,7 +174,7 @@ function checkEstimate(est, opts = {}) {
     for (let i = 1; i < firstIdx.length; i++) if (firstIdx[i] < firstIdx[i - 1]) {
       add("work_order", "scope", "Scope lines are out of work order (millwork, carpet/base, doors/walls, ceiling)."); break;
     }
-    if (!(est.job && est.job.access)) add("access", "job", "Access isn't stated (job.access), e.g. single man door or roll-up door.");
+    if (!(est.job && est.job.access)) add("access", "job", "Access isn't set. Pick how the crew gets in and out (single man door, roll-up door, stairs...).");
   }
   const grading = gradeWords.test(lc(scopeText));
   if (grading && !/lift|recompact|compact/.test(lc(scopeText))) add("lifts_recompaction", "scope", "Grading scope doesn't mention lifts or recompaction. Required by the plans or soils report?");
@@ -199,9 +200,11 @@ function checkEstimate(est, opts = {}) {
   if (!qc.length && (est.takeoff || est.has_takeoff)) add("quantity_unchecked", "quantities", "No takeoff quantities were cross-checked against plan dimensions.");
 
   // ---- plan QC (lib/plans.js results stored on the estimate) ----
-  for (const f of est.plan_flags || []) {
+  for (const f of (est.plan_flags || []).concat(est.auto_flags || [])) {
     if (confirmed.has(f.key)) continue;
-    issues.push({ id: f.key, level: f.level === "block" ? "ask" : f.level, where: f.sheet ? `plans ${f.sheet}` : "plans", message: f.message, lesson: "From the plan check (code reading the plan text, no AI)." });
+    const fromPlans = f.key.startsWith("plan_");
+    issues.push({ id: f.key, level: f.level === "block" ? "ask" : f.level, where: fromPlans ? (f.sheet ? `plans ${f.sheet}` : "plans") : "autopilot", message: f.message,
+      lesson: fromPlans ? "From the plan check (code reading the plan text, no AI)." : "From the autopilot draft (starter production numbers, no AI)." });
   }
 
   const order = { block: 0, ask: 1, warn: 2 };

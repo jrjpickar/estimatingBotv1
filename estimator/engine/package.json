@@ -8,7 +8,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "node --test test/engine.test.js test/training.test.js test/checks.test.js test/auto.test.js test/plans.test.js",
+    "test": "node --test test/engine.test.js test/training.test.js test/checks.test.js test/auto.test.js test/plans.test.js test/autopilot.test.js",
     "vendor": "esbuild vendor/entry.js --bundle --platform=node --target=node18 --format=cjs --minify --legal-comments=eof --outfile=vendor/docx-vendor.js"
   },
   "devDependencies": {

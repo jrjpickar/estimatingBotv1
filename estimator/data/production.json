@@ -1,0 +1,30 @@
+{
+ "_note": "Starter production numbers for AUTOPILOT drafts only. Loosely calibrated on 600 PCH (8 worker-days, 3 loads), Montebello (about 10 worker-days, 1 load), the parking lot (9 worker-days, 10 loads) and the duplex (28 worker-days, 14 loads). They are a first draft for the estimator to correct, not A2Z pricing. Tune them as real crew-days and loads come back from finished jobs.",
+ "crew_size": 4,
+ "haul_cushion": 1.2,
+ "missing_callout_worker_days": 0.5,
+ "fuel_per_heavy_equipment_day": 75,
+ "equipment_delivery_each_way": 150,
+ "condition_labor_add": { "upper_floor": 0.15, "man_door_access": 0.10, "occupied": 0.10 },
+ "groups": {
+  "flooring":             { "SF": { "wd": 0.0025, "loads": 0.0008 }, "LF": { "wd": 0.004, "loads": 0.0002 } },
+  "ceilings":             { "SF": { "wd": 0.004,  "loads": 0.0006 } },
+  "walls_partitions":     { "LF": { "wd": 0.03,   "loads": 0.01 },  "SF": { "wd": 0.004, "loads": 0.0012 } },
+  "doors":                { "EA": { "wd": 0.25,   "loads": 0.05 } },
+  "windows_storefront":   { "EA": { "wd": 0.3,    "loads": 0.05 },  "SF": { "wd": 0.006, "loads": 0.001 }, "LF": { "wd": 0.03, "loads": 0.005 } },
+  "millwork_casework":    { "SF": { "wd": 0.02,   "loads": 0.003 }, "LF": { "wd": 0.04, "loads": 0.006 }, "EA": { "wd": 0.25, "loads": 0.05 } },
+  "plumbing_fixtures":    { "EA": { "wd": 0.25,   "loads": 0.03 } },
+  "mep_electrical_hvac":  { "EA": { "wd": 0.1,    "loads": 0.01 },  "LF": { "wd": 0.01, "loads": 0.001 } },
+  "signage_specialties":  { "EA": { "wd": 0.25,   "loads": 0.03 } },
+  "furniture_contents":   { "EA": { "wd": 0.1,    "loads": 0.03 } },
+  "roofing":              { "SF": { "wd": 0.004,  "loads": 0.001 } },
+  "exterior_finishes":    { "SF": { "wd": 0.005,  "loads": 0.0012 } },
+  "whole_structure":      { "SF": { "wd": 0.008,  "loads": 0.004 } },
+  "concrete_sawcut_slab": { "SF": { "wd": 0.003,  "loads": 0.0035 }, "LF": { "wd": 0.02, "loads": 0.004 }, "EA": { "wd": 0.5, "loads": 0.1 } },
+  "hardscape_site":       { "SF": { "wd": 0.003,  "loads": 0.0025 }, "LF": { "wd": 0.02, "loads": 0.004 }, "EA": { "wd": 0.5, "loads": 0.2 } },
+  "block_wall_fence":     { "LF": { "wd": 0.05,   "loads": 0.02 } },
+  "grading_excavation":   { "SF": { "wd": 0.002,  "loads": 0.0015 }, "CY": { "wd": 0.02, "loads": 0.08 } },
+  "erosion_control":      { "LF": { "wd": 0.005,  "loads": 0 },     "EA": { "wd": 0.05, "loads": 0 } }
+ },
+ "by_unit": { "SF": { "wd": 0.003, "loads": 0.001 }, "LF": { "wd": 0.02, "loads": 0.005 }, "EA": { "wd": 0.2, "loads": 0.02 }, "CY": { "wd": 0.05, "loads": 0.08 } }
+}

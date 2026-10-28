@@ -1,12 +1,12 @@
 {
   "name": "a2z-estimating-bot",
-  "version": "0.5.0",
+  "version": "1.0.0",
   "private": true,
   "description": "A2Z Estimating Bot: estimate checker page + Netlify functions (check, auto draft, proposal and job costing files). Plain Node, no dependencies.",
   "engines": { "node": ">=18" },
   "scripts": {
     "build": "node tools/build.js estimator public",
     "sandbox": "python3 tools/sandbox.py public/checker.html sandbox/estimating-bot.html tools/examples.json",
-    "test": "node --test estimator/engine/test/engine.test.js estimator/engine/test/training.test.js estimator/engine/test/checks.test.js estimator/engine/test/auto.test.js estimator/engine/test/plans.test.js && node tools/smoke.js && node tools/passcode-test.mjs"
+    "test": "node --test estimator/engine/test/engine.test.js estimator/engine/test/training.test.js estimator/engine/test/checks.test.js estimator/engine/test/auto.test.js estimator/engine/test/plans.test.js estimator/engine/test/autopilot.test.js && node --test tests/server.test.cjs && node tools/smoke.js"
   }
 }

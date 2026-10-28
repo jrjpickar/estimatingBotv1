@@ -18,8 +18,7 @@ function dataDir() {
 function getAssets() {
   if (!assets) {
     const dir = dataDir();
-    assets = E.loadAssets(dir);
-    assets.defaults = JSON.parse(fs.readFileSync(path.join(dir, "defaults.json"), "utf8"));
+    assets = E.loadAssets(dir); // includes defaults.json and production.json
   }
   return assets;
 }

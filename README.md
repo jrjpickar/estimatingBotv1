@@ -1,101 +1,153 @@
-# A2Z Estimating Bot
+# A2Z Estimating Bot (v1.0)
 
-A2Z's estimate checker page and the estimating engine behind it, ready for GitHub and Netlify. Plain Node, no dependencies, no AI on this site.
+A2Z's Estimating Bot: drop a STACK takeoff CSV and the plan set, and it drafts the estimate, the cost sheet and the proposal from A2Z's real templates. You can open and edit all three, save them for the team, and download the proposal (.docx) and job costing (.xlsx). Runs as a GHL Marketplace app with automatic sign-in, or outside GHL with a passcode. Plain Node, no dependencies, no AI on this site.
 
 **Keep this repo private.** `estimator/data/job_library.json` holds real customer names and bid prices.
 
-## What you get
+## What's in it
 
 | Path | What it is |
 |---|---|
-| `public/index.html` (same as `checker.html`) | The Estimating Bot page. Drop a STACK CSV for scope lines and comps, drop the plan set PDF for the plan check, enter cost lines, see totals, markup, margin and every FIX / QUESTION / CHECK. Dark or colorful GHL theme. Opens and saves `estimate.json`. |
+| `public/index.html` | The app. Tabs: **Builder** (takeoff, plans, autopilot, checks), **Cost sheet** (the Job Costing Worksheet laid out row by row, editable), **Proposal** (the proposal as a page, every field editable). Plus **Saved estimates** and **Admin**. |
+| `netlify/functions/session.js` | Sign-in: GHL automatic sign-in, passcode sign-in, sign-out, who am I. |
+| `netlify/functions/bot-data.js` | Sends the job library, rates and settings to the page, only after sign-in. |
+| `netlify/functions/estimates.js` | Saved estimates: list, open (any version), save (each save is a new version), delete (admins only). |
+| `netlify/functions/admin.js` | Admin view: Access, Health, Audit log, Team activity, Sign-ins. |
 | `netlify/functions/estimate-check.js` | `POST` an estimate, get `{ ok, priced, issues }` back. |
-| `netlify/functions/estimate-auto.js` | `POST { takeoffCsv, planPages?, inputs?, facts?, job?, markup? }`, get a draft estimate, checks, comps, the plan check and a review sheet. |
-| `netlify/functions/estimate-docs.js` | `POST { estimate, takeoffCsv?, force? }`, get the proposal `.docx` and job costing `.xlsx` (base64) filled from A2Z's real templates. Refuses while FIX items remain unless `force: true` (files are then named DRAFT). |
-| `netlify/edge-functions/passcode.js` | Passcode gate in front of the page and all three functions. The passcode comes from the `ESTIMATING_BOT_PASSCODE` environment variable. |
-| `netlify/lib/engine.js` | Shared loader the three functions use (finds `estimator/data`). |
-| `estimator/engine/` | The engine (same code as the Cowork plugin v0.4.0): STACK parsing, comps, pricing, checks, auto draft, template fillers. |
-| `estimator/data/` | Job library, rates, default markup (130% on cost), house style, and the two templates. |
-| `estimator/training-notes.md` | The training lessons the rules come from. |
-| `src/checker.template.html`, `tools/build.js` | Page source. `npm run build` inlines the engine, rates, library and defaults into `public/`. |
+| `netlify/functions/estimate-auto.js` | `POST { takeoffCsv, planPages?, inputs?, job?, markup? }`, get a draft estimate, checks, comps and the plan check. |
+| `netlify/functions/estimate-docs.js` | `POST { estimate }`, get the proposal `.docx` and job costing `.xlsx` (base64). Named DRAFT while any FIX or QUESTION is open. |
+| `netlify/lib/` | Sign-in and access (`auth.js`, same rules as the Estimating Desk), saved estimates, activity, Blobs, GHL users. |
+| `estimator/` | The engine (same code as the Cowork plugin v0.7.0) and its data: job library, rates, default markup (130% on cost), production numbers, house style, the two templates. |
+| `src/checker.template.html`, `tools/build.js` | Page source. `npm run build` builds `public/`. |
+| `tools/dev-server.cjs` | Runs the site and real functions on your computer for testing (see the end). |
 
-## Plan check (code, no AI)
+**Updating from an older version:** delete `netlify/edge-functions/passcode.js` (the old passcode gate). Sign-in is handled by the functions now, and the `?key=` link is no longer used.
 
-Drop the plan set PDF on the page (with or without the CSV). The page reads the text of every sheet in the browser (pdf.js, loaded from cdnjs only when a PDF is dropped; the plans never leave the computer) and `estimator/engine/lib/plans.js` checks it against the takeoff:
+## Signing in
 
-- Finds the sheets and their type (cover, demo plan, ceiling plan, site) by sheet number and title.
-- Pulls every demo callout ("DEMO (E) ...", "REMOVE ...", "CUT & DEMO ...") and matches it to the takeoff lines. Callouts with no takeoff line become QUESTIONs; one click adds them to scope.
-- Flags new work (new or mat slab, footings), by-others / NIC items (one click adds them to the exclusions), hazardous materials notes, upper floor, occupied building, restricted hours and dust protection.
-- Ceiling plan: grid stays or goes, devices being removed, ceiling height; warns when the takeoff has ceiling work but the set has no ceiling plan, or the other way around.
-- Reads remodel / suite / lot areas and checks the takeoff square footage against them.
-- Scanned sheets have no text: they are listed as unreadable for a person to check. Symbol counts and what a drawing means also stay with a person (or the AI step in Cowork).
+**Inside GHL (Marketplace app):** people are signed in automatically as their GHL user. No passcode.
+- Jesse Pickar is always senior admin (by email, GHL user id and name, even if the settings are wrong).
+- Everyone else needs to be on the Access list (Admin, Access). People who aren't see "No Estimating Bot access".
+- The sign-in lasts 7 days in that browser, so after opening it once in GHL you can also use the site directly with the same rights.
 
-Every plan item shows in the same Checks list and clears with "Mark answered". The sandbox has a "Try a sample takeoff + plan set" button using a made-up 3-sheet set (`tools/sample-plans.pdf`).
+**Outside GHL (passcode):** the site asks for a name and the passcode.
+- Passcode users are estimators: they can do everything except Admin and deleting saved estimates.
+- Their name shows on saves and in the audit log as "Passcode sign-in".
+- Changing `ESTIMATING_BOT_PASSCODE` signs every passcode user out.
+- Leave the passcode blank to turn passcode sign-in off.
 
-## Put it on GitHub
+**Webhooks, Make, GHL workflows:** send the header `x-bot-passcode: <passcode>` with each request to the functions.
 
-1. Create a new **private** repo (for example `a2z-estimating-bot`).
-2. Unzip this folder and push it:
-   ```
-   cd a2z-estimating-bot
-   git init
-   git add .
-   git commit -m "A2Z Estimating Bot"
-   git branch -M main
-   git remote add origin https://github.com/<you>/a2z-estimating-bot.git
-   git push -u origin main
-   ```
-   Or drag the files into the repo on github.com (Add file, Upload files).
+## Environment variables (Netlify, Site configuration, Environment variables)
 
-## Deploy on Netlify
+| Name | Needed | What it's for |
+|---|---|---|
+| `SESSION_SECRET` | Yes | Signs sign-ins. A long random string (40+ characters). Changing it signs everyone out. |
+| `GHL_APP_SHARED_SECRET` | For GHL | The Shared Secret from the Marketplace app (below). |
+| `ESTIMATING_BOT_PASSCODE` | For outside GHL | The passcode. Use 12+ characters (short ones trip Netlify's secrets scan and are easy to guess). |
+| `GHL_PIT_TOKEN` | For adding people | A GHL private integration token with `users.readonly`, so Admin can list A2Z's GHL users. Same one the Desk uses. |
+| `SENIOR_ADMINS` | Optional | More senior admins, comma separated (names, emails or GHL user ids). Jesse is always included. |
+| `GHL_LOCATION_ID` | Optional | Defaults to the A2Z sub-account. |
+| `AUTH_ENFORCE` | Emergency only | `off` lets the site run without sign-in (never admin). Remove it right after. |
 
-1. Netlify, Add new site, Import an existing project, GitHub, pick the repo.
-2. Leave the settings as they come. `netlify.toml` already sets the build command (`npm run build`), the publish folder (`public`), the functions folder and the data files the functions need.
-3. Before the first deploy (or right after, then redeploy): Site configuration, Environment variables, add `ESTIMATING_BOT_PASSCODE` with the passcode you want. Until it's set the whole site stays locked.
-4. Deploy. The page is at `https://<site>.netlify.app/`.
+Redeploy after changing any of these.
 
-## Passcode
+## Set up the GHL Marketplace app
 
-- **People:** the site asks for the passcode once, then remembers that browser for 30 days. `/__logout` signs out.
-- **Changing it:** update `ESTIMATING_BOT_PASSCODE` in Netlify and redeploy. Everyone has to enter the new one.
-- **In the GHL iframe:** some browsers (Safari especially) block cookies inside iframes, so the login won't stick there. Use `https://<site>.netlify.app/?key=<passcode>` as the custom menu link instead. Only people who can see that GHL menu link can see the passcode.
-- **Webhooks, Make, GHL workflows:** send the header `x-bot-passcode: <passcode>` (or `Authorization: Bearer <passcode>`) with each request to the functions.
-- The page and the job library inside it are only sent after the passcode check, so nothing is visible without it.
+1. Go to marketplace.gohighlevel.com, My Apps, Create App.
+   - Type: Private.
+   - Distribution: Sub-account.
+   - Same as the Desk's app, or add a second Custom Page to the Desk's app.
+2. Under Advanced Settings, Auth, generate the **Shared Secret**. Copy it into Netlify as `GHL_APP_SHARED_SECRET` and redeploy.
+3. Under Custom Pages (Modules), add a page:
+   - Name: Estimating Bot.
+   - URL: `https://<site>.netlify.app/`.
+4. Install the app on the A2Z sub-account. "Estimating Bot" shows in the left menu.
+5. Open it. You're signed in as Jesse Pickar, Senior admin. Go to Admin, Access and add the estimators.
 
-Every push to `main` redeploys.
+From an opportunity, `https://<site>.netlify.app/?opportunityId=<id>&job=<project name>` labels the estimate with that opportunity.
 
-## Put it in GHL
+## Using it
 
-- **Custom menu link:** Agency Settings, Custom Menu Links, new link to `https://<site>.netlify.app/?key=<passcode>`, open in iFrame, assign it to the A2Z sub-account and the estimators.
-- **Colorful theme:** add `?theme=color` to the link. Each person can also switch with the button in the header.
-- **From an opportunity:** `https://<site>.netlify.app/?opportunityId=<id>&job=<project name>` labels the page for that job.
-- **From a workflow or Make:** send a webhook (POST, JSON body, header `x-bot-passcode`) to `/.netlify/functions/estimate-check` and branch on `ok`.
+1. **Builder:** drop the STACK CSV in 1. Takeoff and one or more plan PDFs in 2. Plans. Autopilot drafts everything: scope lines, crew-days, loads, equipment, rates, the 130% markup, the plan check and the comps.
+2. **Checks:** clear them.
+   - **FIX** (red) means the estimate is wrong. Change it.
+   - **QUESTION** (gold) needs a person to decide. Use the card's buttons, or Mark answered.
+   - **CHECK** (gray) looks off. Fix it or mark it answered.
+   - Files are named DRAFT until no FIX or QUESTION is left.
+3. **Cost sheet:** edit any row (description, qty, rate), add or delete rows, change the markup or type a final bid.
+   - The bid follows cost times markup until you type a bid yourself.
+   - The "automatic pricing" button puts it back.
+4. **Proposal:** edit the estimate #, date, customer, location, estimator, opening, each scope's lines and price, alternates, notes, exclusions, validity and payment terms.
+   - What you see is what goes in the .docx.
+5. **Save** (button or Ctrl+S): every save is a new version.
+   - **Saved estimates** lists them with search.
+   - You can open any version.
+   - Admins can delete.
+6. **Download** the proposal and job costing from the Cost sheet or Proposal tab.
+
+## Admin (admins only)
+
+- **Access:** add GHL users, make admin, remove access.
+- **Health:** sign-in, passcode, GHL users, Blobs storage, engine, saved estimates, recent errors.
+- **Audit log:** who saved, made files or ran autopilot, and when.
+- **Team activity:** counts per person.
+- **Sign-ins:** who signed in, how and when.
+
+## Autopilot and the plan check (code, no AI)
+
+- **Production numbers:** `estimator/data/production.json` holds starter worker-days and loads per SF / LF / EA.
+  - They're tuned on 600 PCH, Montebello, the parking lot and the duplex.
+  - Expect other jobs to be off until they're tuned with real crew-days and loads from finished jobs.
+  - Edit the file and push.
+- **Plan check:** plans are read in the browser (pdf.js from cdnjs) and never leave the computer. The check finds:
+  - the sheets;
+  - demo callouts that aren't in the takeoff (one click adds them);
+  - by-others items (one click moves them to exclusions);
+  - new work, hazardous materials, upper floor, occupied building, ceiling height and grid;
+  - takeoff areas that don't match the plans.
+- **Scanned sheets:** they have no text, so they're listed for a person to check.
+- **Drafts:** every drafted line says where its number came from. Nothing goes to a customer automatically.
+
+## Put it on GitHub and Netlify
+
+1. Create a **private** GitHub repo and push this folder (or drag the files in with Add file, Upload files).
+2. Netlify:
+   - Add new site, Import an existing project, pick the repo.
+   - `netlify.toml` sets the build, publish folder, functions and data files.
+3. Add the environment variables above, then deploy.
+4. Every push to `main` redeploys.
 
 ## Check that it works
 
 ```
 npm test
 ```
-Runs the 27 engine tests (including the plan check on the sample set), calls all three functions directly, and tests the passcode gate (no Netlify needed).
+This runs:
+- the 31 engine tests;
+- the 6 server tests (GHL sign-in, Jesse as senior admin, stranger blocked, passcode sign-in and its limits, saving and versions, files, admin views);
+- a smoke test of the functions.
 
-Live check after deploy:
+No Netlify needed.
+
+To try the whole app on your computer:
 ```
-curl -X POST https://<site>.netlify.app/.netlify/functions/estimate-check \
-  -H "Content-Type: application/json" \
-  -H "x-bot-passcode: <passcode>" \
-  -d '{"sections":[{"name":"Interior","lines":[{"category":"Labor","description":"4-man crew x 2 days","qty":2,"rate":1600}]}],"markup":1.3,"scopes":[{"name":"Demolition","lines":["Properly remove carpet"]}]}'
+node tools/dev-server.cjs 8888
 ```
+- It uses test secrets and fake data storage. Never deploy it.
+- Open `http://localhost:8888/` and use the test passcode `correct-horse-battery-7`.
+- Open `http://localhost:8888/__ghl-frame?user=jesse` to fake the GHL sign-in.
 
 ## Changing things
 
-- **A rule:** edit `estimator/engine/lib/checks.js`, add a test in `estimator/engine/test/checks.test.js`, run `npm test`, push.
-- **Rates or default markup:** `estimator/data/rates.json`, `estimator/data/defaults.json`. Push and the page rebuilds with the new values.
-- **Page look:** `src/checker.template.html`, then push.
-- Keep the engine in step with the Cowork plugin: copy `skills/estimate-job/engine` and `skills/estimate-job/data` from the plugin over `estimator/` when the plugin changes.
+- **A rule:**
+  1. Edit `estimator/engine/lib/checks.js`.
+  2. Add a test in `estimator/engine/test/checks.test.js`.
+  3. Run `npm test` and push.
+- **Rates, markup, production numbers:** `estimator/data/rates.json`, `defaults.json`, `production.json`.
+- **Page look:** `src/checker.template.html`.
+- **Keeping the engine in step with the Cowork plugin:** copy `skills/estimate-job/engine` and `skills/estimate-job/data` from the plugin over `estimator/`.
 
 ## Not in this site yet
 
 - Reading scanned plan sets and counting symbols (AI plan reading, needs an Anthropic API key).
-
-- Saving estimates per opportunity so the team shares one copy (planned: Netlify Blobs, like the Desk's due dates).
-- Reading the plan set and drafting crew-days and loads. Those are the AI steps and run in Cowork with the plugin; `estimate-auto` accepts their results as `facts` and `inputs`.

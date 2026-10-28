@@ -134,24 +134,42 @@ function autoEstimate({ items, facts = {}, inputs = {}, job = {}, defaults = DEF
   if (facts.exclusions && facts.exclusions.length) est.extra_exclusions = facts.exclusions;
   if (facts.plan_flags && facts.plan_flags.length) est.plan_flags = facts.plan_flags;
   if (facts.notes && facts.notes.length) est.extra_notes = facts.notes;
-  // price per scope at the markup, whole dollars, so the scope totals add up exactly
-  const cost = (names) => sections.filter((s) => names.includes(s.name)).reduce((t, s) => t + s.lines.reduce((u, l) => u + Number(l.qty || 0) * Number(l.rate || 0), 0), 0);
-  const base = scopes.filter((s) => !s.alternate);
-  if (sections.length && base.length) {
-    if (base.length === 1) {
-      est.final_price = Math.round(cost(["Interior", "Exterior", "Grading"]) * (1 + m));
-    } else {
-      // costs in a section no scope claims go to the first scope
-      const claimed = new Set(base.flatMap((s) => s._sections));
-      const orphan = cost(["Interior", "Exterior", "Grading"].filter((n) => !claimed.has(n)));
-      base.forEach((s, i) => { s.price = Math.round((cost(s._sections) + (i === 0 ? orphan : 0)) * (1 + m)); });
-      est.final_price = base.reduce((t, s) => t + s.price, 0);
-    }
-    est.pricing_note = `${Math.round(m * 100)}% markup on cost (${est.auto.markup_source}), rounded to whole dollars${base.length > 1 ? " per scope" : ""}.`;
-  }
+  // price per scope at the markup, whole dollars, so the scope totals add up exactly.
+  // pricing_auto keeps it that way as cost lines change (reprice), until someone types a bid or scope total.
+  scopes.forEach((s) => { s.sections = s._sections; });
+  est.pricing_auto = true;
+  reprice(est);
   scopes.forEach((s) => delete s._sections);
   return est;
 }
+
+// Re-split the bid from the current cost lines and markup, while pricing_auto is on.
+// Single scope: final = cost x (1 + markup), whole dollars. Several scopes: each scope priced from the
+// sections it covers (scope.sections; unclaimed costs go to the first scope), final = their sum.
+// Mutates and returns the estimate. A no-op once pricing_auto is false (someone set prices by hand).
+function reprice(est) {
+  if (!est || !est.pricing_auto) return est;
+  const m = Number(est.markup);
+  if (!isFinite(m)) return est;
+  const sections = est.sections || [];
+  const cost = (names) => sections.filter((s) => names.includes(s.name)).reduce((t, s) => t + (s.lines || []).reduce((u, l) => u + (Number(l.qty) || 0) * (Number(l.rate) || 0), 0), 0);
+  const all = ["Interior", "Exterior", "Grading"];
+  const base = (est.scopes || []).filter((s) => !s.alternate);
+  if (!sections.length || !base.length) { delete est.final_price; return est; }
+  if (base.length === 1) {
+    base[0].price = null;
+    est.final_price = Math.round(cost(all) * (1 + m));
+  } else {
+    const secOf = (s, i) => (Array.isArray(s.sections) && s.sections.length ? s.sections : i === 0 ? ["Interior", "Exterior"] : ["Grading"]);
+    const claimed = new Set(base.flatMap((s, i) => secOf(s, i)));
+    const orphan = cost(all.filter((n) => !claimed.has(n)));
+    base.forEach((s, i) => { s.price = Math.round((cost(secOf(s, i)) + (i === 0 ? orphan : 0)) * (1 + m)); });
+    est.final_price = base.reduce((t, s) => t + s.price, 0);
+  }
+  est.pricing_note = `${Math.round(m * 100)}% markup on cost, rounded to whole dollars${base.length > 1 ? " per scope" : ""} (priced automatically).`;
+  return est;
+}
+
 
 function reviewSheet(priced, chk, comps, facts = {}) {
   const L = [];
@@ -193,4 +211,4 @@ function reviewSheet(priced, chk, comps, facts = {}) {
   return L.join("\n");
 }
 
-module.exports = { autoEstimate, draftScopes, draftLines, reviewSheet, DEFAULTS, cleanName };
+module.exports = { reprice, autoEstimate, draftScopes, draftLines, reviewSheet, DEFAULTS, cleanName };
