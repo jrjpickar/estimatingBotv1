@@ -1,0 +1,18 @@
+{
+  "name": "a2z-estimator-engine",
+  "version": "0.3.0",
+  "private": true,
+  "description": "A2Z Estimator engine: STACK parsing, comps, pricing, and filling A2Z's proposal + job costing templates. Plain Node, zero runtime dependencies (docxtemplater + pizzip are pre-bundled in vendor/docx-vendor.js), Netlify-function ready.",
+  "main": "index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test test/engine.test.js test/training.test.js test/checks.test.js test/auto.test.js",
+    "vendor": "esbuild vendor/entry.js --bundle --platform=node --target=node18 --format=cjs --minify --legal-comments=eof --outfile=vendor/docx-vendor.js"
+  },
+  "devDependencies": {
+    "docxtemplater": "3.47.4",
+    "pizzip": "3.1.7"
+  }
+}

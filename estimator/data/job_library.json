@@ -1,0 +1,3796 @@
+{
+ "version": "2026-10-16",
+ "notes": "Sent totals reconciled GHL vs Dropbox; disagreements confirmed by Jesse. Outcome from GHL stage. Takeoff items from STACK. When several bids share one STACK takeoff, the takeoff stays on the largest bid only.",
+ "jobs": [
+  {
+   "id": "1 half",
+   "name": "1 HALF MOON BAY",
+   "customer": "MWC CONSTRUCTORS",
+   "date": "2026-09-28",
+   "sentTotal": 258098.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [
+    [
+     "DEMOLITION",
+     38695.0
+    ],
+    [
+     "HARDSCAPE/SOFTSCAPE",
+     28990.0
+    ],
+    [
+     "BASEMENT EXCAVATION/GRADING",
+     190413.0
+    ]
+   ],
+   "scopeText": "DEMOLITION\n\nFull Demolition of a single story 2796 sqft house & foundation in its entirety (per plans)\n\nDEMOLITION TOTAL:  $38,695.00\n\nHARDSCAPE/SOFTSCAPE\n\nRemove all existing hardscape softscape & all existing trees (per plans)\n\nHARDSCAPE/SOFTSCAPE TOTAL:  $28,990.00\n\nBASEMENT EXCAVATION/GRADING\n\nExcavate the proposed basement area to the elevations indicated on the approved plans\n\nperform over excavation & recompaction of the basement subgrade & at grade building  pad for portion of house & garage to a depth of approx (36\") (Per soils report)\n\nMoisture condition & recompact soils in maximum (12\") lifts (per soils report)\n\nBASEMENT EXCAVATION/GRADING TOTAL:  $190,413.00",
+   "takeoff": [
+    {
+     "item": "Slab Removal",
+     "qty": 3662.43,
+     "unit": "Sq Ft",
+     "count": 3,
+     "stackProject": "1 Half Moon Bay MWC"
+    },
+    {
+     "item": "remove site wall and foundation",
+     "qty": 374.46,
+     "unit": "Ln Ft",
+     "count": 5,
+     "stackProject": "1 Half Moon Bay MWC"
+    },
+    {
+     "item": "Remove brick hardscape",
+     "qty": 3974.0,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "1 Half Moon Bay MWC"
+    },
+    {
+     "item": "remove concrete hardscape",
+     "qty": 1543.09,
+     "unit": "Sq Ft",
+     "count": 4,
+     "stackProject": "1 Half Moon Bay MWC"
+    },
+    {
+     "item": "ext footings",
+     "qty": 314.33,
+     "unit": "Ln Ft",
+     "count": 3,
+     "stackProject": "1 Half Moon Bay MWC"
+    }
+   ]
+  },
+  {
+   "id": "1 la",
+   "name": "1 LA SALLE LN LADERA RANCH CA 92694",
+   "customer": "TODD CUSTOM HOMES",
+   "date": "2026-10-01",
+   "sentTotal": 25495.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "INTERIOR\n\nProperly demolish jack and jill bathroom in its entirety\n\nCarefully demolish primary shower and tub\n\nRemove carpet flooring in bedroom 4\n\nRemove closet shelf and pole\n\nProperly remove walls per plan\n\nEXTERIOR\n\nCarefully remove roof tiles and stack on site\n\nRemove stucco in areas of new proposed addition only\n\nRemove windows in areas of new proposed addition only\n\nCut back eaves and roofing for new proposed addition only",
+   "takeoff": []
+  },
+  {
+   "id": "101 radial",
+   "name": "101 RADIAL, IRVINE, CA 92618",
+   "customer": "Easton Design",
+   "date": "2026-08-18",
+   "sentTotal": 17950,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "EXTERIOR\n   Properly remove stucco and demolish wall per plans\n\nHARDSCAPE/SOFTSCAPE\nRemove all existing hardscape and softscape per plans\n\nTRENCHING\nProperly dig footings per plans",
+   "takeoff": [
+    {
+     "item": "demo wall/stucco",
+     "qty": 72.92,
+     "unit": "Ln Ft",
+     "count": 7,
+     "stackProject": "101 Radial, Irvine"
+    },
+    {
+     "item": "dig footing",
+     "qty": 24.38,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "101 Radial, Irvine"
+    },
+    {
+     "item": "dig 18\" posts",
+     "qty": 6.0,
+     "unit": "Ea",
+     "count": 6,
+     "stackProject": "101 Radial, Irvine"
+    },
+    {
+     "item": "hardscape",
+     "qty": 254.4,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "101 Radial, Irvine"
+    }
+   ]
+  },
+  {
+   "id": "10165 redeye",
+   "name": "10165 Redeye Cir Fountain Valley, CA 92708",
+   "customer": "Todd Custom Homes",
+   "date": "2026-07-21",
+   "sentTotal": 23620.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Pending Decision"
+   ],
+   "scopeTotals": [],
+   "scopeText": "HOUSE DEMO\n   Properly sawcut and remove all stucco for new proposed addition (per plan A301)\nRemove windows & doors (per plan A301)\nRemove roofing material for new proposed addition (per plan S3)\nRemove all drywall (per plans A203)\nRemove all non load bearing walls (per plan A203)\nTOTAL: $10,625\nSOFTSCAPE/HARDSCAPE\nRemove all softscape, & two trees for new proposed addition\nSawcut, Break, & Haul a portion of the garage slab, driveway, & all hardscape walkways only for new proposed addition \nTOTAL: $12,995\nDRIVEWAY\nProperly remove remaining driveway \nTOTAL: $2,454",
+   "takeoff": [
+    {
+     "item": "remove for new slab",
+     "qty": 655.1,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "10165 Redeye cir Fountain Valley"
+    },
+    {
+     "item": "Remove walls",
+     "qty": 49.97,
+     "unit": "Ln Ft",
+     "count": 4,
+     "stackProject": "10165 Redeye cir Fountain Valley"
+    },
+    {
+     "item": "Garage slab",
+     "qty": 21.5,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "10165 Redeye cir Fountain Valley"
+    }
+   ]
+  },
+  {
+   "id": "1020 madison",
+   "name": "1020 MADISON PL, LAGUNA BEACH",
+   "customer": "HARPER BUILD",
+   "date": "2026-10-01",
+   "sentTotal": 8495,
+   "priceSource": "GHL (Jesse)",
+   "priceStatus": "confirmed",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [
+    [
+     "DEMOLITION",
+     8295.0
+    ]
+   ],
+   "scopeText": "DEMOLITION\n\nCarefully deconstruct bathroom in its entirety down to studs\n\nProperly Sawcut/Break/Haul 4inch concrete for new proposed plumbing\n\nProperly protect all working areas and provide air scrubbers to minimize all dust\n\nDEMOLITION TOTAL:  $8,295.00",
+   "takeoff": []
+  },
+  {
+   "id": "104 huntington",
+   "name": "104 Huntington st, Hunington beach",
+   "customer": "Todd Custom Homes",
+   "date": "2026-06-30",
+   "sentTotal": 35000,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": [
+    {
+     "item": "Roof demo",
+     "qty": 986.49,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "104 Huntington St - 011326"
+    },
+    {
+     "item": "Rear balcony deck demo",
+     "qty": 56.93,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "104 Huntington St - 011326"
+    },
+    {
+     "item": "Remove windows",
+     "qty": 15.0,
+     "unit": "Ea",
+     "count": 15,
+     "stackProject": "104 Huntington St - 011326"
+    },
+    {
+     "item": "All exterior siding and trim",
+     "qty": 269.93,
+     "unit": "Ln Ft",
+     "count": 2,
+     "stackProject": "104 Huntington St - 011326"
+    },
+    {
+     "item": "Int. walls demo",
+     "qty": 100.05,
+     "unit": "Ln Ft",
+     "count": 16,
+     "stackProject": "104 Huntington St - 011326"
+    },
+    {
+     "item": "Ext walls demo",
+     "qty": 51.68,
+     "unit": "Ln Ft",
+     "count": 8,
+     "stackProject": "104 Huntington St - 011326"
+    },
+    {
+     "item": "Floor area",
+     "qty": 1769.86,
+     "unit": "Sq Ft",
+     "count": 5,
+     "stackProject": "104 Huntington St - 011326"
+    },
+    {
+     "item": "Slab saw cutting",
+     "qty": 42.3,
+     "unit": "Ln Ft",
+     "count": 3,
+     "stackProject": "104 Huntington St - 011326"
+    },
+    {
+     "item": "concrete demo",
+     "qty": 147.66,
+     "unit": "Sq Ft",
+     "count": 4,
+     "stackProject": "104 Huntington St - 011326"
+    }
+   ]
+  },
+  {
+   "id": "107 via",
+   "name": "107 Via Mentone, Newport Beach",
+   "customer": "Olive Tree Construction",
+   "date": "2026-08-27",
+   "sentTotal": 67674,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "DEMOLITON\nFull demolition of a residential structure of 1,183 square feet & foundation in it's entirety per plans.\nRemove all hardscape & softscape per plan\nSITE WORK | GRADING\nPerform 4' over-excavation of approx. 2,926 S.F for new proposed\nfoundation (Per Plan s1) and soils report.\nPerform sewer cut & cap, not to exceed 3\u2019 dept of excavation.\nALTERNATE #1 - EROSION CONTROL\nPurchase 180 gravel bags (Per Plan) and grading phase, delivery & labor to lay, install gravel bags\nProperly lay 10'x10' of Filter fabric  ",
+   "takeoff": [
+    {
+     "item": "Driveway Aproch",
+     "qty": 40.61,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "107 Via Mentone, Newport Beach"
+    },
+    {
+     "item": "erosion control - sand bags",
+     "qty": 159.54,
+     "unit": "Ln Ft",
+     "count": 4,
+     "stackProject": "107 Via Mentone, Newport Beach"
+    }
+   ]
+  },
+  {
+   "id": "111 berry",
+   "name": "111 S BERRY ST, BREA",
+   "customer": "HANSEN CONCRETE",
+   "date": "2026-10-07",
+   "sentTotal": 43945.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [
+    [
+     "DEMOLITION",
+     43945.0
+    ]
+   ],
+   "scopeText": "DEMOLITION\n\nRemove drywall (per jobwalk)\n\nRemove finished flooring (per jobwalk)\n\nRemove ceilings (per jobwalk)\n\nDemolish mens bathroom in its entirety (per jobwalk)\n\nRemove necessary ductwork (per jobwalk)\n\nRemove light fixtures (per jobwalk)\n\nDEMOLITION TOTAL:  $43,945.00",
+   "takeoff": []
+  },
+  {
+   "id": "11133 washington",
+   "name": "11133 WASHINGTON BLVD. WHITTIER, CA 90606",
+   "customer": "RUMSEY CONSTRUCTION",
+   "date": "2026-07-21",
+   "sentTotal": 32135,
+   "priceSource": "sum of 3 scopes",
+   "priceStatus": "confirmed",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "DEMOLITION\n   Remove existing wall finishes\nRemove all bathroom fixtures\nRemove non load bearing walls\nRemove all existing flooring and scrap clean of all adhesive and\nthin set\nRemove all t bar/gypsm board ceilings and light fixtures\nTOTAL: $13,245\nSAWCUT/BREAK/HAUL\nProperly Sawcut/Break/Haul 300 sqft of 6inch concrete for plumbing & electrical \nTOTAL: $9,245\nCONCRETE POURBACK\nProperly lay #4 rebar @ 12\u201d on center with #4 dowels at 12\u201d on center &\nepoxy set into existing slab\nPour 300 sqft of 6 inch concrete at 4,000 psi for new proposed plumbing\nand electrical\nTOTAL: $9,645",
+   "takeoff": []
+  },
+  {
+   "id": "1121 kings",
+   "name": "1121 KINGS RD",
+   "customer": "HARPER CONSTRUCTION",
+   "date": "2026-10-01",
+   "sentTotal": 69495.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent",
+    "New Lead"
+   ],
+   "scopeTotals": [
+    [
+     "INTERIOR",
+     0.0
+    ],
+    [
+     "EXTERIOR",
+     0.0
+    ],
+    [
+     "SOILS EXPORT",
+     0.0
+    ]
+   ],
+   "scopeText": "INTERIOR\n\nRemove walls\n\nRemove interior finishes along walls that will be removed for proposed addition only\n\nINTERIOR TOTAL:  $0.00\n\nEXTERIOR\n\nRemove all existing stucco along side yards and backyard for proposed addition only\n\nRemove windows and doors for proposed addition only\n\nDemo existing old roof for remodel\n\nRemove exterior walls for proposed addition only\n\nDemolish concrete deck in its entirety\n\nDemolish stairs to deck in its entirety\n\nRemove all soft scape in backyard only\n\nEXTERIOR TOTAL:  $0.00\n\nSOILS EXPORT\n\nProperly haul away 8 super 10 loads of soils ($800 per load) while we are still on site\n\nSOILS EXPORT TOTAL:  $0.00",
+   "takeoff": [
+    {
+     "item": "Sawcut for new Pads",
+     "qty": 15.84,
+     "unit": "Ln Ft",
+     "count": 2,
+     "stackProject": "1121 Kings Rd Due Asap"
+    },
+    {
+     "item": "Cut Raised floor for new pads",
+     "qty": 23.92,
+     "unit": "Ln Ft",
+     "count": 2,
+     "stackProject": "1121 Kings Rd Due Asap"
+    },
+    {
+     "item": "Walls to be removed",
+     "qty": 118.24,
+     "unit": "Ln Ft",
+     "count": 9,
+     "stackProject": "1121 Kings Rd Due Asap"
+    },
+    {
+     "item": "Peel Back roofing",
+     "qty": 266.14,
+     "unit": "Sq Ft",
+     "count": 2,
+     "stackProject": "1121 Kings Rd Due Asap"
+    },
+    {
+     "item": "Remove Concrete Slab",
+     "qty": 498.65,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "1121 Kings Rd Due Asap"
+    },
+    {
+     "item": "Demo Fireplace in its entirety",
+     "qty": 9.93,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "1121 Kings Rd Due Asap"
+    },
+    {
+     "item": "bathroom trenching",
+     "qty": 54.2,
+     "unit": "Ln Ft",
+     "count": 2,
+     "stackProject": "1121 Kings Rd Due Asap"
+    },
+    {
+     "item": "SE-6 Gravel Bag Berm",
+     "qty": 325.78,
+     "unit": "Ln Ft",
+     "count": 3,
+     "stackProject": "1121 Kings Rd"
+    },
+    {
+     "item": "SE-1 Silt Fence",
+     "qty": 130.67,
+     "unit": "Ln Ft",
+     "count": 2,
+     "stackProject": "1121 Kings Rd"
+    },
+    {
+     "item": "TC-1 Stabilized Construction Exit",
+     "qty": 77.97,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "1121 Kings Rd"
+    },
+    {
+     "item": "NS-3 Paving Operations Area (driveway approach)",
+     "qty": 282.22,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "1121 Kings Rd"
+    },
+    {
+     "item": "WM-1 Material Storage Area",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "1121 Kings Rd"
+    },
+    {
+     "item": "WM-5 Solid Waste (Dumpster)",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "1121 Kings Rd"
+    },
+    {
+     "item": "WM-8 Concrete Washout",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "1121 Kings Rd"
+    },
+    {
+     "item": "WM-9 Sanitary Facility (Porta-John)",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "1121 Kings Rd"
+    },
+    {
+     "item": "block wall",
+     "qty": 88.41,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "1121 Kings Rd"
+    }
+   ]
+  },
+  {
+   "id": "113 las",
+   "name": "113 s las posas rd San Marcos",
+   "customer": "Rumsey Construction",
+   "date": "2026-06-22",
+   "sentTotal": 21699,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Job Completed",
+    "Job Completed",
+    "Job Completed",
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "Went back to patch and repair some stucco that was damaged during our contracted work. This T&M can be pulled from the profit of this Job-",
+   "takeoff": []
+  },
+  {
+   "id": "1210 washington",
+   "name": "1210 E. WASHINGTON ST, COLTON",
+   "customer": "SEQUOIA PACIFIC BUILDERS",
+   "date": "2026-09-10",
+   "sentTotal": 68413.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [
+    [
+     "INTERIOR",
+     12454.0
+    ],
+    [
+     "EXTERIOR",
+     55959.0
+    ]
+   ],
+   "scopeText": "INTERIOR\n\nRemove doors frames and hardware per plans.\n\nRemove storefront door hardware per plans.\n\nRemove lockers and millwork per plans.\n\nRemove millwork and shelving per plans.\n\nDemolish bathrooms in their entirety per plans.\n\nRemove all plumbing fixtures per plans.\n\nRemove floor drains and seal per plans.\n\nRemove bathroom and shower finishes per plans.\n\nRemove interior walls and partitions per plans.\n\nRemove all floor finishes per plans.\n\nRemove light fixtures and electrical equipment per plans.\n\nRemove acoustic ceiling systems gypsum board ceilings soffits and wall finishes per plans.\n\nRemove mechanical equipment ductwork grilles and accessories per plans.\n\nINTERIOR TOTAL:  $12,454.00\n\nEXTERIOR\n\nRemove partial storefront glazing per plans.\n\nRemove bollards per plans.\n\nRemove truck dock components and associated concrete as required per plans.\n\nRemove existing RTUs and associated equipment per plans.\n\nRemove roof ladder and hatch per plans.\n\nRemove satellite dish steel support frame and accessories per plans.\n\nCut new openings for new mechanical units per plans.\n\nRemove exterior signs per plans.\n\nEXTERIOR TOTAL:  $55,959.00",
+   "takeoff": [
+    {
+     "item": "remove steel can",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "1210 E. Washington St, Colton"
+    },
+    {
+     "item": "remove storefront film",
+     "qty": 65.85,
+     "unit": "Ln Ft",
+     "count": 3,
+     "stackProject": "1210 E. Washington St, Colton"
+    },
+    {
+     "item": "remove doors",
+     "qty": 12.0,
+     "unit": "Ea",
+     "count": 12,
+     "stackProject": "1210 E. Washington St, Colton"
+    },
+    {
+     "item": "sawcut concrete",
+     "qty": 295.99,
+     "unit": "Sq Ft",
+     "count": 6,
+     "stackProject": "1210 E. Washington St, Colton"
+    },
+    {
+     "item": "sawcut linear concrete",
+     "qty": 354.15,
+     "unit": "Ln Ft",
+     "count": 6,
+     "stackProject": "1210 E. Washington St, Colton"
+    },
+    {
+     "item": "remove light fixtures",
+     "qty": 2.0,
+     "unit": "Ea",
+     "count": 2,
+     "stackProject": "1210 E. Washington St, Colton"
+    },
+    {
+     "item": "Remove interior walls",
+     "qty": 969.43,
+     "unit": "Ln Ft",
+     "count": 34,
+     "stackProject": "1210 E. Washington St, Colton"
+    },
+    {
+     "item": "remove plumbing fixtures",
+     "qty": 2.0,
+     "unit": "Ea",
+     "count": 2,
+     "stackProject": "1210 E. Washington St, Colton"
+    },
+    {
+     "item": "remove furniture?",
+     "qty": 61.74,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "1210 E. Washington St, Colton"
+    },
+    {
+     "item": "remove flooring, ceiling, shelving, etc.",
+     "qty": 21928.0,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "1210 E. Washington St, Colton"
+    },
+    {
+     "item": "remove electric boxes",
+     "qty": 5.0,
+     "unit": "Ea",
+     "count": 5,
+     "stackProject": "1210 E. Washington St, Colton"
+    },
+    {
+     "item": "remove wall finish",
+     "qty": 11.96,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "1210 E. Washington St, Colton"
+    },
+    {
+     "item": "remove exterior billboard",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "1210 E. Washington St, Colton"
+    },
+    {
+     "item": "drill 18\"x26\" concrete",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "1210 E. Washington St, Colton"
+    },
+    {
+     "item": "remove truck dock",
+     "qty": 56.92,
+     "unit": "Sq Ft",
+     "count": 2,
+     "stackProject": "1210 E. Washington St, Colton"
+    },
+    {
+     "item": "remove gas meter",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "1210 E. Washington St, Colton"
+    },
+    {
+     "item": "remove RTUs and ductwork",
+     "qty": 4.0,
+     "unit": "Ea",
+     "count": 4,
+     "stackProject": "1210 E. Washington St, Colton"
+    },
+    {
+     "item": "remove partial roof for new RTU",
+     "qty": 217.54,
+     "unit": "Sq Ft",
+     "count": 10,
+     "stackProject": "1210 E. Washington St, Colton"
+    },
+    {
+     "item": "remove exhaust fan, hood, and vent",
+     "qty": 6.0,
+     "unit": "Ea",
+     "count": 6,
+     "stackProject": "1210 E. Washington St, Colton"
+    },
+    {
+     "item": "remove metal access door",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "1210 E. Washington St, Colton"
+    },
+    {
+     "item": "remove satellite dish and frame",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "1210 E. Washington St, Colton"
+    }
+   ]
+  },
+  {
+   "id": "1234 francisquito",
+   "name": "1234 W. FRANCISQUITO AVE, WEST COVINA",
+   "customer": "TFD CONSTRUCTION",
+   "date": "2026-09-10",
+   "sentTotal": 69700.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "lost",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [
+    [
+     "DEMOLITION",
+     69700.0
+    ]
+   ],
+   "scopeText": "DEMOLITION\n\nRemove millwork per plans (D1.1)\n\nRemove doors per plans (D1.1)\n\nRemove all furniture and equipment per plans (D1.1)\n\nRemove bathroom finishes per plans (D1.1)\n\nRemove all flooring per plans (D1.1)\n\nRemove walls per plans (D1.1)\n\nRemove all HVAC grills and ductwork per plans (M1.0)\n\nRemove existing lights per plans (E1.0)\n\nRemove all existing ceilings and soffits per plans (D1.1)\n\nDEMOLITION TOTAL:  $69,700.00",
+   "takeoff": []
+  },
+  {
+   "id": "12591 harbor",
+   "name": "12591 Harbor Blvd, Garden Grove, CA",
+   "customer": "",
+   "date": "2026-08-27",
+   "sentTotal": 2592.21,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "Fixbid/Contract- Started saw cutting per our C.O this is needed for underground plumbing-",
+   "takeoff": []
+  },
+  {
+   "id": "12625 frederick",
+   "name": "12625 FREDERICK ST SUITE B4 & B5 MORENO VALLEY",
+   "customer": "RT STEVENS",
+   "date": "2026-09-10",
+   "sentTotal": 29625,
+   "priceSource": "GHL (Jesse)",
+   "priceStatus": "confirmed",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [
+    [
+     "INTERIOR",
+     42065.0
+    ]
+   ],
+   "scopeText": "Interior\n\nRemove flooring and base per plans.\n\nRemove partitions and finishes per plans.\n\nRemove millwork per plans.\n\nRemove doors per plans.\n\nRemove bathroom finishes and fixtures per plans.\n\nDemolish restroom per plans.\n\nRemove electrical box per plans.\n\nRemove ceiling per plans.\n\nRemove ceiling lighting fixtures and finishes per plans.\n\nRemove wall sconce per plans.\n\nINTERIOR TOTAL:  $42,065.00",
+   "takeoff": [
+    {
+     "item": "remove flooring and base",
+     "qty": 4813.94,
+     "unit": "Sq Ft",
+     "count": 11,
+     "stackProject": "12625 Frederick St, Moreno Valley"
+    },
+    {
+     "item": "remove partitions and finishes",
+     "qty": 138.81,
+     "unit": "Ln Ft",
+     "count": 16,
+     "stackProject": "12625 Frederick St, Moreno Valley"
+    },
+    {
+     "item": "remove millwork",
+     "qty": 32.34,
+     "unit": "Sq Ft",
+     "count": 2,
+     "stackProject": "12625 Frederick St, Moreno Valley"
+    },
+    {
+     "item": "remove doors",
+     "qty": 9.0,
+     "unit": "Ea",
+     "count": 9,
+     "stackProject": "12625 Frederick St, Moreno Valley"
+    },
+    {
+     "item": "remove bathroom finishes and fixtures",
+     "qty": 4.0,
+     "unit": "Ea",
+     "count": 4,
+     "stackProject": "12625 Frederick St, Moreno Valley"
+    },
+    {
+     "item": "demolish restroom",
+     "qty": 45.48,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "12625 Frederick St, Moreno Valley"
+    },
+    {
+     "item": "remove electric box",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "12625 Frederick St, Moreno Valley"
+    },
+    {
+     "item": "remove ceiling",
+     "qty": 4770.63,
+     "unit": "Sq Ft",
+     "count": 4,
+     "stackProject": "12625 Frederick St, Moreno Valley"
+    },
+    {
+     "item": "remove ceiling and lighting fixtures, finishes",
+     "qty": 41.0,
+     "unit": "Ea",
+     "count": 41,
+     "stackProject": "12625 Frederick St, Moreno Valley"
+    },
+    {
+     "item": "remove wall sconce",
+     "qty": 27.24,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "12625 Frederick St, Moreno Valley"
+    }
+   ]
+  },
+  {
+   "id": "12681 harbor",
+   "name": "12681 harbor blvd, garden grove",
+   "customer": "",
+   "date": "2026-07-28",
+   "sentTotal": 400000,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Work In Progress"
+   ],
+   "scopeTotals": [],
+   "scopeText": "-",
+   "takeoff": []
+  },
+  {
+   "id": "12844 excelsior",
+   "name": "12844 EXCELSIOR DR NORWALK CA",
+   "customer": "LACY CONSTRUCTION",
+   "date": "2026-10-01",
+   "sentTotal": 21454.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "DEMOLITION\n\nProperly remove 500LF of chain link fencing and all post footings.",
+   "takeoff": []
+  },
+  {
+   "id": "14 morning",
+   "name": "14 Morning View Dr",
+   "customer": "Olive Tree Construction",
+   "date": "2026-08-12",
+   "sentTotal": 44995,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "INTERIOR\nCarefully remove and stage all appliances including all toilets in the garage \nCarefully remove all chandeliers, light fixtures and curtains Per Note #22 &12\nDemolish kitchen, pantry and butlers pantry in its entirely to be left to the studs Per Note #5\nCarefully remove all cabinetry throughout Per Note #15\nCarefully remove all baseboard, casing and crown molding per note #10\nCarefully demolish interior walls Per Note # 8 & 26\nCarefully disconnect and demolish 8' soffit at the kitchens upper cabinets Per Note #6\nCarefully remove and scrape all wallpaper throughout Per Note #11\nRemove all 3 fireplace mantles and fireplace boxes Per Note #13 & 14 \nDemolish all closets including garage built ins throughout Per Note #19\nDemolish office and laundry room in its entirely Per Note #17&18\nDemolish all bathrooms throughout left to drywall Per Note 16,20,25,27,28 29\nRemove all tile and carpet flooring throughout Per Note #9\n\nEXTERIOR\nRemove all exterior windows and doors Per Note #1\nDemolish primary bedroom balcony and guard rail to the plywood Per Note #23 & 24\nCarefully remove roof tiles where needed for scaffolding to be installed Per Note #32",
+   "takeoff": [
+    {
+     "item": "remove windows",
+     "qty": 43.0,
+     "unit": "Ea",
+     "count": 43,
+     "stackProject": "14 Morning View Dr, Newport Coast, CA 92657"
+    },
+    {
+     "item": "remove doors",
+     "qty": 16.0,
+     "unit": "Ea",
+     "count": 16,
+     "stackProject": "14 Morning View Dr, Newport Coast, CA 92657"
+    },
+    {
+     "item": "remove kitchen applicances",
+     "qty": 5.0,
+     "unit": "Ea",
+     "count": 5,
+     "stackProject": "14 Morning View Dr, Newport Coast, CA 92657"
+    },
+    {
+     "item": "remove bathroom finishes",
+     "qty": 20.0,
+     "unit": "Ea",
+     "count": 20,
+     "stackProject": "14 Morning View Dr, Newport Coast, CA 92657"
+    },
+    {
+     "item": "remove bar and laundry room appliances/sinks",
+     "qty": 4.0,
+     "unit": "Ea",
+     "count": 4,
+     "stackProject": "14 Morning View Dr, Newport Coast, CA 92657"
+    },
+    {
+     "item": "remove staircase",
+     "qty": 2.0,
+     "unit": "Ea",
+     "count": 2,
+     "stackProject": "14 Morning View Dr, Newport Coast, CA 92657"
+    },
+    {
+     "item": "demolish linen closet",
+     "qty": 19.49,
+     "unit": "Sq Ft",
+     "count": 2,
+     "stackProject": "14 Morning View Dr, Newport Coast, CA 92657"
+    },
+    {
+     "item": "remove closet walls",
+     "qty": 30.61,
+     "unit": "Ln Ft",
+     "count": 7,
+     "stackProject": "14 Morning View Dr, Newport Coast, CA 92657"
+    },
+    {
+     "item": "remove balcony guard rail",
+     "qty": 27.04,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "14 Morning View Dr, Newport Coast, CA 92657"
+    },
+    {
+     "item": "remove columns?",
+     "qty": 2.0,
+     "unit": "Ea",
+     "count": 2,
+     "stackProject": "14 Morning View Dr, Newport Coast, CA 92657"
+    },
+    {
+     "item": "remove tile floor",
+     "qty": 4889.06,
+     "unit": "Sq Ft",
+     "count": 23,
+     "stackProject": "14 Morning View Dr, Newport Coast, CA 92657"
+    },
+    {
+     "item": "remove fireplace fascade",
+     "qty": 37.92,
+     "unit": "Sq Ft",
+     "count": 3,
+     "stackProject": "14 Morning View Dr, Newport Coast, CA 92657"
+    },
+    {
+     "item": "remove spiral staircase rail",
+     "qty": 72.53,
+     "unit": "Ln Ft",
+     "count": 8,
+     "stackProject": "14 Morning View Dr, Newport Coast, CA 92657"
+    }
+   ]
+  },
+  {
+   "id": "14006 riverside",
+   "name": "14006 RIVERSIDE DR, SHERMAN OAKS",
+   "customer": "ALLEN HEJAZI",
+   "date": "2026-09-10",
+   "sentTotal": 46013.0,
+   "priceSource": "Dropbox only",
+   "priceStatus": "single-source",
+   "outcome": "unknown",
+   "stages": [],
+   "scopeTotals": [],
+   "scopeText": "Interior\n\nProperly remove furniture.\n\nProperly remove decorative furniture.\n\nProperly remove curtains.\n\nProperly remove fridge and microwave.\n\nProperly remove safe.\n\nProperly remove fire extinguishers.\n\nProperly remove wall-mounted panel and shelves.\n\nProperly remove doors.\n\nProperly remove molding.\n\nProperly remove baseboard.\n\nProperly remove walls.\n\nProperly remove wood flooring and prepare the area for new flooring.\n\nProperly remove access panel.\n\nProperly remove air return grill.\n\nProperly remove recessed lights.\n\nProperly remove track lights.\n\nProperly remove gypsum board ceiling.\n\nExterior\n\nProperly remove signage.\n\nProperly remove shopwindow cladding.",
+   "takeoff": [
+    {
+     "item": "remove safe",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "14006 Riverside Dr, Sherman Oaks"
+    },
+    {
+     "item": "remove wall mounted panel and shelves",
+     "qty": 51.32,
+     "unit": "Sq Ft",
+     "count": 6,
+     "stackProject": "14006 Riverside Dr, Sherman Oaks"
+    },
+    {
+     "item": "remove doors",
+     "qty": 9.0,
+     "unit": "Ea",
+     "count": 9,
+     "stackProject": "14006 Riverside Dr, Sherman Oaks"
+    },
+    {
+     "item": "remove fire extinguishers",
+     "qty": 2.0,
+     "unit": "Ea",
+     "count": 2,
+     "stackProject": "14006 Riverside Dr, Sherman Oaks"
+    },
+    {
+     "item": "remove walls",
+     "qty": 29.06,
+     "unit": "Ln Ft",
+     "count": 7,
+     "stackProject": "14006 Riverside Dr, Sherman Oaks"
+    },
+    {
+     "item": "remove fridge and microwave",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "14006 Riverside Dr, Sherman Oaks"
+    },
+    {
+     "item": "remove furniture",
+     "qty": 185.1,
+     "unit": "Sq Ft",
+     "count": 13,
+     "stackProject": "14006 Riverside Dr, Sherman Oaks"
+    },
+    {
+     "item": "remove curtains",
+     "qty": 11.71,
+     "unit": "Ln Ft",
+     "count": 2,
+     "stackProject": "14006 Riverside Dr, Sherman Oaks"
+    },
+    {
+     "item": "remove wood flooring, prep for new",
+     "qty": 1365.13,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "14006 Riverside Dr, Sherman Oaks"
+    },
+    {
+     "item": "remove shopwindow cladding",
+     "qty": 2.0,
+     "unit": "Ea",
+     "count": 2,
+     "stackProject": "14006 Riverside Dr, Sherman Oaks"
+    },
+    {
+     "item": "remove decorative furniture",
+     "qty": 4.0,
+     "unit": "Ea",
+     "count": 4,
+     "stackProject": "14006 Riverside Dr, Sherman Oaks"
+    },
+    {
+     "item": "remove baseboard",
+     "qty": 4.53,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "14006 Riverside Dr, Sherman Oaks"
+    },
+    {
+     "item": "remove molding",
+     "qty": 1.4,
+     "unit": "Sq Ft",
+     "count": 2,
+     "stackProject": "14006 Riverside Dr, Sherman Oaks"
+    },
+    {
+     "item": "remove recessed lights",
+     "qty": 38.0,
+     "unit": "Ea",
+     "count": 38,
+     "stackProject": "14006 Riverside Dr, Sherman Oaks"
+    },
+    {
+     "item": "remove track lights",
+     "qty": 79.0,
+     "unit": "Ea",
+     "count": 79,
+     "stackProject": "14006 Riverside Dr, Sherman Oaks"
+    },
+    {
+     "item": "remove air return grill",
+     "qty": 4.0,
+     "unit": "Ea",
+     "count": 4,
+     "stackProject": "14006 Riverside Dr, Sherman Oaks"
+    },
+    {
+     "item": "remove access panel",
+     "qty": 2.0,
+     "unit": "Ea",
+     "count": 2,
+     "stackProject": "14006 Riverside Dr, Sherman Oaks"
+    },
+    {
+     "item": "remove signage",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "14006 Riverside Dr, Sherman Oaks"
+    },
+    {
+     "item": "remove gypsum board ceiling",
+     "qty": 1275.84,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "14006 Riverside Dr, Sherman Oaks"
+    }
+   ]
+  },
+  {
+   "id": "1412 lincoln",
+   "name": "1412 Lincoln Ln, Newport Beach",
+   "customer": "ATP Builders",
+   "date": "2026-07-21",
+   "sentTotal": 16995,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Job Completed",
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "Started new fixbid job per our scope-Dumpster,\u00a0Tow-Behind Compressor, 90 lb. Jack Hammer, Hoses, Diesel Fuel & Delivery",
+   "takeoff": [
+    {
+     "item": "for the over excavation",
+     "qty": 471.0,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "1412 Lincoln Ln Newport"
+    }
+   ]
+  },
+  {
+   "id": "14851 yorba",
+   "name": "14851 Yorba street, Tustin",
+   "customer": "NEWCASTLE CONSTRUCTION",
+   "date": "2026-08-18",
+   "sentTotal": 258598,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Accepted"
+   ],
+   "scopeTotals": [],
+   "scopeText": "LEVEL 0\nProperly remove all non-load bearing walls (per plan XA-2.0)\nProperly remove finished flooring (per plan XA-2.0)\nProperly remove hard lid ceilings (per plan )\nLEVEL 1\nProperly remove all furniture in areas of demolition\nProperly demolish all finished cabinetry\nRemove all doors\nDemolish bathrooms in their entirety\nDemolish all non-load bearing walls \nRemove all vct, tile, & carpet flooring \nRemove tbar ceiling \nLEVEL 2\nProperly remove all furniture in areas of demolition\nProperly demolish all finished cabinetry \nRemove all doors\nRemove all wheel chair bumpers\nDemolish bathrooms in their entirety\nCarefully remove & save interior windows  \nDemolish all non-load bearing walls \nRemove all vct, tile, & carpet flooring \nRemove soffits, & tbar ceilings \n-",
+   "takeoff": [
+    {
+     "item": "remove walls",
+     "qty": 754.05,
+     "unit": "Ln Ft",
+     "count": 207,
+     "stackProject": "14851 Yorba St, Tustin"
+    },
+    {
+     "item": "remove doors",
+     "qty": 59.0,
+     "unit": "Ea",
+     "count": 59,
+     "stackProject": "14851 Yorba St, Tustin"
+    },
+    {
+     "item": "remove ceiling",
+     "qty": 703.74,
+     "unit": "Sq Ft",
+     "count": 17,
+     "stackProject": "14851 Yorba St, Tustin"
+    },
+    {
+     "item": "bathrooms",
+     "qty": 4.0,
+     "unit": "Ea",
+     "count": 4,
+     "stackProject": "14851 Yorba St, Tustin"
+    },
+    {
+     "item": "remove flooring",
+     "qty": 1134.02,
+     "unit": "Sq Ft",
+     "count": 7,
+     "stackProject": "14851 Yorba St, Tustin"
+    },
+    {
+     "item": "sf",
+     "qty": 2467.28,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "14851 Yorba St, Tustin"
+    },
+    {
+     "item": "sf",
+     "qty": 35387.04,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "14851 Yorba St, Tustin"
+    }
+   ]
+  },
+  {
+   "id": "16 downfield",
+   "name": "16 DOWNFIELD, COTO DE CAZA",
+   "customer": "TODD CUSTOM HOMES",
+   "date": "2026-08-27",
+   "sentTotal": 2495.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "DEMOLITION\n\nDemolish & haul away cover patio, wood fountain base, wood fence in sideyard",
+   "takeoff": []
+  },
+  {
+   "id": "1623 santa",
+   "name": "1623 Santa Crus St, Laguna Beach ",
+   "customer": "Vaughn Construction",
+   "date": "2026-07-21",
+   "sentTotal": 14495,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": []
+  },
+  {
+   "id": "1720 w",
+   "name": "1720 W 135TH ST, GARDENA",
+   "customer": "BRADY CONSTRUCTION",
+   "date": "2026-09-08",
+   "sentTotal": 13425.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "won",
+   "stages": [
+    "Accepted",
+    "Proposal Sent",
+    "Priced too low"
+   ],
+   "scopeTotals": [],
+   "scopeText": "SAWCUT/BREAK/HAUL\n\nProperly demolish concrete for new proposed plumbing",
+   "takeoff": [
+    {
+     "item": "demo walls",
+     "qty": 342.01,
+     "unit": "Ln Ft",
+     "count": 14,
+     "stackProject": "1720 W 135th St, Gardena"
+    },
+    {
+     "item": "remove tile floor and prep",
+     "qty": 1523.51,
+     "unit": "Sq Ft",
+     "count": 2,
+     "stackProject": "1720 W 135th St, Gardena"
+    },
+    {
+     "item": "sawcut concrete",
+     "qty": 132.3,
+     "unit": "Sq Ft",
+     "count": 4,
+     "stackProject": "1720 W 135th St, Gardena"
+    },
+    {
+     "item": "sawcut linear concrete",
+     "qty": 59.07,
+     "unit": "Ln Ft",
+     "count": 3,
+     "stackProject": "1720 W 135th St, Gardena"
+    },
+    {
+     "item": "sawcut 2",
+     "qty": 74.56,
+     "unit": "Ln Ft",
+     "count": 2,
+     "stackProject": "1720 W 135th St, Gardena"
+    }
+   ]
+  },
+  {
+   "id": "18191 von",
+   "name": "18191 Von Karman Ave, Irvine Steel Beam Removal ",
+   "customer": "Kukbo Design",
+   "date": "2026-07-01",
+   "sentTotal": 4150,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": []
+  },
+  {
+   "id": "20 city",
+   "name": "20 City Blvd West, Orange",
+   "customer": "Tom Rectenwald Construction",
+   "date": "2026-09-22",
+   "sentTotal": 24150.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [
+    [
+     "DEMOLITION",
+     24150.0
+    ]
+   ],
+   "scopeText": "Demolition\n\nRemove signage per plans (AD101).\n\nRemove plumbing fixtures per plans (AD101).\n\nRemove millwork per plans (AD101).\n\nRemove partition walls per plans (AD101).\n\nRemove blade sign per plans (AD101).\n\nRemove thermostat per plans (AD101).\n\nRemove door per plans (AD101).\n\nRemove flooring and base per plans (AD101).\n\nRemove telecom panel per plans (AD101).\n\nRemove security panel per plans (AD101).\n\nRemove traffic counter per plans (AD101).\n\nRemove speakers and associated wiring per plans (AD102).\n\nRemove security cameras per plans (AD102).\n\nRemove track lights per plans (AD102).\n\nRemove ductwork per plans (M100).\n\nRemove supply and return ducts per plans (M100).\n\nRemove exhaust fan and remaining ductwork per plans (M100).\n\nRemove exhaust fan and remaining ductwork quantities per plans (M100).\n\nRemove supply and return duct quantities per plans (M100).\n\nDEMOLITION TOTAL:  $24,150.00",
+   "takeoff": [
+    {
+     "item": "remove signage ad101",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "20 City Blvd West, Orange"
+    },
+    {
+     "item": "remove flooring and base ad101",
+     "qty": 591.27,
+     "unit": "Sq Ft",
+     "count": 2,
+     "stackProject": "20 City Blvd West, Orange"
+    },
+    {
+     "item": "remove plumbing fixtures ad101",
+     "qty": 3.0,
+     "unit": "Ea",
+     "count": 3,
+     "stackProject": "20 City Blvd West, Orange"
+    },
+    {
+     "item": "remove millwork ad101",
+     "qty": 192.61,
+     "unit": "Sq Ft",
+     "count": 20,
+     "stackProject": "20 City Blvd West, Orange"
+    },
+    {
+     "item": "remove partition walls ad101",
+     "qty": 12.27,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "20 City Blvd West, Orange"
+    },
+    {
+     "item": "remove blade sign ad101",
+     "qty": 3.85,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "20 City Blvd West, Orange"
+    },
+    {
+     "item": "remove thermostat ad101",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "20 City Blvd West, Orange"
+    },
+    {
+     "item": "remove door ad101",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "20 City Blvd West, Orange"
+    },
+    {
+     "item": "remove telecom panel ad101",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "20 City Blvd West, Orange"
+    },
+    {
+     "item": "remove security panel ad101",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "20 City Blvd West, Orange"
+    },
+    {
+     "item": "remove traffic counter ad102",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "20 City Blvd West, Orange"
+    },
+    {
+     "item": "remove speakers and wiring ad102",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "20 City Blvd West, Orange"
+    },
+    {
+     "item": "remove security cameras ad102",
+     "qty": 3.0,
+     "unit": "Ea",
+     "count": 3,
+     "stackProject": "20 City Blvd West, Orange"
+    },
+    {
+     "item": "remove track lights ad102",
+     "qty": 25.66,
+     "unit": "Ln Ft",
+     "count": 5,
+     "stackProject": "20 City Blvd West, Orange"
+    },
+    {
+     "item": "remove ductwork m100",
+     "qty": 115.4,
+     "unit": "Ln Ft",
+     "count": 8,
+     "stackProject": "20 City Blvd West, Orange"
+    },
+    {
+     "item": "remove supply and return ducts m100",
+     "qty": 3.43,
+     "unit": "Sq Ft",
+     "count": 2,
+     "stackProject": "20 City Blvd West, Orange"
+    },
+    {
+     "item": "remove exhaust fan and remaining ductwork m100",
+     "qty": 0.99,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "20 City Blvd West, Orange"
+    },
+    {
+     "item": "remove exhaust fan and remaining ductwork qty m100",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "20 City Blvd West, Orange"
+    },
+    {
+     "item": "remove supply and return ducts qty m100",
+     "qty": 2.0,
+     "unit": "Ea",
+     "count": 2,
+     "stackProject": "20 City Blvd West, Orange"
+    }
+   ]
+  },
+  {
+   "id": "20 talmont",
+   "name": "20 Talmont newport beach",
+   "customer": "SLS Construction, Inc.",
+   "date": "2026-07-28",
+   "sentTotal": 26000,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "Continued working per our scope of work. Removed garage cabinetry, removed 1 fireplace box hauled off all debris off site into a dump truck. Removed all appliances off site into the dump truck.-",
+   "takeoff": []
+  },
+  {
+   "id": "2012 apollo",
+   "name": "2012 Apollo CT",
+   "customer": "",
+   "date": "2026-08-25",
+   "sentTotal": 26775,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": []
+  },
+  {
+   "id": "202 oceanfront",
+   "name": "202 E OCEANFRONT NEWPORT BEACH CA 92661",
+   "customer": "ATP CONSTRUCTION",
+   "date": "2026-08-27",
+   "sentTotal": 26240,
+   "priceSource": "GHL (Jesse)",
+   "priceStatus": "confirmed",
+   "outcome": "won",
+   "stages": [
+    "Accepted"
+   ],
+   "scopeTotals": [
+    [
+     "STUCCO REMOVAL",
+     13845.0
+    ],
+    [
+     "WINDOW REMOVAL",
+     8945.0
+    ],
+    [
+     "INTERIOR DEMOLITION",
+     6295.0
+    ]
+   ],
+   "scopeText": "STUCCO REMOVAL\n\nCarefully cut and remove plaster on backside of house (per jobwalk)\n\nClean all studs of nails & paper\n\nSTUCCO REMOVAL TOTAL:  $13,845.00\n\nWINDOW REMOVAL\n\nCarefully remove all windows (within a week of a two man crew)\n\n(Every day passed a week will be $1360 for a two man crew)\n\nWINDOW REMOVAL TOTAL:  $8,945.00\n\nINTERIOR DEMOLITION\n\nCarefully remove all drywall (per jobwalk)\n\nClean all studs by cutting screws\n\nRemove 2 fireplace finishes\n\nINTERIOR DEMOLITION TOTAL:  $6,295.00",
+   "takeoff": []
+  },
+  {
+   "id": "2032 racquet",
+   "name": "2032 RACQUET HILL, SANTA ANA, CA 92705",
+   "customer": "THT Construction",
+   "date": "2026-08-12",
+   "sentTotal": 7645,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "DEMOLITION\n   Properly Demolish kitchen & wet bar down to studs \nRemove kitchen ceiling joists for new proposed ceiling heights\nProperly plastic off area of work for dust control and provide air scrubber to minimize dust",
+   "takeoff": []
+  },
+  {
+   "id": "208 towne",
+   "name": "208 TOWNE CENTER DR, COMPTON, CA 90220",
+   "customer": "RETAIL TRANSFORMATION SPECIALIST, INC.",
+   "date": "2026-10-05",
+   "sentTotal": 31754.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [
+    [
+     "DEMOLITION",
+     31754.0
+    ]
+   ],
+   "scopeText": "DEMOLITION\n\nRemove casework per plans (D10)\n\nRemove doors per plans (D10)\n\nRemove plumbing fixtures per plans (D10)\n\nRemove wall furring per plans (D10)\n\nRemove interior walls per plans (D10)\n\nRemove all finished flooring & scrape all adhesive per plans (D10)\n\nRemove all lights per plans (D10)\n\nRemove ceilings per plans (D10)\n\nRemove cart railing per plans (D10)\n\nDEMOLITION TOTAL:  $31,754.00",
+   "takeoff": []
+  },
+  {
+   "id": "21010 pch",
+   "name": "21010 PCH HWY, HUNTINGTON BEACH, CA",
+   "customer": "RT STEVENS CONSTRUCTION",
+   "date": "2026-08-19",
+   "sentTotal": 8695.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "DEMOLITION\n\nRemove all walls (Per Plan A20.01)\n\nDemolish all hardwood flooring throughout (Per Plan A20.01)",
+   "takeoff": [
+    {
+     "item": "remove walls",
+     "qty": 65.65,
+     "unit": "Ln Ft",
+     "count": 6,
+     "stackProject": "21010 PCH, Huntington Beach"
+    },
+    {
+     "item": "remove flooring",
+     "qty": 1174.27,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "21010 PCH, Huntington Beach"
+    },
+    {
+     "item": "remove lights",
+     "qty": 32.0,
+     "unit": "Ea",
+     "count": 32,
+     "stackProject": "21010 PCH, Huntington Beach"
+    }
+   ]
+  },
+  {
+   "id": "2158 glendale",
+   "name": "2158 Glendale Galleria, Glendale",
+   "customer": "JAC Construction",
+   "date": "2026-06-30",
+   "sentTotal": 17895,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": []
+  },
+  {
+   "id": "216 avenida",
+   "name": "216 W AVENIDA CORDOBA",
+   "customer": "GRANT MUARY CONSTRUCTION",
+   "date": "2026-09-11",
+   "sentTotal": 20467.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [
+    [
+     "INTERIOR",
+     17640.0
+    ]
+   ],
+   "scopeText": "INTERIOR\n\nCarefully remove all finished cabinetry & carpentry throughout\n\nRemove all existing doors & door frames (Per Plan AD1)\n\nCarefully demolish non-load walls (Per Plan AD1)\n\nRemove all (3) fireplace mantels surrounds & fireplace boxes\n\nProperly protect all areas in our scope\n\nEXTERIOR\n\nRemove all exterior windows for new proposed addition only\n\nProperly remove roofing materials cut back rafter tails & eaves back to the face of all the wall for new proposed addition only\n\nRemove deck & handrail in its entirety\n\nINTERIOR TOTAL:  $17,640.00\n\nALTERNATE #1 - SAWCUT/BREAK\n\nSawcut/Break/Haul off all concrete for new proposed addition\n\nDemolish concrete underneath the deck\n\nALTERNATE #1 - SAWCUT/BREAK TOTAL:  $2,827.50",
+   "takeoff": [
+    {
+     "item": "Remove Doors",
+     "qty": 8.0,
+     "unit": "Ea",
+     "count": 8,
+     "stackProject": "216 W Avenida Cordoba, San Clemente"
+    },
+    {
+     "item": "Door Frames",
+     "qty": 20.3,
+     "unit": "Ln Ft",
+     "count": 7,
+     "stackProject": "216 W Avenida Cordoba, San Clemente"
+    },
+    {
+     "item": "Existing Walls To Be Removed",
+     "qty": 111.64,
+     "unit": "Ln Ft",
+     "count": 17,
+     "stackProject": "216 W Avenida Cordoba, San Clemente"
+    },
+    {
+     "item": "Remove Fireplace",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "216 W Avenida Cordoba, San Clemente"
+    },
+    {
+     "item": "Remove All Existing Cabnetry",
+     "qty": 106.03,
+     "unit": "Sq Ft",
+     "count": 7,
+     "stackProject": "216 W Avenida Cordoba, San Clemente"
+    },
+    {
+     "item": "Remove All Windows & Frames",
+     "qty": 7.0,
+     "unit": "Ea",
+     "count": 7,
+     "stackProject": "216 W Avenida Cordoba, San Clemente"
+    },
+    {
+     "item": "Remove All Flooring",
+     "qty": 476.18,
+     "unit": "Sq Ft",
+     "count": 4,
+     "stackProject": "216 W Avenida Cordoba, San Clemente"
+    },
+    {
+     "item": "REMOVE DECK & GUARDRAIL",
+     "qty": 150.39,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "216 W Avenida Cordoba, San Clemente"
+    },
+    {
+     "item": "Remove Stairs",
+     "qty": 6.05,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "216 W Avenida Cordoba, San Clemente"
+    }
+   ]
+  },
+  {
+   "id": "2185 south",
+   "name": "2185 E South St, Long Beach",
+   "customer": "Tilton Builders",
+   "date": "2026-06-30",
+   "sentTotal": 17000,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": []
+  },
+  {
+   "id": "2200 harbor",
+   "name": "2200 HARBOR BLVD, COSTA MESA",
+   "customer": "TILTON BUILDERS",
+   "date": "2026-07-21",
+   "sentTotal": 242495.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "lost",
+   "stages": [
+    "Priced too low"
+   ],
+   "scopeTotals": [],
+   "scopeText": "INTERIOR\n   Remove all industrial racks on sales floor and walls (per plan D1.0) \nRemove all signage (per plan D1.0)\nDemolish all restrooms in their entirety (per plan D1.0)\nDemolish 565LF of metals stud walls (per plan D1.0) \nRemove all finished and rough MEPS (per plan D1.0, HD1.0, PD1.0) \nRemove roof ladder and hatch system\n\nEXTERIOR\nDemolish existing canopy, columns, & footings in their entirety (per plan D2.0)\nDemolish existing garden center concrete walls, slab, & footings in their entirety (per plan D2.0)\nRemove garden center fence (per plan D2.0)\nRemove all signage (per plan D2.0)\nRemove all stucco, lath, paper on front of building (per plan D2.0)\nDemolish all vegetation & planters (per plan D2.0)\nDemolish 2,500 sqft of sidewalk (per plan D1.0)\nRemove storefront, glazing, & all doors (per plan D2.0)\nSawcut 7 opening for new man doors (per plan D2.0)\nRemove 5 rtu units in their entirety (per plan D1.1)\nCut 11 openings in roof for new proposed rtu units (per plan D1.1)\nRemove 3,500 sqft of roofing membrane & rigid insulation to accommodate for new entry \n(per plan D1.1)\nRemove compactor door (per plan D2.0)\nRemove exterior lights (per plan D2.0)\n\nALTERNATE #1\nProperly sawcut/break/haul for all new proposed plumbing lines\nTOTAL: $41,254",
+   "takeoff": [
+    {
+     "item": "flooring to be removed",
+     "qty": 90187.57,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Protect columns",
+     "qty": 5.0,
+     "unit": "Ea",
+     "count": 5,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "note check off",
+     "qty": 32.0,
+     "unit": "Ea",
+     "count": 32,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove glazed storefront doors",
+     "qty": 105.45,
+     "unit": "Ln Ft",
+     "count": 3,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove entry awning",
+     "qty": 29.12,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Cut opening in exterior walls",
+     "qty": 26.96,
+     "unit": "Ln Ft",
+     "count": 7,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove ladder system",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove metal doors",
+     "qty": 7.0,
+     "unit": "Ea",
+     "count": 7,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove tenants floor stripping",
+     "qty": 17.67,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove garden center",
+     "qty": 3504.87,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove sidewalk for new ext wall",
+     "qty": 69.67,
+     "unit": "Ln Ft",
+     "count": 2,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove sidewalk",
+     "qty": 2554.73,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove existing columns s",
+     "qty": 8.0,
+     "unit": "Ea",
+     "count": 8,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove garden center fence",
+     "qty": 261.45,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove vegetation planters",
+     "qty": 620.35,
+     "unit": "Sq Ft",
+     "count": 3,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove interior walls",
+     "qty": 564.77,
+     "unit": "Ln Ft",
+     "count": 13,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove bathroom",
+     "qty": 744.72,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove roof in its entirety",
+     "qty": 2762.24,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove roofing membrain",
+     "qty": 3429.3,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove entrance tower and roofing system",
+     "qty": 824.62,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove coping cap",
+     "qty": 273.1,
+     "unit": "Ln Ft",
+     "count": 2,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove rtu unit",
+     "qty": 5.0,
+     "unit": "Ea",
+     "count": 5,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "cut roof openings",
+     "qty": 11.0,
+     "unit": "Ea",
+     "count": 11,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "cut roofing openings area",
+     "qty": 914.92,
+     "unit": "Sq Ft",
+     "count": 11,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove exhaust fan",
+     "qty": 3.0,
+     "unit": "Ea",
+     "count": 3,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove roof hatch",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove canopies",
+     "qty": 1807.51,
+     "unit": "Sq Ft",
+     "count": 2,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "garden center roof",
+     "qty": 3410.55,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove tenants at home sign",
+     "qty": 31.73,
+     "unit": "Ln Ft",
+     "count": 2,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove stucco",
+     "qty": 8809.92,
+     "unit": "Sq Ft",
+     "count": 5,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "columns measurement",
+     "qty": 11.89,
+     "unit": "Ln Ft",
+     "count": 2,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "sawcut exterior walls area for sqft of concrete",
+     "qty": 171.35,
+     "unit": "Sq Ft",
+     "count": 7,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "LF for exterior concrete walls",
+     "qty": 148.27,
+     "unit": "Ln Ft",
+     "count": 8,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "garden center measurements",
+     "qty": 166.91,
+     "unit": "Ln Ft",
+     "count": 3,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove compactor door",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove duct work",
+     "qty": 210.68,
+     "unit": "Ln Ft",
+     "count": 4,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "remove units",
+     "qty": 6.0,
+     "unit": "Ea",
+     "count": 6,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove exterior light s",
+     "qty": 22.0,
+     "unit": "Ea",
+     "count": 22,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Sawcut for plumbing",
+     "qty": 808.11,
+     "unit": "Ln Ft",
+     "count": 12,
+     "stackProject": "Dicks Costa Mesa"
+    },
+    {
+     "item": "Remove slab for plumbing",
+     "qty": 3654.0,
+     "unit": "Sq Ft",
+     "count": 2,
+     "stackProject": "Dicks Costa Mesa"
+    }
+   ]
+  },
+  {
+   "id": "2211 vista",
+   "name": "2211 E VISTA ROYAL DR, ORANGE",
+   "customer": "Pyramid Construction",
+   "date": "2026-07-21",
+   "sentTotal": 8000,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "REMOVED TILE FLOORING AND CARPET PER OUR SCOPE-",
+   "takeoff": []
+  },
+  {
+   "id": "23441 via",
+   "name": "23441 Via Alondra C/O Erosion Control",
+   "customer": "SC Homes",
+   "date": "2026-07-21",
+   "sentTotal": 6999,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "erosion control laying out 760 gravel bags and a 10'x29' construction entrance of 3-5\" rock \nproposal total $6,999-Dumpster",
+   "takeoff": [],
+   "takeoffNote": "STACK takeoff 'SC HOMES VIA ALONDRA 23441' belongs to the main bid at this address; this record is a smaller/related bid"
+  },
+  {
+   "id": "23465 civic",
+   "name": "23465 Civic Center Way Malibu, CA 90265",
+   "customer": "JAC Carpentry",
+   "date": "2026-08-12",
+   "sentTotal": 3454,
+   "priceSource": "Dropbox (Jesse)",
+   "priceStatus": "confirmed",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "Properly Remove 8ft x 16ft wood framed wall (per plans)",
+   "takeoff": []
+  },
+  {
+   "id": "2352 fordam",
+   "name": "2352 Fordam Drive ",
+   "customer": "Ray Lewis",
+   "date": "2026-08-18",
+   "sentTotal": 45190,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": []
+  },
+  {
+   "id": "2360 long",
+   "name": "2360 LONG BEACH BLVD",
+   "customer": "AYDEN STONE",
+   "date": "2026-09-11",
+   "sentTotal": 33110,
+   "priceSource": "GHL (Jesse)",
+   "priceStatus": "confirmed",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "Interior Demolition\n\nRemove doors and walls per plans\n\nRemove cabinetry per plans",
+   "takeoff": [
+    {
+     "item": "remove doors",
+     "qty": 30.0,
+     "unit": "Ea",
+     "count": 30,
+     "stackProject": "2360 Long Beach Blvd Long Beach"
+    },
+    {
+     "item": "demo walls",
+     "qty": 510.77,
+     "unit": "Ln Ft",
+     "count": 49,
+     "stackProject": "2360 Long Beach Blvd Long Beach"
+    },
+    {
+     "item": "demo cabinetry and fixtures",
+     "qty": 188.34,
+     "unit": "Sq Ft",
+     "count": 11,
+     "stackProject": "2360 Long Beach Blvd Long Beach"
+    }
+   ]
+  },
+  {
+   "id": "24708 5th highland",
+   "name": "24708 5th Highland",
+   "customer": "Viraj Patel Harikrishna Gas Llc",
+   "date": "2026-07-06",
+   "sentTotal": 101695,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "lost",
+   "stages": [
+    "Proposal Declined -Hot"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": [
+    {
+     "item": "Pad SqFt",
+     "qty": 4558.02,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "24708 5th st Highland, CA Due 5/16/25"
+    },
+    {
+     "item": "gas station canopies",
+     "qty": 8406.29,
+     "unit": "Sq Ft",
+     "count": 3,
+     "stackProject": "24708 5th st Highland, CA Due 5/16/25"
+    },
+    {
+     "item": "New Pad",
+     "qty": 4611.58,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "24708 5th st Highland, CA Due 5/16/25"
+    },
+    {
+     "item": "site sqft",
+     "qty": 55455.98,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "24708 5th st Highland, CA Due 5/16/25"
+    },
+    {
+     "item": "gravel bags",
+     "qty": 273.1,
+     "unit": "Ln Ft",
+     "count": 24,
+     "stackProject": "24708 5th st Highland, CA Due 5/16/25"
+    },
+    {
+     "item": "Shoring linear footage",
+     "qty": 278.71,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "24708 5th st Highland, CA Due 5/16/25"
+    }
+   ]
+  },
+  {
+   "id": "24762 anchor",
+   "name": "24762 Anchor Lantern, Dana Point",
+   "customer": "Todd Custom Homes",
+   "date": "2026-07-06",
+   "sentTotal": 9717,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Accepted",
+    "In Negotiation"
+   ],
+   "scopeTotals": [],
+   "scopeText": "ALTERNATE #1\nRemove backyard slider door, exterior stucco wall and deconstruct chiminey by hand for new\nproposed slider doors-",
+   "takeoff": []
+  },
+  {
+   "id": "25533 marguerite",
+   "name": "25533 MARGUERITE PKWY MISSION VIEJO",
+   "customer": "GM NORTHRUP CONSTRUCTION",
+   "date": "2026-09-24",
+   "sentTotal": 89454.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [
+    [
+     "INTERIOR",
+     35737.0
+    ],
+    [
+     "EXTERIOR",
+     53917.0
+    ]
+   ],
+   "scopeText": "INTERIOR\n\nProperly remove VCT flooring or carpet per plans (D1.0)\n\nProperly remove partition walls per plans (D1.0)\n\nProperly remove ACT and ceiling grid per plans (D1.1)\n\nProperly remove doors per plans (D1.0)\n\nProperly remove plumbing fixtures per plans (D1.0)\n\nProperly remove light fixtures per plans (D1.1)\n\nProperly remove branch duct per plans (M1.0)\n\nINTERIOR TOTAL:  $35,737.00\n\nEXTERIOR\n\nProperly remove tiles per plans (A3.0)\n\nProperly remove exterior wall per plans (D1.0)\n\nProperly remove glazing per plans (D1.0/A3.0)\n\nProperly remove sliding doors per plans (D1.0)\n\nProperly remove drive-thru window per plans (D1.0)\n\nProperly remove exterior light per plans (A3.1)\n\nProperly remove drive-thru canopy per plans (D1.1)\n\nProperly remove bollards per plans (D1.0)\n\nProperly remove drive-thru lane per plans (D1.0)\n\nEXTERIOR TOTAL:  $53,917.00",
+   "takeoff": [
+    {
+     "item": "remove glazing d1.0",
+     "qty": 15.56,
+     "unit": "Ln Ft",
+     "count": 3,
+     "stackProject": "Oreillys Mission Viejo"
+    },
+    {
+     "item": "remove sliding doors d1.0",
+     "qty": 2.0,
+     "unit": "Ea",
+     "count": 2,
+     "stackProject": "Oreillys Mission Viejo"
+    },
+    {
+     "item": "remove exterior wall d1.0",
+     "qty": 3.21,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "Oreillys Mission Viejo"
+    },
+    {
+     "item": "remove vct flooring or carpet d1.0",
+     "qty": 6996.66,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "Oreillys Mission Viejo"
+    },
+    {
+     "item": "remove partition walls d1.0",
+     "qty": 179.77,
+     "unit": "Ln Ft",
+     "count": 15,
+     "stackProject": "Oreillys Mission Viejo"
+    },
+    {
+     "item": "remove doors d1.0",
+     "qty": 3.0,
+     "unit": "Ea",
+     "count": 3,
+     "stackProject": "Oreillys Mission Viejo"
+    },
+    {
+     "item": "remove plumbing fixtures d1.0",
+     "qty": 8.0,
+     "unit": "Ea",
+     "count": 8,
+     "stackProject": "Oreillys Mission Viejo"
+    },
+    {
+     "item": "remove drivethru window d1.0",
+     "qty": 4.88,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "Oreillys Mission Viejo"
+    },
+    {
+     "item": "remove drivethru lane d1.0",
+     "qty": 99.15,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "Oreillys Mission Viejo"
+    },
+    {
+     "item": "remove bollards d1.0",
+     "qty": 7.0,
+     "unit": "Ea",
+     "count": 7,
+     "stackProject": "Oreillys Mission Viejo"
+    },
+    {
+     "item": "remove light fixtures d1.1",
+     "qty": 198.0,
+     "unit": "Ea",
+     "count": 198,
+     "stackProject": "Oreillys Mission Viejo"
+    },
+    {
+     "item": "remove ACT and ceiling grid d1.1",
+     "qty": 5215.96,
+     "unit": "Sq Ft",
+     "count": 2,
+     "stackProject": "Oreillys Mission Viejo"
+    },
+    {
+     "item": "remove drivethru canopy d1.1",
+     "qty": 458.27,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "Oreillys Mission Viejo"
+    },
+    {
+     "item": "remove glazing a3.0",
+     "qty": 191.36,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "Oreillys Mission Viejo"
+    },
+    {
+     "item": "remove tiles a3.0",
+     "qty": 739.47,
+     "unit": "Sq Ft",
+     "count": 2,
+     "stackProject": "Oreillys Mission Viejo"
+    },
+    {
+     "item": "remove drivethru window a3.1",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "Oreillys Mission Viejo"
+    },
+    {
+     "item": "remove exterior light a3.1",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "Oreillys Mission Viejo"
+    },
+    {
+     "item": "remove branch duct m1.0",
+     "qty": 8.0,
+     "unit": "Ea",
+     "count": 8,
+     "stackProject": "Oreillys Mission Viejo"
+    }
+   ]
+  },
+  {
+   "id": "25686 rolling",
+   "name": "25686 Rolling Hills Rd, laguna Hills",
+   "customer": "Grant Muary Construction",
+   "date": "2026-07-01",
+   "sentTotal": 9245,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "lost",
+   "stages": [
+    "Proposal Declined -Hot"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": []
+  },
+  {
+   "id": "26 blue",
+   "name": "26 Blue Heron ",
+   "customer": "Grace Built ",
+   "date": "2026-08-18",
+   "sentTotal": 26477,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "lost",
+   "stages": [
+    "Proposal Declined -Warm"
+   ],
+   "scopeTotals": [],
+   "scopeText": "Interior & Exterior Demolition \n\nINTERIOR\nDemolish all gypsum board and walls per plan only for new proposed second story addition. \n\nEXTERIOR\nCarefully deconstruct roof structure per plans only for new proposed second story addition. \n\nRemove windows and door per plans. \n26477",
+   "takeoff": []
+  },
+  {
+   "id": "267 e",
+   "name": "267 E 16TH ST, COSTA MESA, CA 92627",
+   "customer": "RIDEGEWAY DEVOLPMENT",
+   "date": "2026-10-08",
+   "sentTotal": 48964.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Generate Proposal"
+   ],
+   "scopeTotals": [],
+   "scopeText": "DEMOLITION\n\nFull demolition of a residential structure of 2000 square feet & foundation in its entirety (Per Plan D1)\n\nRemove all Hardscape & Softscape (Per Plan D1)\n\nSITEWORK | GRADING\n\nPerform",
+   "takeoff": [
+    {
+     "item": "House & foundation",
+     "qty": 2000.28,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "267 E. 16TH STREET, COSTA MESA"
+    },
+    {
+     "item": "Hardscape",
+     "qty": 2269.11,
+     "unit": "Sq Ft",
+     "count": 3,
+     "stackProject": "267 E. 16TH STREET, COSTA MESA"
+    },
+    {
+     "item": "Construction Entrance",
+     "qty": 274.57,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "267 E. 16TH STREET, COSTA MESA"
+    },
+    {
+     "item": "Block wall",
+     "qty": 290.93,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "267 E. 16TH STREET, COSTA MESA"
+    },
+    {
+     "item": "Sand bags",
+     "qty": 80.75,
+     "unit": "Ln Ft",
+     "count": 2,
+     "stackProject": "267 E. 16TH STREET, COSTA MESA"
+    }
+   ]
+  },
+  {
+   "id": "26891 soria",
+   "name": "26891 SORIA CIR, IRVINE, CA 92691",
+   "customer": "HUNTER CONSTRUCTION",
+   "date": "2026-08-10",
+   "sentTotal": 4000.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "won",
+   "stages": [
+    "Job Completed",
+    "CO Sent",
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "DEMOLITION\n\nProperly demolish shake roof down to board sheathing",
+   "takeoff": [
+    {
+     "item": "sawcut pads",
+     "qty": 194.31,
+     "unit": "Sq Ft",
+     "count": 16,
+     "stackProject": "26891 Soria Cir Mission Viejo"
+    }
+   ]
+  },
+  {
+   "id": "27 waves",
+   "name": "27 Waves End, Newport Beach",
+   "customer": "Grace Built",
+   "date": "2026-09-04",
+   "sentTotal": 65000,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Accepted",
+    "Job Completed",
+    "Cancelled",
+    "Cancelled"
+   ],
+   "scopeTotals": [],
+   "scopeText": "Continued grading around the property per our scope of work.-",
+   "takeoff": [
+    {
+     "item": "Rooms",
+     "qty": 15945.76,
+     "unit": "Sq Ft",
+     "count": 18,
+     "stackProject": "27 Waves End, Crystal Cove"
+    },
+    {
+     "item": "Interior Wall",
+     "qty": 1517.8,
+     "unit": "Ln Ft",
+     "count": 65,
+     "stackProject": "27 Waves End, Crystal Cove"
+    },
+    {
+     "item": "Exterior Wall",
+     "qty": 399.7,
+     "unit": "Ln Ft",
+     "count": 20,
+     "stackProject": "27 Waves End, Crystal Cove"
+    },
+    {
+     "item": "Double Swing Door",
+     "qty": 3.0,
+     "unit": "Ea",
+     "count": 3,
+     "stackProject": "27 Waves End, Crystal Cove"
+    },
+    {
+     "item": "Single Swing Door",
+     "qty": 2.0,
+     "unit": "Ea",
+     "count": 2,
+     "stackProject": "27 Waves End, Crystal Cove"
+    }
+   ]
+  },
+  {
+   "id": "2740 pt",
+   "name": "2740 PT DEL MAR, CORONA DEL MAR",
+   "customer": "RDM GENERAL CONTRACTING",
+   "date": "2026-09-22",
+   "sentTotal": 4295,
+   "priceSource": "Dropbox (Jesse)",
+   "priceStatus": "confirmed",
+   "outcome": "won",
+   "stages": [
+    "Job Completed"
+   ],
+   "scopeTotals": [
+    [
+     "DEMOLITION",
+     4295.0
+    ]
+   ],
+   "scopeText": "DEMOLITION\n\nDemolish primary shower in its entirety down to studs & subfloor\n\nCarefully remove vanities in all (3) bathrooms\n\nRemove all tile flooring down to the subfloor in primary & hallway bathroom\n\nCarefully remove closet doors per walk\n\nA2Z will provide all necessary protection to protect all finishes with plastic, zippers, & to minimize dust we will supply (2) air scrubbers in the areas of construction.\n\nDEMOLITION TOTAL:  $4,295.00",
+   "takeoff": []
+  },
+  {
+   "id": "2741 ocean",
+   "name": "2741 OCEAN BLVD, CORONA DEL MAR, CA 92625",
+   "customer": "DUGALLY OBERGELD",
+   "date": "2026-09-03",
+   "sentTotal": 6745.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "won",
+   "stages": [
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "EROSION CONTROL\n\nPurchase, deliver, & install 900 gravel bags, 4ftx100ft of filter fabric, & 170LF of straw waddle",
+   "takeoff": []
+  },
+  {
+   "id": "3080 airway",
+   "name": "3080 AIRWAY AVE, COSTA MESA",
+   "customer": "DOUG ZALAR HOMES",
+   "date": "2026-10-13",
+   "sentTotal": 5645,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "INTERIOR\n\nRemove air vent (Per Walk)\n\nRemove all drywall for new proposed addition (Per Walk)\n\nRemove all hand railings (Per Walk)\n\nSawcut & break out concrete (Per walk)",
+   "takeoff": []
+  },
+  {
+   "id": "31722 florence",
+   "name": "31722 FLORENCE AVE, LAGUNA BEACH, CA 92651",
+   "customer": "TAMAR BALIAN",
+   "date": "2026-08-20",
+   "sentTotal": 14989,
+   "priceSource": "Dropbox (Jesse)",
+   "priceStatus": "confirmed",
+   "outcome": "lost",
+   "stages": [
+    "Proposal Declined -Warm"
+   ],
+   "scopeTotals": [],
+   "scopeText": "INTERIOR\n\nRemove kitchen appliances (save vent)\n\nDemolish kitchen down to studs and remove kitchen/dining room wall\n\nDemolish bathroom on top floor down to studs (leaving ceiling)\n\nRemove approx 4 ft of drywall to adjacent room\n\nRemove all flooring down to subfloor throughout top floor\n\nEXTERIOR\n\nRemove siding on street side of house, keeping stucco behind siding in place (pad and protect deck)\n\nRemove 3 windows and slider, including 8 inches of stucco around windows and slider, from kitchen to dining room (All windows to be left in place ready to be removed)\n\nRemove stucco, windows, and drywall facing the street on lower level (leaving 6 inches of stucco below the second story deck for new waterproofing)\n\nRemove door on west side (to be framed in) (all openings to be covered up)\n\nCut and remove floor tiles at grout line, where concrete to be demolished for new proposed plumbing\n\nTrench from 18 in down to 3 ft to locate clean out and dig 5 ft x 5 ft x 3 ft for tie in\n\nProperly backfill and compact after drains are installed\n\nSAWCUT/BREAK/HAUL\n\n25 feet x 24 in x 4 in for new proposed plumbing",
+   "takeoff": []
+  },
+  {
+   "id": "31792 via",
+   "name": "31792 Via Perdiz, Coto de Caza",
+   "customer": "Todd Custom Homes",
+   "date": "2026-07-21",
+   "sentTotal": 12795,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": []
+  },
+  {
+   "id": "31882 via",
+   "name": "31882 VIA OSO, COTO DE CAZA",
+   "customer": "TODD CUSTOM HOMES",
+   "date": "2026-08-27",
+   "sentTotal": 27604,
+   "priceSource": "GHL (Jesse)",
+   "priceStatus": "confirmed",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [
+    [
+     "DEMOLITION",
+     21454.0
+    ],
+    [
+     "SAWCUT/BREAK/HAUL",
+     8250.0
+    ]
+   ],
+   "scopeText": "DEMOLITION\n\nRemove all roofing material down to sheeting\n\nRemove all siding, windows, doors, and framing for new proposed additions and opening\n\nRemove railing on balcony above front door\n\nRemove necessary pavers for new proposed deck\n\nDEMOLITION TOTAL:  $21,454.00\n\nSAWCUT/BREAK/HAUL\n\nProperly remove 4-inch concrete in garage for new proposed junior ADU\n\nSAWCUT/BREAK/HAUL TOTAL:  $8,250.00",
+   "takeoff": []
+  },
+  {
+   "id": "32891 calle",
+   "name": "32891 Calle Perfecto, San Juan Capistrano",
+   "customer": "MWC Constructors",
+   "date": "2026-06-22",
+   "sentTotal": 32495,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "test SOW",
+   "takeoff": []
+  },
+  {
+   "id": "3310 macarthur",
+   "name": "3310 W MacArthur Blvd",
+   "customer": "Lacy Construction",
+   "date": "2026-07-06",
+   "sentTotal": 13890,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "In Negotiation",
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "-",
+   "takeoff": []
+  },
+  {
+   "id": "334 beverly",
+   "name": "334 N BEVERLY HILLS DRIVE",
+   "customer": "JUSTIN VROOMAN",
+   "date": "2026-09-10",
+   "sentTotal": 23845.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "INTERIOR\n\nRemove GWB, ACT ceilings, soffits, & connections to structure above per plans.\n\nRemove finished lighting, hvac registers, ductwork, & electrical conduits per plans.\n\nRemove abandoned electrical wiring, & conduit per plans.\n\nRemove existing flooring and scrape adhesive per plans.\n\nRemove partition walls per plans.\n\nEXTERIOR\n\nRemove signage per plans.\n\nRemove storefront glazing & plaster in its entirety per plans.\n\nCarefully remove decorative coping & parapet cap per plans.",
+   "takeoff": [
+    {
+     "item": "remove parapet cap",
+     "qty": 4.6,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "334 N Beverly Hills Drive"
+    },
+    {
+     "item": "remove decorative coping",
+     "qty": 14.56,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "334 N Beverly Hills Drive"
+    },
+    {
+     "item": "remove signage",
+     "qty": 13.45,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "334 N Beverly Hills Drive"
+    },
+    {
+     "item": "remove floor and adhesive",
+     "qty": 202.96,
+     "unit": "Sq Ft",
+     "count": 3,
+     "stackProject": "334 N Beverly Hills Drive"
+    },
+    {
+     "item": "remove storefront",
+     "qty": 931.12,
+     "unit": "Sq Ft",
+     "count": 3,
+     "stackProject": "334 N Beverly Hills Drive"
+    },
+    {
+     "item": "remove partition walls",
+     "qty": 34.19,
+     "unit": "Ln Ft",
+     "count": 2,
+     "stackProject": "334 N Beverly Hills Drive"
+    },
+    {
+     "item": "remove decorative coping",
+     "qty": 36.8,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "334 N Beverly Hills Drive"
+    },
+    {
+     "item": "remove signage",
+     "qty": 2.0,
+     "unit": "Ea",
+     "count": 2,
+     "stackProject": "334 N Beverly Hills Drive"
+    },
+    {
+     "item": "remove life safety and exit signage",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "334 N Beverly Hills Drive"
+    },
+    {
+     "item": "remove GWB or ACT ceilings",
+     "qty": 330.83,
+     "unit": "Sq Ft",
+     "count": 2,
+     "stackProject": "334 N Beverly Hills Drive"
+    }
+   ]
+  },
+  {
+   "id": "33611 camino",
+   "name": "33611 Camino Capistrano, San Juan Capistrano",
+   "customer": "SLS Construction, Inc.",
+   "date": "2026-07-28",
+   "sentTotal": 5989.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "DEMOLITION\nCarefully deconstruct five (5) walls at the existing office and cubicle areas, approximately 10' long x 10' high each.\n\nRemove existing glue-down carpet at the side entrance and scrape the substrate clean of remaining carpet adhesive and residue.\n\nProvide all necessary protection for adjacent areas, finishes, and surfaces affected by A2Z's scope of work.",
+   "takeoff": []
+  },
+  {
+   "id": "33633 san",
+   "name": "33633 San Juan Capistrano",
+   "customer": "SLS Construction, Inc.",
+   "date": "2026-08-05",
+   "sentTotal": 7295,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "Interior demo per our scope of work-",
+   "takeoff": []
+  },
+  {
+   "id": "380 main",
+   "name": "380 S MAIN ST, ORANGE, CA 92868 UNITED STATES",
+   "customer": "PYRAMID CONSTRUCTION",
+   "date": "2026-08-26",
+   "sentTotal": 6930.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Generate Proposal"
+   ],
+   "scopeTotals": [
+    [
+     "DEMOLITION",
+     4265.0
+    ]
+   ],
+   "scopeText": "DEMOLITION\n\nProperly protect all flooring throughout\n\nCarefully remove 857 sqft of T-Bar, light fixtures & any abandoned duct work at the main room & hallway (Per walk)\n\nDEMOLITION TOTAL:  $4,265.00\n\nALTERNATE #1\n\nCarefully remove 763 sqft of T-Bar, light fixtures & any abandoned duct work at the kitchen area (Per walk)\n\nALTERNATE #1 TOTAL:  $2,665.00",
+   "takeoff": []
+  },
+  {
+   "id": "385 colorado",
+   "name": "385 E COLORADO BLVD STE 110",
+   "customer": "BRADY CONSTRUCTION",
+   "date": "2026-06-22",
+   "sentTotal": 21454,
+   "priceSource": "GHL (Jesse)",
+   "priceStatus": "confirmed",
+   "outcome": "won",
+   "stages": [
+    "Job Completed",
+    "Job Completed"
+   ],
+   "scopeTotals": [
+    [
+     "DEMOLITION",
+     18150.0
+    ]
+   ],
+   "scopeText": "DEMOLITION\n\nProperly demolish all walls (per plans)\n\nProperly remove acoustic ceiling, lighting & venting (per plans)\n\nDEMOLITION TOTAL:  $18,150.00",
+   "takeoff": [
+    {
+     "item": "demolish office",
+     "qty": 672.21,
+     "unit": "Sq Ft",
+     "count": 2,
+     "stackProject": "385 E Colorado Blvd Ste 110"
+    },
+    {
+     "item": "remove walls",
+     "qty": 231.74,
+     "unit": "Ln Ft",
+     "count": 14,
+     "stackProject": "385 E Colorado Blvd Ste 110"
+    },
+    {
+     "item": "remove acoustic ceiling, lighting, and venting",
+     "qty": 1321.7,
+     "unit": "Sq Ft",
+     "count": 2,
+     "stackProject": "385 E Colorado Blvd Ste 110"
+    },
+    {
+     "item": "sqft",
+     "qty": 7399.34,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "385 E Colorado Blvd Ste 110"
+    }
+   ]
+  },
+  {
+   "id": "4 merrimac",
+   "name": "4 MERRIMAC, IRVINE, CA 92620",
+   "customer": "EASTON DESIGN",
+   "date": "2026-08-18",
+   "sentTotal": 14545,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "DEMOLITION\n   Remove doors, walls, windows, and portion of roof per plans",
+   "takeoff": [
+    {
+     "item": "demo roof",
+     "qty": 78.43,
+     "unit": "Sq Ft",
+     "count": 2,
+     "stackProject": "4 Merrimac, Irvine"
+    },
+    {
+     "item": "remove windows",
+     "qty": 9.0,
+     "unit": "Ea",
+     "count": 9,
+     "stackProject": "4 Merrimac, Irvine"
+    },
+    {
+     "item": "remove walls",
+     "qty": 138.13,
+     "unit": "Ln Ft",
+     "count": 15,
+     "stackProject": "4 Merrimac, Irvine"
+    },
+    {
+     "item": "remove doors",
+     "qty": 2.0,
+     "unit": "Ea",
+     "count": 2,
+     "stackProject": "4 Merrimac, Irvine"
+    },
+    {
+     "item": "Patio cover",
+     "qty": 151.53,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "4 Merrimac, Irvine"
+    }
+   ]
+  },
+  {
+   "id": "411 truman",
+   "name": "411 Truman Ave",
+   "customer": "P B Contracting",
+   "date": "2026-06-19",
+   "sentTotal": 1709.4,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "lost",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": []
+  },
+  {
+   "id": "416 south",
+   "name": "416 SOUTH ATLANTIC BLVD, MONTEREY PARK",
+   "customer": "KEVIN SIEBALD",
+   "date": "2026-08-19",
+   "sentTotal": 178692.0,
+   "priceSource": "Dropbox only",
+   "priceStatus": "single-source",
+   "outcome": "unknown",
+   "stages": [],
+   "scopeTotals": [
+    [
+     "DEMOLITION",
+     154239.0
+    ]
+   ],
+   "scopeText": "DEMOLITION\n\nRemove all finished cabinetry and carpentry per plans (AD2.0).\n\nRemove plumbing fixtures per plans (AD2.0).\n\nRemove doors per plans (AD2.1).\n\nRemove walls and partitions per plans (AD2.0-AD2.1).\n\nRemove finished flooring\n\nRemove air return grilles and diffusers per plans (AD2.0-AD2.2).\n\nRemove T-bar & gypsum board ceiling per plans (AD2.2).\n\nRemove recessed lights per plans (AD2.3).\n\nRemove glazing per plans (AD2.1).\n\nRemove exterior signs per plans (AD2.4).\n\nDEMOLITION TOTAL:  $154,239.00\n\nALTERNATE #1\n\nSawcut/break/haul 8in concrete per plans (P2.0)(E2.0).\n\nALTERNATE #1 TOTAL:  $24,454.00",
+   "takeoff": [
+    {
+     "item": "demo walls and partitions",
+     "qty": 1041.97,
+     "unit": "Ln Ft",
+     "count": 54,
+     "stackProject": "416 S. Atlantic Blvd, Monterey Park"
+    },
+    {
+     "item": "demo glazing",
+     "qty": 149.22,
+     "unit": "Ln Ft",
+     "count": 10,
+     "stackProject": "416 S. Atlantic Blvd, Monterey Park"
+    },
+    {
+     "item": "demo plumbing fixture",
+     "qty": 50.0,
+     "unit": "Ea",
+     "count": 50,
+     "stackProject": "416 S. Atlantic Blvd, Monterey Park"
+    },
+    {
+     "item": "remove doors",
+     "qty": 17.0,
+     "unit": "Ea",
+     "count": 17,
+     "stackProject": "416 S. Atlantic Blvd, Monterey Park"
+    },
+    {
+     "item": "demo millwork",
+     "qty": 244.84,
+     "unit": "Sq Ft",
+     "count": 8,
+     "stackProject": "416 S. Atlantic Blvd, Monterey Park"
+    },
+    {
+     "item": "remove benches",
+     "qty": 6.0,
+     "unit": "Ea",
+     "count": 6,
+     "stackProject": "416 S. Atlantic Blvd, Monterey Park"
+    },
+    {
+     "item": "remove drinking fountain",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "416 S. Atlantic Blvd, Monterey Park"
+    },
+    {
+     "item": "remove diffusers",
+     "qty": 67.0,
+     "unit": "Ea",
+     "count": 67,
+     "stackProject": "416 S. Atlantic Blvd, Monterey Park"
+    },
+    {
+     "item": "remove air return grill",
+     "qty": 29.0,
+     "unit": "Ea",
+     "count": 29,
+     "stackProject": "416 S. Atlantic Blvd, Monterey Park"
+    },
+    {
+     "item": "remove t bar ceiling",
+     "qty": 17047.2,
+     "unit": "Sq Ft",
+     "count": 5,
+     "stackProject": "416 S. Atlantic Blvd, Monterey Park"
+    },
+    {
+     "item": "remove gypsum board ceiling",
+     "qty": 1103.49,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "416 S. Atlantic Blvd, Monterey Park"
+    },
+    {
+     "item": "remove tile ceiling",
+     "qty": 25955.36,
+     "unit": "Sq Ft",
+     "count": 4,
+     "stackProject": "416 S. Atlantic Blvd, Monterey Park"
+    },
+    {
+     "item": "remove recessed lights",
+     "qty": 139.0,
+     "unit": "Ea",
+     "count": 139,
+     "stackProject": "416 S. Atlantic Blvd, Monterey Park"
+    },
+    {
+     "item": "remove exterior signs",
+     "qty": 2.0,
+     "unit": "Ea",
+     "count": 2,
+     "stackProject": "416 S. Atlantic Blvd, Monterey Park"
+    },
+    {
+     "item": "sawcut for plumbing",
+     "qty": 127.67,
+     "unit": "Ln Ft",
+     "count": 4,
+     "stackProject": "416 S. Atlantic Blvd, Monterey Park"
+    },
+    {
+     "item": "sawcut",
+     "qty": 604.86,
+     "unit": "Ln Ft",
+     "count": 4,
+     "stackProject": "416 S. Atlantic Blvd, Monterey Park"
+    },
+    {
+     "item": "concrete removal",
+     "qty": 4955.95,
+     "unit": "Sq Ft",
+     "count": 2,
+     "stackProject": "416 S. Atlantic Blvd, Monterey Park"
+    }
+   ]
+  },
+  {
+   "id": "416 atlantic",
+   "name": "416 South Atlantic Blvd, Monterey Park",
+   "customer": "Kevin Siebald",
+   "date": "2026-08-20",
+   "sentTotal": 178692,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "lost",
+   "stages": [
+    "Cancelled"
+   ],
+   "scopeTotals": [],
+   "scopeText": "DEMOLITION\nRemove all finished cabinetry and carpentry per plans (AD2.0).\nRemove plumbing fixtures per plans (AD2.0).\nRemove doors per plans (AD2.1).\nRemove walls and partitions per plans (AD2.0-AD2.1).\nRemove finished flooring \nRemove air return grilles and diffusers per plans (AD2.0-AD2.2).\nRemove T-bar & gypsum board ceiling per plans (AD2.2).\nRemove recessed lights per plans (AD2.3).\nRemove glazing per plans (AD2.1).\nRemove exterior signs per plans (AD2.4).\n154239\nALTERNATE #1\nSawcut/break/haul 8in concrete per plans (P2.0)(E2.0).\n24454",
+   "takeoff": [],
+   "takeoffNote": "STACK takeoff '416 S. Atlantic Blvd, Monterey Park' belongs to the main bid at this address; this record is a smaller/related bid"
+  },
+  {
+   "id": "421 marguerite",
+   "name": "421 Marguerite, Corona Del Mar",
+   "customer": "Templeton Custom Homes",
+   "date": "2026-06-10",
+   "sentTotal": 10000,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "lost",
+   "stages": [
+    "Pending Decision"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": [
+    {
+     "item": "3ft over-ex",
+     "qty": 1327.47,
+     "unit": "Sq Ft",
+     "count": 2,
+     "stackProject": "421 Marguerite, Corona Del Mar"
+    }
+   ]
+  },
+  {
+   "id": "427 cabrillo",
+   "name": "427 CABRILLO ST, COSTA MESA, CA 92627",
+   "customer": "INTERIOR HABITAT",
+   "date": "2026-10-14",
+   "sentTotal": 18695.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [
+    [
+     "GRADING",
+     18695.0
+    ]
+   ],
+   "scopeText": "GRADING\n\nProperly perform a 3ft over ex & recompact in 12\" lifts for new 1137 sqft addition in the back\n\nProperly perform a 10\" scarify & recompact for new 543 sqft addition in the front\n\nGRADING TOTAL:  $18,695.00",
+   "takeoff": []
+  },
+  {
+   "id": "4521 orrington",
+   "name": "4521 Orrington Rd, Corona Del Mar",
+   "customer": "MWC Constructors",
+   "date": "2026-06-25",
+   "sentTotal": 1077449,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "lost",
+   "stages": [
+    "Priced too low"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": [
+    {
+     "item": "basement sqft",
+     "qty": 6065.96,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "4521 Orrington Rd CDM MWC Constructors"
+    },
+    {
+     "item": "sand bags",
+     "qty": 294.99,
+     "unit": "Ln Ft",
+     "count": 5,
+     "stackProject": "4521 Orrington Rd CDM MWC Constructors"
+    },
+    {
+     "item": "straw waddle",
+     "qty": 76.2,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "4521 Orrington Rd CDM MWC Constructors"
+    },
+    {
+     "item": "Silt fence",
+     "qty": 340.12,
+     "unit": "Ln Ft",
+     "count": 4,
+     "stackProject": "4521 Orrington Rd CDM MWC Constructors"
+    }
+   ]
+  },
+  {
+   "id": "4800 laurel",
+   "name": "4800 Laurel Canyon Blvd Valley Village",
+   "customer": "Brady Construction",
+   "date": "2026-08-03",
+   "sentTotal": 12000,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": []
+  },
+  {
+   "id": "48650 seminole",
+   "name": "48650 SEMINOLE DR, STE 206 CABAZON",
+   "customer": "JAC CARPENTRY",
+   "date": "2026-06-30",
+   "sentTotal": 4250.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "won",
+   "stages": [
+    "Proposal Sent",
+    "Job Completed",
+    "Job Completed",
+    "Cancelled",
+    "Job Completed",
+    "Job Completed",
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "Replace and paint several pieces of insulation per request\n\nPerform two drywall patches\n\nHaul away materials",
+   "takeoff": []
+  },
+  {
+   "id": "5012 old",
+   "name": "5012 Old Ranch Rd, La Verne",
+   "customer": "",
+   "date": "2026-06-25",
+   "sentTotal": 11645,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "lost",
+   "stages": [
+    "Proposal Declined -Warm"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": []
+  },
+  {
+   "id": "555 the",
+   "name": "555 THE SHOPS AT MISSION VIEJO",
+   "customer": "PHILLIP PLAKE",
+   "date": "2026-09-07",
+   "sentTotal": 16169,
+   "priceSource": "GHL (Jesse)",
+   "priceStatus": "confirmed",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "Demolition\n\nProperly sawcut and haul concrete per plans",
+   "takeoff": [
+    {
+     "item": "sawcut concrete",
+     "qty": 197.93,
+     "unit": "Sq Ft",
+     "count": 24,
+     "stackProject": "Sur La Table- Mission Viejo"
+    },
+    {
+     "item": "sawcut linear concrete",
+     "qty": 750.47,
+     "unit": "Ln Ft",
+     "count": 32,
+     "stackProject": "Sur La Table- Mission Viejo"
+    }
+   ]
+  },
+  {
+   "id": "5757 santa",
+   "name": "5757 E SANTA ANA CANYON RD, ANAHEIM",
+   "customer": "TILTON PACIFIC CONSTRUCTION",
+   "date": "2026-08-31",
+   "sentTotal": 52957.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Generate Proposal"
+   ],
+   "scopeTotals": [
+    [
+     "INTERIOR",
+     31775.0
+    ],
+    [
+     "EXTERIOR",
+     21182.0
+    ]
+   ],
+   "scopeText": "Interior\n\nRemove doors per plans.\n\nRemove lockers and millwork per plans.\n\nRemove millwork per plans.\n\nRemove bathroom partitions per plans.\n\nRemove shower heads and finishes per plans.\n\nRemove bathroom finishes per plans.\n\nRemove acoustic ceiling per plans.\n\nRemove gypsum board ceiling per plans.\n\nRemove mechanical ducts per plans.\n\nRemove walls per plans.\n\nRemove floor finishes per plans.\n\nRemove wood flooring per plans.\n\nINTERIOR TOTAL:  $31,775.00\n\nExterior\n\nRemove partial storefront and curb per plans.\n\nRemove railing and stairs per plans.\n\nRemove rooftop units per plans.\n\nRemove roof ladder and chute per plans.\n\nRemove roof hatch per plans.\n\nRemove TPO roofing per plans.\n\nEXTERIOR TOTAL:  $21,182.00",
+   "takeoff": [
+    {
+     "item": "remove walls",
+     "qty": 942.63,
+     "unit": "Ln Ft",
+     "count": 27,
+     "stackProject": "5757 E Santa Ana Canyon Rd"
+    },
+    {
+     "item": "demo floor finish",
+     "qty": 7234.82,
+     "unit": "Sq Ft",
+     "count": 3,
+     "stackProject": "5757 E Santa Ana Canyon Rd"
+    },
+    {
+     "item": "demo wood flooring",
+     "qty": 7866.14,
+     "unit": "Sq Ft",
+     "count": 4,
+     "stackProject": "5757 E Santa Ana Canyon Rd"
+    },
+    {
+     "item": "remove doors",
+     "qty": 27.0,
+     "unit": "Ea",
+     "count": 27,
+     "stackProject": "5757 E Santa Ana Canyon Rd"
+    },
+    {
+     "item": "remove millwork",
+     "qty": 4.0,
+     "unit": "Ea",
+     "count": 4,
+     "stackProject": "5757 E Santa Ana Canyon Rd"
+    },
+    {
+     "item": "demo lockers & millwork",
+     "qty": 467.48,
+     "unit": "Sq Ft",
+     "count": 10,
+     "stackProject": "5757 E Santa Ana Canyon Rd"
+    },
+    {
+     "item": "remove shower heads & finishes",
+     "qty": 14.0,
+     "unit": "Ea",
+     "count": 14,
+     "stackProject": "5757 E Santa Ana Canyon Rd"
+    },
+    {
+     "item": "remove bathroom finishes",
+     "qty": 14.0,
+     "unit": "Ea",
+     "count": 14,
+     "stackProject": "5757 E Santa Ana Canyon Rd"
+    },
+    {
+     "item": "remove bathroom partitions",
+     "qty": 45.89,
+     "unit": "Ln Ft",
+     "count": 9,
+     "stackProject": "5757 E Santa Ana Canyon Rd"
+    },
+    {
+     "item": "demo railing and stairs",
+     "qty": 862.74,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "5757 E Santa Ana Canyon Rd"
+    },
+    {
+     "item": "remove roof ladder and shoot",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "5757 E Santa Ana Canyon Rd"
+    },
+    {
+     "item": "remove partial storefront and curb",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "5757 E Santa Ana Canyon Rd"
+    },
+    {
+     "item": "remove acoustic ceiling",
+     "qty": 25391.48,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "5757 E Santa Ana Canyon Rd"
+    },
+    {
+     "item": "remove gypsum board ceiling",
+     "qty": 4664.57,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "5757 E Santa Ana Canyon Rd"
+    },
+    {
+     "item": "remove mechanical ducts",
+     "qty": 4.0,
+     "unit": "Ea",
+     "count": 4,
+     "stackProject": "5757 E Santa Ana Canyon Rd"
+    },
+    {
+     "item": "remove rt units",
+     "qty": 11.0,
+     "unit": "Ea",
+     "count": 11,
+     "stackProject": "5757 E Santa Ana Canyon Rd"
+    },
+    {
+     "item": "remove roof hatch",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "5757 E Santa Ana Canyon Rd"
+    },
+    {
+     "item": "remove tpo roofing",
+     "qty": 33138.5,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "5757 E Santa Ana Canyon Rd"
+    }
+   ]
+  },
+  {
+   "id": "600 pch",
+   "name": "600 PACIFIC COAST HWY SEAL BEACH",
+   "customer": "CRM CONSTRUCTION",
+   "date": "2026-09-24",
+   "sentTotal": 21454,
+   "priceSource": "sent PDF (Jesse)",
+   "priceStatus": "confirmed",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [
+    [
+     "DEMOLITION",
+     11060.0
+    ]
+   ],
+   "scopeText": "Demolition\n\nProperly remove cabinetry per plans (A101)\n\nProperly demolish metal stud walls and wall segment per plans (A101)\n\nProperly cut and remove carpet per plans (A101)\n\nDEMOLITION TOTAL:  $11,060.00",
+   "takeoff": [
+    {
+     "item": "demo metal stud walls",
+     "qty": 53.27,
+     "unit": "Ln Ft",
+     "count": 8,
+     "stackProject": "600 PCH, Seal Beach"
+    },
+    {
+     "item": "cut and demo floor carpet",
+     "qty": 1783.81,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "600 PCH, Seal Beach"
+    },
+    {
+     "item": "remove millwork",
+     "qty": 66.61,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "600 PCH, Seal Beach"
+    },
+    {
+     "item": "demo sink",
+     "qty": 1.0,
+     "unit": "Ea",
+     "count": 1,
+     "stackProject": "600 PCH, Seal Beach"
+    }
+   ]
+  },
+  {
+   "id": "6131 telegraph",
+   "name": "6131 TELEGRAPH RD, COMMERCE, CA 90040",
+   "customer": "BLACKSTAR BUILDERS",
+   "date": "2026-10-14",
+   "sentTotal": 5495.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "won",
+   "stages": [
+    "Accepted",
+    "Cancelled"
+   ],
+   "scopeTotals": [],
+   "scopeText": "DEMOLITION\n\nProperly remove metal railing & blinds",
+   "takeoff": []
+  },
+  {
+   "id": "622 el",
+   "name": "622 E EL SEGUNDO BLVD",
+   "customer": "GM NORTHRUP CONSTRUCTION",
+   "date": "2026-09-10",
+   "sentTotal": 27674.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [
+    [
+     "DEMOLITION",
+     27674.0
+    ]
+   ],
+   "scopeText": "Demolition\n\nRemove all doors (per plan D1.0)\n\nRemove all plumbing fixtures (per plan D1.0)\n\nRemove all partition walls (per plan D1.0)\n\nRemove steps (per plan D1.0)\n\nRemove all VCT/Carpet flooring and scrape all adhesive (per plan D1.0)\n\nRemove all gypsum board ceiling & tiles (leaving grid) (per plan D1.1)\n\nRemove all light fixtures (per plan D1.1)\n\nDEMOLITION TOTAL:  $27,674.00",
+   "takeoff": [
+    {
+     "item": "remove doors",
+     "qty": 12.0,
+     "unit": "Ea",
+     "count": 12,
+     "stackProject": "622 E El Segundo Blvd"
+    },
+    {
+     "item": "remove steps",
+     "qty": 6.8,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "622 E El Segundo Blvd"
+    },
+    {
+     "item": "remove plumbing fixtures",
+     "qty": 4.0,
+     "unit": "Ea",
+     "count": 4,
+     "stackProject": "622 E El Segundo Blvd"
+    },
+    {
+     "item": "remove partition walls",
+     "qty": 107.45,
+     "unit": "Ln Ft",
+     "count": 11,
+     "stackProject": "622 E El Segundo Blvd"
+    },
+    {
+     "item": "remove vct flooring or carpet where applicable",
+     "qty": 10754.24,
+     "unit": "Sq Ft",
+     "count": 2,
+     "stackProject": "622 E El Segundo Blvd"
+    },
+    {
+     "item": "gypsum board ceiling",
+     "qty": 626.84,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "622 E El Segundo Blvd"
+    },
+    {
+     "item": "remove act tiles",
+     "qty": 4374.2,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "622 E El Segundo Blvd"
+    }
+   ]
+  },
+  {
+   "id": "624 loretta",
+   "name": "624 Loretta Drive",
+   "customer": "Terin Dumas",
+   "date": "2026-08-18",
+   "sentTotal": 78461,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": []
+  },
+  {
+   "id": "647 spectrum",
+   "name": "647 Spectrum Center Drive Irvine",
+   "customer": "JAC Construction",
+   "date": "2026-07-01",
+   "sentTotal": 16495,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": []
+  },
+  {
+   "id": "705 orchid",
+   "name": "705 Orchid Ave Corona Del Mar",
+   "customer": "",
+   "date": "2026-08-13",
+   "sentTotal": 54854,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "Started working per our scope of workRemoved and recycled $600 of copper-",
+   "takeoff": []
+  },
+  {
+   "id": "8421 melrose",
+   "name": "8421 MELROSE PL, WEST HOLLYWOOD, CA 90069",
+   "customer": "BLACKSTAR CONTRACTORS",
+   "date": "2026-08-12",
+   "sentTotal": 1150.0,
+   "priceSource": "GHL = Dropbox",
+   "priceStatus": "agree",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent",
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "DEMOLITION\n\nProperly remove all rocks from two planter & remove metal flange that makes of the planter",
+   "takeoff": [
+    {
+     "item": "remove gate",
+     "qty": 9.99,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "8421 Melrose Pl - Joe Rosales"
+    },
+    {
+     "item": "Remove interior walls",
+     "qty": 48.01,
+     "unit": "Ln Ft",
+     "count": 8,
+     "stackProject": "8421 Melrose Pl - Joe Rosales"
+    },
+    {
+     "item": "Remove doors",
+     "qty": 7.0,
+     "unit": "Ea",
+     "count": 7,
+     "stackProject": "8421 Melrose Pl - Joe Rosales"
+    },
+    {
+     "item": "remove bathroom fixtures",
+     "qty": 4.0,
+     "unit": "Ea",
+     "count": 4,
+     "stackProject": "8421 Melrose Pl - Joe Rosales"
+    },
+    {
+     "item": "Remove Flooring finish",
+     "qty": 1228.23,
+     "unit": "Sq Ft",
+     "count": 8,
+     "stackProject": "8421 Melrose Pl - Joe Rosales"
+    },
+    {
+     "item": "remove furniture",
+     "qty": 18.0,
+     "unit": "Ea",
+     "count": 18,
+     "stackProject": "8421 Melrose Pl - Joe Rosales"
+    },
+    {
+     "item": "exterior patio flooring",
+     "qty": 196.25,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "8421 Melrose Pl - Joe Rosales"
+    },
+    {
+     "item": "remove palm trees",
+     "qty": 4.0,
+     "unit": "Ea",
+     "count": 4,
+     "stackProject": "8421 Melrose Pl - Joe Rosales"
+    },
+    {
+     "item": "remove ceiling",
+     "qty": 68.46,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "8421 Melrose Pl - Joe Rosales"
+    },
+    {
+     "item": "remove spotlights",
+     "qty": 6.0,
+     "unit": "Ea",
+     "count": 6,
+     "stackProject": "8421 Melrose Pl - Joe Rosales"
+    }
+   ]
+  },
+  {
+   "id": "888 lincoln",
+   "name": "888 Lincoln Boulevard",
+   "customer": "Ray Lewis ",
+   "date": "2026-07-28",
+   "sentTotal": 106675,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "DEMOLITION\nDemolish and remove existing non-structural interior partition/demising walls as required. Existing restroom walls and restroom facilities are to remain and will be protected during demolition.\n\nRemove existing suspended/drop ceiling, including ceiling tiles and grid.\n\nRemove and dispose of existing furniture, retail fixtures, gondolas, shelving, displays, register counters, cabinetry, casework, millwork, and miscellaneous tenant improvements.\n\nRemove existing pharmacy-related casework, counters, cabinetry, shelving, and miscellaneous fixtures.\n\nRemove existing walk-in cooler/freezer panels and associated fixtures. Refrigerant recovery and mechanical/electrical disconnects are to be performed by others prior to demolition.\n\nRemove existing lighting fixtures after electrical systems have been properly disconnected, de-energized, and made safe by others.\n\nRemove existing HVAC ductwork, associated distribution components  and vents only.  HVAC units not included in our price. \n\nRemove doors, frames, and miscellaneous components associated with walls being demolished.\n\nLoad, haul, and legally dispose of demolition-generated debris.\n\nProvide all necessary protection for adjacent areas, finishes, and components designated to remain within A2Z's scope of work.\n\nUpon completion of demolition, leave the work area broom swept and free of demolition-generated debris.\n\n76,777.00",
+   "takeoff": []
+  },
+  {
+   "id": "co backfill for 32891 calle perfecto, san juan capistrano",
+   "name": "CO Backfill for 32891 Calle Perfecto, San Juan Capistrano",
+   "customer": "MWC Constructors",
+   "date": "2026-07-28",
+   "sentTotal": 5145,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": []
+  },
+  {
+   "id": "co stump grind 23441 via alondra, trabucco canyon",
+   "name": "CO Stump Grind 23441 Via Alondra, Trabucco Canyon",
+   "customer": "",
+   "date": "2026-07-28",
+   "sentTotal": 788,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Job Completed"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": [],
+   "takeoffNote": "STACK takeoff 'SC HOMES VIA ALONDRA 23441' belongs to the main bid at this address; this record is a smaller/related bid"
+  },
+  {
+   "id": "co#1 3310 w macarthur blvd",
+   "name": "CO#1 3310 W MacArthur Blvd",
+   "customer": "LACY CONSTRUCTION",
+   "date": "2026-10-06",
+   "sentTotal": 2997,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "open",
+   "stages": [
+    "Generate CO"
+   ],
+   "scopeTotals": [],
+   "scopeText": "DEMOLITION\nRemove ACT flooring.\nRemove walls.\nRemove t-bar ceiling.",
+   "takeoff": []
+  },
+  {
+   "id": "ewb 385 e colorado blvd 2nd floor ",
+   "name": "EWB 385 E Colorado blvd 2nd floor ",
+   "customer": "Brady Construction",
+   "date": "2026-06-22",
+   "sentTotal": 21454,
+   "priceSource": "GHL (Jesse)",
+   "priceStatus": "confirmed",
+   "outcome": "lost",
+   "stages": [
+    "Cancelled"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": [
+    {
+     "item": "Remove ceiling",
+     "qty": 899.48,
+     "unit": "Sq Ft",
+     "count": 2,
+     "stackProject": "EWB Los Robles Pasadena Office 2nd Floor"
+    }
+   ]
+  },
+  {
+   "id": "kia cerritos",
+   "name": "Kia Cerritos",
+   "customer": "Sauer Lopez",
+   "date": "2026-08-18",
+   "sentTotal": 857000,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "open",
+   "stages": [
+    "Proposal Sent"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": []
+  },
+  {
+   "id": "marriott - shadow ridge ",
+   "name": "Marriott - Shadow Ridge ",
+   "customer": "McGuire Builders",
+   "date": "2026-09-22",
+   "sentTotal": 129898,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "open",
+   "stages": [
+    "Pending Decision"
+   ],
+   "scopeTotals": [],
+   "scopeText": "",
+   "takeoff": []
+  },
+  {
+   "id": "via alondra 23441 coto de caza ",
+   "name": "Via Alondra 23441 Coto De Caza ",
+   "customer": "SC Homes",
+   "date": "2026-06-22",
+   "sentTotal": 49000,
+   "priceSource": "GHL only",
+   "priceStatus": "single-source",
+   "outcome": "won",
+   "stages": [
+    "Work In Progress"
+   ],
+   "scopeTotals": [],
+   "scopeText": "Fixbid/contract\nHelp the concrete subs compact with  a compactor-",
+   "takeoff": [
+    {
+     "item": "sand bags",
+     "qty": 376.72,
+     "unit": "Ln Ft",
+     "count": 1,
+     "stackProject": "SC HOMES VIA ALONDRA 23441"
+    },
+    {
+     "item": "gravel entry",
+     "qty": 290.37,
+     "unit": "Sq Ft",
+     "count": 1,
+     "stackProject": "SC HOMES VIA ALONDRA 23441"
+    }
+   ]
+  }
+ ]
+}

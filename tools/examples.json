@@ -1,0 +1,55 @@
+[
+ {"label": "Montebello ceiling demo (has issues)", "estimate": {
+  "job": {"name": "Montebello ceiling demo (example)", "location": "2242, near Beverly Wilcox Village, Montebello CA"},
+  "sections": [{"name": "Interior", "lines": [
+   {"category": "Labor", "description": "5 workers x 2 days", "qty": 10, "rate": 400},
+   {"category": "Hauling", "description": "1 load", "qty": 1, "rate": 850},
+   {"category": "Equipment", "description": "Scissor Lift 15 ft Electric, 1 day", "qty": 1, "rate": 115}]}],
+  "markup": 1.4, "price_source": "transcript",
+  "scopes": [{"name": "Demolition", "price": null, "lines": [
+   "Properly remove (1) small millwork cabinet",
+   "Properly remove ACT ceiling tiles, lights, diffusers, speakers and security devices",
+   "Properly remove carpet tile and rubber base",
+   "Properly remove marked walls and doors"]}],
+  "confirmed": [], "quantity_checks": [], "excavation": {}}},
+ {"label": "Montebello, questions answered (passes)", "estimate": {
+  "job": {"name": "Montebello ceiling demo (example)", "access": "single man door", "ceiling_height_ft": 10},
+  "sections": [{"name": "Interior", "lines": [
+   {"category": "Labor", "description": "5 workers x 2 days (includes 1 day cushion)", "qty": 10, "rate": 400},
+   {"category": "Hauling", "description": "1 load", "qty": 1, "rate": 850},
+   {"category": "Equipment", "description": "Scissor Lift 15 ft Electric, 1 day", "qty": 1, "rate": 115},
+   {"category": "Equipment", "description": "Lift delivery and pickup", "qty": 2, "rate": 150}]}],
+  "markup": 1.4, "price_source": "costing_sheet",
+  "scopes": [{"name": "Demolition", "price": null, "lines": [
+   "Properly remove (1) small millwork cabinet",
+   "Properly remove carpet tile and rubber base",
+   "Properly remove marked walls and doors",
+   "Properly remove ACT ceiling tiles, leave existing ceiling grid in place",
+   "Properly remove ceiling lights, diffusers, speakers and security devices"]}],
+  "confirmed": ["ceiling_devices"], "quantity_checks": [], "excavation": {}}},
+ {"label": "Parking lot asphalt demo", "estimate": {
+  "job": {"name": "Parking lot asphalt demo (example)"},
+  "sections": [{"name": "Exterior", "lines": [
+   {"category": "Labor", "description": "3 workers x 3 days", "qty": 9, "rate": 400},
+   {"category": "Hauling", "description": "10 loads", "qty": 10, "rate": 850},
+   {"category": "Equipment", "description": "20K excavator, skid steer, breaker, fuel (combined)", "qty": 1, "rate": 2800}]}],
+  "markup": 1.4, "final_price": 29800,
+  "scopes": [{"name": "Asphalt Demolition", "price": null, "lines": [
+   "Saw-cut, break and haul 2,800 SF of asphalt (per plans, 70 ft x 40 ft)",
+   "24\" mat slab is new work, by others"]}],
+  "quantity_checks": [{"item": "Asphalt", "takeoff_qty": 241000, "plan_qty": 2800, "unit": "SF", "source": "70 x 40 on plans"}],
+  "confirmed": [], "excavation": {}}},
+ {"label": "Basement excavation + demo", "estimate": {
+  "job": {"name": "Basement excavation (example)"},
+  "sections": [{"name": "Grading", "lines": [
+   {"category": "Labor", "description": "4 workers x 3 weeks", "qty": 60, "rate": 400},
+   {"category": "Hauling", "description": "Sub haul, super ten loads", "qty": 240, "rate": 500},
+   {"category": "Equipment", "description": "56K excavator, 1 month", "qty": 1, "rate": 56000},
+   {"category": "Fuel", "description": "Job fuel allowance", "qty": 1, "rate": 2000}]}],
+  "final_price": 294000,
+  "scopes": [
+   {"name": "DEMOLITION", "price": 31400, "lines": ["Full demolition of structure and foundation in its entirety (per plans)", "Remove existing hardscape, softscape, trees, retaining walls and planters"]},
+   {"name": "BASEMENT EXCAVATION/GRADING", "price": 262600, "lines": ["Excavate basement to the elevations on the approved plans", "Moisture condition and recompact soils in maximum 12\" lifts (per soils report)"]}],
+  "excavation": {"depth_ft": 12, "loads": 240},
+  "confirmed": [], "quantity_checks": []}}
+]

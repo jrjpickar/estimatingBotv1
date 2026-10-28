@@ -1,0 +1,603 @@
+{
+ "_source": "Concrete & Cost Reference tab of the A2Z job cost workbook (600 PCH copy, Sep 2026). Use only as a menu; the estimator confirms each rate.",
+ "standard": {
+  "crew_day_4man": {
+   "rate": 1600,
+   "per": "crew-day",
+   "note": "4 men x 8 hr x $50/hr; confirmed by Jesse"
+  },
+  "truck_load_all_in": {
+   "rate": 850,
+   "per": "load",
+   "note": "all-in cost per load incl. dump; confirmed by Jesse. The $375/trip + dump rows below are NOT used for estimating."
+  },
+  "worker_day": {
+   "rate": 400,
+   "per": "worker-day",
+   "note": "1 worker x 8 hr x $50/hr; same basis as the 4-man crew-day. Use when the estimator gives crew size x days."
+  }
+ },
+ "rate_sheet": [
+  {
+   "category": "Labor Services",
+   "item": "General Clean Up Labor - 8 HR Minimum / Trash Pick Up Labor - 4 HR Minimum",
+   "rate": 50.0,
+   "per": "Hour",
+   "note": ""
+  },
+  {
+   "category": "Labor Services",
+   "item": "Leadsman - General Clean Up Labor - 8 HR Minimum / Driver - Trash Pick Up Labor - 5 HR Minimum",
+   "rate": 50.0,
+   "per": "Hour",
+   "note": ""
+  },
+  {
+   "category": "Labor Services",
+   "item": "Skilled Labor - 8 HR Minimum",
+   "rate": 65.0,
+   "per": "Hour",
+   "note": ""
+  },
+  {
+   "category": "Labor Services",
+   "item": "Skilled Leadsman Labor - 8 HR Minimum",
+   "rate": 85.0,
+   "per": "Hour",
+   "note": ""
+  },
+  {
+   "category": "Trucking & Hauling",
+   "item": "Full Truck Load",
+   "rate": 375.0,
+   "per": "Trip",
+   "note": "Excludes dump fees"
+  },
+  {
+   "category": "Trucking & Hauling",
+   "item": "1/2 Truck Load",
+   "rate": 175.0,
+   "per": "Trip",
+   "note": "Excludes dump fees"
+  },
+  {
+   "category": "Trucking & Hauling",
+   "item": "Dump Fees",
+   "rate": 106.0,
+   "per": "Ton",
+   "note": "Starting rate; cost per ton varies by disposal center"
+  },
+  {
+   "category": "Trucking & Hauling",
+   "item": "Bobcat with Operator",
+   "rate": 155.0,
+   "per": "Hour",
+   "note": ""
+  },
+  {
+   "category": "Trucking & Hauling",
+   "item": "Mini Excavator with Operator",
+   "rate": 155.0,
+   "per": "Hour",
+   "note": ""
+  },
+  {
+   "category": "Trucking & Hauling",
+   "item": "Bobcat with Operator and Breaker",
+   "rate": 185.0,
+   "per": "Hour",
+   "note": ""
+  },
+  {
+   "category": "Trucking & Hauling",
+   "item": "Mini Excavator with Operator and Breaker",
+   "rate": 185.0,
+   "per": "Hour",
+   "note": ""
+  },
+  {
+   "category": "Roll-Off Containers",
+   "item": "40 Yard Container - Within Orange County",
+   "rate": 800.0,
+   "per": "Container",
+   "note": "Includes up to 5 tons; going rate per ton thereafter"
+  },
+  {
+   "category": "Roll-Off Containers",
+   "item": "40 Yard Container - Outside Orange County",
+   "rate": 900.0,
+   "per": "Container",
+   "note": "Includes up to 5 tons; going rate per ton thereafter"
+  },
+  {
+   "category": "Roll-Off Containers",
+   "item": "Low Boy - Clean Concrete or Dirt Only",
+   "rate": 800.0,
+   "per": "Container",
+   "note": ""
+  },
+  {
+   "category": "Roll-Off Containers",
+   "item": "Low Boy - Mixed Dirt and Concrete Only",
+   "rate": 850.0,
+   "per": "Container",
+   "note": ""
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "Gas Compressor",
+   "rate": 110.0,
+   "per": "Day",
+   "note": ""
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "Compactor",
+   "rate": 110.0,
+   "per": "Day",
+   "note": ""
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "Generator",
+   "rate": 125.0,
+   "per": "Day",
+   "note": ""
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "Pressure Washer",
+   "rate": 95.0,
+   "per": "Day",
+   "note": ""
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "Gas Water Pump",
+   "rate": 65.0,
+   "per": "Day",
+   "note": ""
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "Fan Blowers",
+   "rate": 35.0,
+   "per": "Day",
+   "note": ""
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "Multi-Tool and Blade",
+   "rate": 25.0,
+   "per": "Day",
+   "note": "Blade charges may apply"
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "Shop Vac",
+   "rate": 25.0,
+   "per": "Day",
+   "note": ""
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "Chipping Hammer",
+   "rate": 65.0,
+   "per": "Day",
+   "note": ""
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "60 lb. Jack Hammer and Cord",
+   "rate": 85.0,
+   "per": "Day",
+   "note": ""
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "Tow-Behind Compressor, 90 lb. Jack Hammer, Hoses, Diesel Fuel and Delivery",
+   "rate": 575.0,
+   "per": "Day",
+   "note": ""
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "Bobcat Breaker",
+   "rate": 275.0,
+   "per": "Day",
+   "note": ""
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "Cordless Rotary Hammer Drill Set",
+   "rate": 30.0,
+   "per": "Day",
+   "note": ""
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "Skill Saw and Blade",
+   "rate": 25.0,
+   "per": "Day",
+   "note": "Blade charges may apply"
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "Quickie Saw and Blade",
+   "rate": 135.0,
+   "per": "Day",
+   "note": "Blade charges may apply"
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "Small Grinder and Blade",
+   "rate": 35.0,
+   "per": "Day",
+   "note": "Blade charges may apply"
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "Large Grinder and Blade",
+   "rate": 65.0,
+   "per": "Day",
+   "note": "Blade charges may apply"
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "Industrial Weed Cutter and Blade",
+   "rate": 45.0,
+   "per": "Day",
+   "note": "Blade charges may apply"
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "Sawzall and Blade",
+   "rate": 25.0,
+   "per": "Day",
+   "note": "Blade charges may apply"
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "Chain Saw and Chain",
+   "rate": 85.0,
+   "per": "Day",
+   "note": ""
+  },
+  {
+   "category": "Daily Equipment Rentals",
+   "item": "50 ft. 12 Gauge Extension Cord",
+   "rate": 25.0,
+   "per": "Day",
+   "note": ""
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Mini Skid Steer - 37 in. Wide Wheeled",
+   "rate": 265.0,
+   "per": "Day",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Mini Skid Steer - 37 in. Wide Wheeled",
+   "rate": 900.0,
+   "per": "Week",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Mini Skid Steer - 37 in. Wide Wheeled",
+   "rate": 1950.0,
+   "per": "Month",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Full Sized Skid Steer - 72 in. Wide Wheeled",
+   "rate": 340.0,
+   "per": "Day",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Full Sized Skid Steer - 72 in. Wide Wheeled",
+   "rate": 1200.0,
+   "per": "Week",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Full Sized Skid Steer - 72 in. Wide Wheeled",
+   "rate": 2400.0,
+   "per": "Month",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "8k Mini Excavator",
+   "rate": 325.0,
+   "per": "Day",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "8k Mini Excavator",
+   "rate": 900.0,
+   "per": "Week",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "8k Mini Excavator",
+   "rate": 2200.0,
+   "per": "Month",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "20k Excavator",
+   "rate": 450.0,
+   "per": "Day",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "20k Excavator",
+   "rate": 1500.0,
+   "per": "Week",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "20k Excavator",
+   "rate": 3400.0,
+   "per": "Month",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "30k Excavator",
+   "rate": 550.0,
+   "per": "Day",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "30k Excavator",
+   "rate": 1900.0,
+   "per": "Week",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "30k Excavator",
+   "rate": 5400.0,
+   "per": "Month",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "56k Excavator",
+   "rate": 750.0,
+   "per": "Day",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "56k Excavator",
+   "rate": 2700.0,
+   "per": "Week",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "56k Excavator",
+   "rate": 6300.0,
+   "per": "Month",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Breaker Attachment 500lb (Skidsteer/Mini Ex)",
+   "rate": 250.0,
+   "per": "Day",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Breaker Attachment 500lb (Skidsteer/Mini Ex)",
+   "rate": 700.0,
+   "per": "Week",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Breaker Attachment 500lb (Skidsteer/Mini Ex)",
+   "rate": 2000.0,
+   "per": "Month",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Breaker Attachment 1,000lb (20k Excavator)",
+   "rate": 300.0,
+   "per": "Day",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Breaker Attachment 1,000lb (20k Excavator)",
+   "rate": 1100.0,
+   "per": "Week",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Breaker Attachment 1,000lb (20k Excavator)",
+   "rate": 2600.0,
+   "per": "Month",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Blue Island Attachment",
+   "rate": 200.0,
+   "per": "Day",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Blue Island Attachment",
+   "rate": 800.0,
+   "per": "Week",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Blue Island Attachment",
+   "rate": 2000.0,
+   "per": "Month",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Ride On Scraper (Ride Along Floor Scraper)",
+   "rate": 575.0,
+   "per": "Day",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Ride On Scraper (Ride Along Floor Scraper)",
+   "rate": 2300.0,
+   "per": "Week",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Ride On Scraper (Ride Along Floor Scraper)",
+   "rate": 4800.0,
+   "per": "Month",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Scissor Lift 15 ft Electric",
+   "rate": 115.0,
+   "per": "Day",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Scissor Lift 15 ft Electric",
+   "rate": 350.0,
+   "per": "Week",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Scissor Lift 15 ft Electric",
+   "rate": 500.0,
+   "per": "Month",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Scissor Lift 19 ft Electric",
+   "rate": 120.0,
+   "per": "Day",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Scissor Lift 19 ft Electric",
+   "rate": 295.0,
+   "per": "Week",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Scissor Lift 19 ft Electric",
+   "rate": 400.0,
+   "per": "Month",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Scissor Lift 26 ft Electric",
+   "rate": 150.0,
+   "per": "Day",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Scissor Lift 26 ft Electric",
+   "rate": 375.0,
+   "per": "Week",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Scissor Lift 26 ft Electric",
+   "rate": 625.0,
+   "per": "Month",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Scissor Lift 32 ft Electric",
+   "rate": 200.0,
+   "per": "Day",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Scissor Lift 32 ft Electric",
+   "rate": 475.0,
+   "per": "Week",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Scissor Lift 32 ft Electric",
+   "rate": 850.0,
+   "per": "Month",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Scissor Lift 40 ft Electric",
+   "rate": 250.0,
+   "per": "Day",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Scissor Lift 40 ft Electric",
+   "rate": 750.0,
+   "per": "Week",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Rentals - LGP",
+   "item": "Scissor Lift 40 ft Electric",
+   "rate": 1300.0,
+   "per": "Month",
+   "note": "LGP Equipment Rentals Inc. - Bell Gardens, CA"
+  },
+  {
+   "category": "Equipment Delivery",
+   "item": "Scissor Lift Delivery",
+   "rate": 150.0,
+   "per": "Trip",
+   "note": "From Montebello training session (Oct 2026); confirm with rental yard"
+  },
+  {
+   "category": "Equipment Delivery",
+   "item": "Scissor Lift Pickup",
+   "rate": 150.0,
+   "per": "Trip",
+   "note": "From Montebello training session (Oct 2026); confirm with rental yard"
+  }
+ ]
+}

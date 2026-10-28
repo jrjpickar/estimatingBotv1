@@ -1,0 +1,1052 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A2Z Estimating Bot</title>
+<style>
+/* Matches the GHL custom theme: warm charcoal + brand orange (default), or the colorful brown / red / gold look. */
+:root{--bg:#141210;--card:#1b1816;--field:#221f1c;--hover:#332e2a;--ink:#f2ede8;--ink2:#c2b9b1;--mute:#9d948c;--line:#3a3430;--line2:#4a433e;
+--accent:#f97316;--accent-strong:#fdba74;--accent-soft:rgba(249,115,22,.16);--btn:#ea580c;--btn-hover:#f97316;--onbtn:#fff;
+--head:#171412;--headsolid:#171412;--headink:#f2ede8;--headmute:#9d948c;--hbtn:#221f1c;--hbtnink:#f2ede8;--hbtnline:#3a3430;
+--block:#ff8f87;--blockbg:#3b1e1e;--ask:#f0c35a;--askbg:#3a2e14;--warn:#c2b9b1;--warnbg:#2c2825;--ok:#7fd894;--okbg:#17301f;--chip:#2c2825;color-scheme:dark}
+html[data-gc="color"]{--bg:#431407;--card:#fffaf6;--field:#fffdfb;--hover:#fbe9d9;--ink:#431407;--ink2:#7c2d12;--mute:#80513d;--line:#fed7aa;--line2:#fdba74;
+--accent:#9a3412;--accent-strong:#9a3412;--accent-soft:#fbe9d9;--btn:#9a3412;--btn-hover:#b45309;--onbtn:#fff;
+--head:linear-gradient(90deg,#7c2d12,#9a3412);--headsolid:#7c2d12;--headink:#fff4ea;--headmute:rgba(255,244,234,.78);--hbtn:#f2c14e;--hbtnink:#431407;--hbtnline:#d99a1e;
+--block:#750e21;--blockbg:#fde4e4;--ask:#6b4300;--askbg:#fbe7b0;--warn:#7c2d12;--warnbg:#fbe9d9;--ok:#14532d;--okbg:#d1fae5;--chip:#fbe9d9;color-scheme:light}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;background:var(--head);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+header h1{font-size:16px;margin:0;font-weight:700;color:var(--headink);letter-spacing:.01em}header .opp{color:var(--headmute);font-size:12px}header .sp{flex:1}
+header .hint,header label{color:var(--headmute)}
+button{font:inherit;border:1px solid var(--line);background:var(--field);color:var(--ink);border-radius:8px;padding:6px 10px;cursor:pointer}
+button:hover{background:var(--hover)}
+header button,header select{background:var(--hbtn);color:var(--hbtnink);border-color:var(--hbtnline);font-weight:600}
+header button:hover{filter:brightness(1.08);background:var(--hbtn)}
+header select{width:auto;max-width:100%}
+html[data-gc="color"] header button.primary{background:#431407;border-color:#431407;color:#fff4ea}html[data-gc="color"] header button.primary:hover{background:#5c1a08}
+button.primary,header button.primary{background:var(--btn);border-color:var(--btn);color:var(--onbtn)}button.primary:hover,header button.primary:hover{background:var(--btn-hover);filter:none}
+button.link,button.link:hover{border:0;background:none;color:var(--accent-strong);padding:2px 4px;font-weight:600}
+button.x,button.x:hover{border:0;background:none;color:var(--mute);font-size:16px;padding:0 6px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+main{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;padding:16px;max-width:1400px;margin:0 auto}
+@media(max-width:980px){main{grid-template-columns:minmax(0,1fr)}aside{position:static}}
+@media(max-width:600px){main{padding:16px 16px}.scope .row{grid-template-columns:1fr 1fr}header h1{font-size:15px}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:16px}
+.card h2{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute);margin:0 0 10px;font-weight:650;display:flex;align-items:center;gap:8px}
+.card h2 .sp{flex:1}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+label{display:block;font-size:12px;color:var(--mute)}
+input,select,textarea{font:inherit;width:100%;border:1px solid var(--line);border-radius:6px;padding:6px 8px;background:var(--field);color:var(--ink)}
+textarea{min-height:70px;resize:vertical}
+table{width:100%;border-collapse:collapse}th{font-size:12px;color:var(--mute);text-align:left;font-weight:600;padding:4px}
+td{padding:3px 4px;vertical-align:top}td.num{text-align:right;white-space:nowrap;padding-top:9px}
+.tablewrap{overflow-x:auto}.lines td input{min-width:60px}.lines td.desc input{min-width:200px}
+.scope{border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:10px}
+.scope .row{display:grid;grid-template-columns:1fr 140px auto auto;gap:8px;align-items:end;margin-bottom:8px}
+.chk{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mute);white-space:nowrap}.chk input{width:auto}
+aside{position:sticky;top:64px;align-self:start}
+.totals div{display:flex;justify-content:space-between;padding:3px 0}.totals .big{font-size:18px;font-weight:700;border-top:1px solid var(--line);margin-top:6px;padding-top:8px}
+.status{border-radius:8px;padding:10px;font-weight:600;margin-bottom:10px}.status.ok{background:var(--okbg);color:var(--ok)}.status.bad{background:var(--blockbg);color:var(--block)}.status.mid{background:var(--askbg);color:var(--ask)}
+.issue{border-left:4px solid;border-radius:6px;padding:8px 10px;margin-bottom:8px}
+.issue.block{border-color:var(--block);background:var(--blockbg)}.issue.ask{border-color:var(--ask);background:var(--askbg)}.issue.warn{border-color:var(--warn);background:var(--warnbg)}
+.issue .tag{font-size:11px;font-weight:700;letter-spacing:.05em}.issue.block .tag{color:var(--block)}.issue.ask .tag{color:var(--ask)}.issue.warn .tag{color:var(--warn)}
+.issue .where{color:var(--mute);font-size:12px}.issue .lesson{color:var(--mute);font-size:12px;margin-top:2px}
+.answered{font-size:12px;color:var(--mute)}.answered span{display:inline-block;background:var(--chip);border-radius:10px;padding:1px 8px;margin:2px}
+details summary{cursor:pointer;color:var(--mute);font-size:12px;text-transform:uppercase;letter-spacing:.04em;font-weight:650}
+.hint{color:var(--mute);font-size:12px}
+.drop{border:2px dashed var(--line);border-radius:10px;padding:16px;margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--card)}
+.drop.over{border-color:var(--accent)}.drop b{font-weight:650}.drop .sp{flex:1}
+.comp{display:grid;grid-template-columns:1fr auto;gap:2px 8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}.comp:last-child{border-bottom:0}
+.comp .meta{color:var(--mute);font-size:12px;grid-column:1/-1}.comp .amt{font-variant-numeric:tabular-nums;font-weight:600}
+</style>
+</head>
+<body>
+<header>
+  <h1>A2Z Estimating Bot</h1><span class="opp" id="opp"></span><span class="sp"></span>
+  <button id="btnTheme" title="Switch theme">Colorful theme</button>
+  <button id="btnNew">New</button>
+  <button id="btnImport">Open estimate.json</button>
+  <button id="btnExport" class="primary">Save estimate.json</button>
+  <input type="file" id="file" accept=".json,application/json" hidden>
+</header>
+<main>
+<div style="min-width:0">
+  <div class="drop" id="drop"><div><b>Drop a STACK Takeoff Quantity CSV</b><div class="hint">Drafts the scope lines in A2Z wording, finds the closest past jobs, and sets the default markup. Add crew-days, loads and equipment below.</div></div><span class="sp"></span><button id="btnCsv">Choose CSV</button><input type="file" id="csvFile" accept=".csv,text/csv" hidden></div>
+  <section class="card"><h2>Job</h2>
+    <div class="grid">
+      <div><label>Job name</label><input data-f="job.name"></div>
+      <div><label>Customer</label><input data-f="job.customer"></div>
+      <div><label>Location</label><input data-f="job.location"></div>
+      <div><label>Estimator</label><input data-f="job.estimator"></div>
+      <div><label>Access</label><input data-f="job.access" placeholder="single man door, roll-up..."></div>
+      <div><label>Ceiling height (ft)</label><input data-f="job.ceiling_height_ft" type="number" step="0.5"></div>
+    </div>
+  </section>
+
+  <section class="card"><h2>Cost lines<span class="sp"></span><button class="link" id="addLine">+ Add line</button></h2>
+    <div class="tablewrap"><table class="lines"><thead><tr><th>Section</th><th>Category</th><th>Description</th><th>Qty</th><th>Rate</th><th style="text-align:right">Extended</th><th></th></tr></thead><tbody id="lines"></tbody></table></div>
+    <p class="hint">Labor: $400 per worker-day, $1,600 per 4-man crew-day. Haul: $850 all-in per load (write "sub" for subcontract hauling). Type in Description to pick from the rate sheet.</p>
+    <datalist id="rateItems"></datalist>
+  </section>
+
+  <section class="card"><h2>Scopes<span class="sp"></span><button class="link" id="addScope">+ Add scope</button></h2>
+    <div id="scopes"></div>
+    <p class="hint">One scope line per row. With several base scopes, each needs a price and they must add up to the total.</p>
+  </section>
+
+  <section class="card"><h2>Pricing</h2>
+    <div class="grid">
+      <div><label>Markup on cost (%)</label><input id="markupPct" type="number" step="1"></div>
+      <div><label>Final bid price ($)</label><input data-f="final_price" type="number" step="1"></div>
+      <div><label>Price source</label><select data-f="price_source"><option value="">New estimate</option><option value="proposal">Proposal</option><option value="costing_sheet">Costing sheet</option><option value="transcript">Transcript</option><option value="notes">Notes</option></select></div>
+    </div>
+    <div style="margin-top:10px"><label>Pricing note (why the bid differs from the markup price, or why markup is low)</label><input data-f="pricing_note"></div>
+  </section>
+
+  <section class="card"><details><summary>Excavation and quantity checks</summary>
+    <div class="grid" style="margin-top:10px">
+      <div><label>Footprint (SF)</label><input data-f="excavation.footprint_sf" type="number"></div>
+      <div><label>Depth (ft)</label><input data-f="excavation.depth_ft" type="number" step="0.5"></div>
+      <div><label>Volume (CY)</label><input data-f="excavation.volume_cy" type="number"></div>
+      <div><label>Loads</label><input data-f="excavation.loads" type="number"></div>
+    </div>
+    <h2 style="margin-top:14px">Takeoff vs plans<span class="sp"></span><button class="link" id="addQc">+ Add check</button></h2>
+    <div class="tablewrap"><table><thead><tr><th>Item</th><th>Takeoff qty</th><th>Plan qty</th><th>Unit</th><th>Source / sheet</th><th></th></tr></thead><tbody id="qcs"></tbody></table></div>
+    <label class="chk" style="margin-top:8px"><input type="checkbox" data-f="has_takeoff" data-bool> This job has a STACK takeoff</label>
+  </details></section>
+</div>
+
+<aside>
+  <section class="card" id="compsCard" hidden><h2>Closest past jobs</h2><div id="comps"></div><p class="hint" id="compRange"></p></section>
+  <section class="card"><h2>Totals</h2><div class="totals" id="totals"></div></section>
+  <section class="card"><h2>Checks</h2><div id="status"></div><div id="issues"></div><div class="answered" id="answered"></div></section>
+</aside>
+</main>
+
+<script>
+(function () {
+var defs = {
+"./common": function (module, exports, require) {
+"use strict";
+// Shared helpers: activity groups, STACK CSV parsing, library profile math.
+// Pure functions (no file system) so the same code runs in the Cowork plugin
+// and in a Netlify function.
+
+// Activity groups, checked in order; first match wins. Patterns run on the
+// lower-cased STACK item name (and on proposal scope text for jobs without a takeoff).
+const GROUPS = [
+  ["erosion_control", /sand ?bag|gravel bag|silt fence|erosion|swppp|se-\d|tc-\d|wm-\d|ns-\d|straw|waddle|construction (exit|entrance)|gravel entry/],
+  ["grading_excavation", /grading|excavat|over.?ex|export|import|cut dirt|fill dirt|dig |trench(?!ing for)|backfill|compact|pad sqft|site sqft|new pad|footing dig|shoring/],
+  ["concrete_sawcut_slab", /saw ?cut|slab|concrete|core drill|drill .*concrete|pour|rebar|dowel|footing|electric(al)? box(es)? in slab|raised floor/],
+  ["hardscape_site", /hardscape|softscape|sidewalk|driveway|aproch|approach|paver|asphalt|paving|planter|vegetation|landscap|tree|stump|bollard|coping|curb|gutter/],
+  ["block_wall_fence", /block wall|cmu|site wall|fence|gate|guard ?rail|railing/],
+  ["whole_structure", /house demo|whole house|building demo|structure|demolish (the )?(house|building)|in its entirety|garage demo|gazebo|patio cover|canop|shed|cabana|deck/],
+  ["roofing", /roof|rtu|membrane|membrain|hatch|skylight/],
+  ["exterior_finishes", /stucco|siding|veneer|cladding|exterior wall|ext walls|fascia|trim|awning|brick/],
+  ["windows_storefront", /window|storefront|glazing|glass|slider|sliding door|shopwindow/],
+  ["doors", /door|frame/],
+  ["walls_partitions", /wall|partition|stud|gypsum|drywall|gyp|closet|soffit|column/],
+  ["ceilings", /ceiling|t ?bar|acoustic|tile ceiling/],
+  ["flooring", /floor|carpet|tile|vct|vinyl|hardwood|wood floor|base(board)?|scrape|stripping|thinset|adhesive|glue/],
+  ["plumbing_fixtures", /plumbing|sink|toilet|lav|urinal|fixture|restroom|bathroom|drinking fountain|shower|tub/],
+  ["millwork_casework", /millwork|cabinet|cabnet|counter|casework|shelv|cashwrap|bar |vanity|fireplace|staircase|stair/],
+  ["mep_electrical_hvac", /light|electric|conduit|panel|duct|diffuser|grill|hvac|exhaust|vent|thermostat|speaker|camera|security|telecom|sconce|meter|fan/],
+  ["signage_specialties", /sign|billboard|fire extinguisher|safe|access panel|curtain|film|satellite|dock|compactor/],
+  ["furniture_contents", /furniture|appliance|fridge|microwave|contents|bench|racks?\b|fixtures and/],
+  ["haul_containers", /haul|container|low ?boy|dump|truck|load|trash/],
+  ["labor_equipment", /labor|guys|equipment|fuel|lift|scraper|rental/],
+];
+const NOISE = /^(ruler|area ruler|check( ?off)?|checkmark|count|area|keynote check|note check off|sf|lf|floor area|bathrooms|columns measurement)\b/i;
+const UNIT_MAP = { "sq ft": "SF", sf: "SF", "ln ft": "LF", lf: "LF", ea: "EA", each: "EA", "cu yd": "CY", cy: "CY" };
+
+function groupFor(name) {
+  const n = " " + String(name || "").toLowerCase() + " ";
+  for (const [g, re] of GROUPS) if (re.test(n)) return g;
+  return "other";
+}
+
+function normUnit(u) {
+  const k = String(u || "").trim().toLowerCase();
+  return UNIT_MAP[k] || (String(u || "").trim().toUpperCase() || "EA");
+}
+
+// RFC 4180 CSV parser (quoted fields, embedded commas/quotes/newlines).
+function parseCsv(text) {
+  text = String(text).replace(/^﻿/, "");
+  const rows = [];
+  let row = [], field = "", i = 0, q = false;
+  while (i < text.length) {
+    const c = text[i];
+    if (q) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i += 2; continue; }
+        q = false; i++; continue;
+      }
+      field += c; i++; continue;
+    }
+    if (c === '"') { q = true; i++; continue; }
+    if (c === ",") { row.push(field); field = ""; i++; continue; }
+    if (c === "\r") { i++; continue; }
+    if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; i++; continue; }
+    field += c; i++;
+  }
+  if (field !== "" || row.length) { row.push(field); rows.push(row); }
+  if (!rows.length) return [];
+  const hdr = rows[0].map((h) => h.trim());
+  return rows.slice(1).filter((r) => r.some((v) => v !== "")).map((r) => Object.fromEntries(hdr.map((h, k) => [h, r[k] ?? ""])));
+}
+
+const num = (v) => { const x = parseFloat(v); return Number.isFinite(x) ? x : 0; };
+
+// STACK "Takeoff Quantity" CSV export -> normalized items.
+function parseStackCsv(text) {
+  const items = [];
+  for (const r of parseCsv(text)) {
+    const name = String(r["Takeoff Name"] ?? r.item ?? "").split(/\s+/).filter(Boolean).join(" ");
+    const qty = num(r["Takeoff Quantity"] ?? r.qty);
+    if (!name || qty <= 0 || NOISE.test(name)) continue;
+    items.push({
+      item: name,
+      description: String(r["Takeoff Description"] || "").trim(),
+      qty: Math.round(qty * 100) / 100,
+      unit: normUnit(r["Takeoff Unit"] ?? r.unit),
+      plan: String(r["Plan Name"] || "").trim(),
+      sqft: num(r["Sq Ft"]), lnft: num(r["Ln Ft"]), each: num(r.EA),
+      group: groupFor(name),
+    });
+  }
+  return items;
+}
+
+function prepareLibrary(lib) {
+  for (const j of lib.jobs) for (const i of j.takeoff || []) { i.unit = normUnit(i.unit); i.group = groupFor(i.item); }
+  return lib;
+}
+
+// Map of "group|unit" -> total qty.
+function profile(items) {
+  const out = new Map();
+  for (const i of items) {
+    const k = `${i.group}|${i.unit}`;
+    out.set(k, (out.get(k) || 0) + Number(i.qty));
+  }
+  return out;
+}
+
+const groupsOf = (prof) => new Set([...prof.keys()].map((k) => k.split("|")[0]));
+
+function textGroups(text) {
+  const found = new Set();
+  for (const line of String(text || "").toLowerCase().split(/[\n.;]/)) {
+    if (!line.trim()) continue;
+    const g = groupFor(line);
+    if (g !== "other") found.add(g);
+  }
+  return found;
+}
+
+function cosine(a, b) {
+  const keys = new Set([...a.keys(), ...b.keys()]);
+  let dot = 0, na = 0, nb = 0;
+  for (const k of keys) {
+    const x = Math.log1p(a.get(k) || 0), y = Math.log1p(b.get(k) || 0);
+    dot += x * y; na += x * x; nb += y * y;
+  }
+  return na && nb ? dot / (Math.sqrt(na) * Math.sqrt(nb)) : 0;
+}
+
+function jaccard(a, b) {
+  const u = new Set([...a, ...b]);
+  if (!u.size) return 0;
+  let n = 0;
+  for (const x of a) if (b.has(x)) n++;
+  return n / u.size;
+}
+
+function scaleMatch(a, b) {
+  const shared = [...a.keys()].filter((k) => b.has(k));
+  if (!shared.length) return 0;
+  const s = shared.reduce((t, k) => t + Math.abs(Math.log((a.get(k) + 1) / (b.get(k) + 1))), 0);
+  return Math.exp(-s / shared.length);
+}
+
+const money0 = (v) => (v == null ? "-" : "$" + Math.round(v).toLocaleString("en-US"));
+const money2 = (v) => "$" + Number(v).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+module.exports = { GROUPS, groupFor, normUnit, parseCsv, parseStackCsv, prepareLibrary, profile, groupsOf, textGroups, cosine, jaccard, scaleMatch, money0, money2 };
+
+},
+"./price": function (module, exports, require) {
+"use strict";
+// Cost build-up and price. Pure arithmetic: every number comes from the estimator.
+//
+// estimate = {
+//   job: { name, customer, location, estimator, estimate_number, date },
+//   sections: [ { name: "Interior"|"Exterior"|"Grading",
+//                 lines: [ { category: "Labor"|"Hotel"|"Hauling"|"Equipment"|"Fuel"|"Misc", description, qty, rate } ] } ],
+//   markup: 2.32,          // price = cost x (1 + markup), as on the Job Costing sheet
+//   final_price: 21454,    // optional: the estimator's chosen bid; overrides the computed price
+//   scopes: [ { name, lines: [...], price, alternate } ],
+//   flags, comp_summary, notes, exclusions, remain ...   (passed through for the documents)
+// }
+const STANDARD_RATES = { crew_day_4man: 1600, truck_load_all_in: 850 }; // confirmed by Jesse
+
+const cents = (x) => Math.round(x * 100) / 100;
+
+function computeEstimate(est) {
+  let totalCost = 0;
+  const sections = (est.sections || []).map((s) => {
+    const lines = (s.lines || []).map((ln) => {
+      if (ln.qty == null || ln.rate == null) throw new Error(`Missing qty or rate on line: ${JSON.stringify(ln)}`);
+      return { ...ln, qty: Number(ln.qty), rate: Number(ln.rate), extended: cents(Number(ln.qty) * Number(ln.rate)) };
+    });
+    const subtotal = cents(lines.reduce((t, l) => t + l.extended, 0));
+    totalCost += subtotal;
+    return { name: s.name, lines, subtotal };
+  });
+  totalCost = cents(totalCost);
+  if (est.markup == null && !est.final_price) throw new Error("Give either a markup or a final_price - the agent never picks one.");
+  const markup = est.markup;
+  const computed = markup != null ? cents(totalCost * (1 + Number(markup))) : null;
+  const final = est.final_price ? Number(est.final_price) : computed;
+  const eff = totalCost ? Math.round((final / totalCost - 1) * 10000) / 10000 : null;
+  const margin = final ? Math.round(((final - totalCost) / final) * 10000) / 10000 : null;
+  const base = (est.scopes || []).filter((s) => s.price != null && !s.alternate);
+  if (base.length) {
+    const sum = base.reduce((t, s) => t + Number(s.price), 0);
+    if (Math.abs(sum - final) > 0.5) throw new Error(`Scope prices add to ${sum.toFixed(2)} but the total is ${final.toFixed(2)}.`);
+  }
+  return { ...est, sections, total_cost: totalCost, computed_price: computed, final_price: final, effective_markup: eff, margin };
+}
+
+function formatEstimate(r) {
+  const m = (v) => "$" + v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const L = [];
+  for (const s of r.sections) {
+    L.push(s.name);
+    for (const l of s.lines) L.push(`  ${l.category.padEnd(10)} ${String(l.description || "").padEnd(28)} ${String(l.qty).padStart(6)} x ${m(l.rate).padStart(10)} = ${m(l.extended).padStart(12)}`);
+    L.push(`  ${"subtotal".padEnd(40)} ${m(s.subtotal).padStart(25)}`);
+  }
+  L.push(`TOTAL COST            ${m(r.total_cost)}`);
+  if (r.computed_price != null) L.push(`Price at markup ${Math.round(r.markup * 100)}%: ${m(r.computed_price)}`);
+  L.push(`FINAL PRICE           ${m(r.final_price)}  (effective markup ${Math.round(r.effective_markup * 100)}%, margin ${Math.round(r.margin * 100)}%)`);
+  return L.join("\n");
+}
+
+module.exports = { computeEstimate, formatEstimate, STANDARD_RATES };
+
+},
+"./checks": function (module, exports, require) {
+"use strict";
+// Estimate checker: A2Z's estimating rules as plain code. No AI, no network, no file access,
+// so the same function runs in the Cowork plugin, a Netlify function and the browser.
+//
+//   checkEstimate(estimate, { rates }) -> { ok, priced, issues: [ { id, level, where, message } ] }
+//
+// Levels:
+//   block = the numbers are wrong or missing; don't build a proposal until fixed
+//   ask   = a question the estimator must answer; answer it by adding the rule id to
+//           estimate.confirmed (e.g. "confirmed": ["sawcut", "ceiling_height"])
+//   warn  = looks off; fix it or add a pricing_note / confirmation
+//
+// Extra estimate fields this file reads (all optional):
+//   pricing_note: "why the bid differs from the markup price"
+//   price_source: "proposal" | "costing_sheet" | "transcript" | "notes" | "memory"
+//   job.access: "roll-up door", "single man door", ...
+//   job.ceiling_height_ft: 12
+//   excavation: { footprint_sf, depth_ft, volume_cy, loads }
+//   quantity_checks: [ { item, takeoff_qty, plan_qty, unit, source } ]
+//   confirmed: [ rule ids already answered ]
+//
+// Every rule comes from references/training-notes.md. Add a rule here + a test when a new lesson comes in.
+
+const { computeEstimate } = require("./price");
+
+const STANDARD = { worker_day: 400, crew_day_4man: 1600, load: 850, hourly: [50, 65, 85] };
+
+const RULES = {
+  // math and structure
+  line_values: { level: "block", lesson: "Every cost line needs a quantity and a rate." },
+  price_basis: { level: "block", lesson: "Give a markup or a final price; the bot never picks one." },
+  markup_format: { level: "block", lesson: "Markup is a decimal on cost (1.4 = 140%)." },
+  scope_sum: { level: "block", lesson: "Scope line items must add up exactly to the total bid." },
+  scope_prices: { level: "block", lesson: "With several base scopes, every scope needs its own price." },
+  below_cost: { level: "block", lesson: "Final price is below cost." },
+  bid_vs_markup: { level: "ask", lesson: "Keep cost, price at markup and final bid separate; say why the bid differs." },
+  low_markup: { level: "ask", lesson: "A2Z usually marks up 100%+; a lower markup needs a reason." },
+  unconfirmed_price: { level: "block", lesson: "Prices from transcripts or notes must be checked against the proposal or costing sheet." },
+  draft_inputs: { level: "ask", lesson: "Auto-drafted crew-days, loads and equipment must be confirmed by the estimator." },
+  empty_line: { level: "warn", lesson: "Remove cost lines that don't apply." },
+  mixed_scope: { level: "warn", lesson: "Price demolition and grading/excavation as separate scopes." },
+  // cost lines
+  labor_rate: { level: "ask", lesson: "Labor is $400 per worker-day, $1,600 per 4-man crew-day, or $50/$65/$85 per hour." },
+  lift_delivery: { level: "ask", lesson: "Equipment delivery and pickup are separate charges." },
+  haul_rate: { level: "ask", lesson: "Standard haul is $850 all-in per load; other rates must be a subcontract price." },
+  sub_haul_fuel: { level: "warn", lesson: "Subcontracted hauling already includes its fuel." },
+  equipment_quote: { level: "ask", lesson: "Large or long equipment rentals need a current quote." },
+  equipment_vs_sheet: { level: "warn", lesson: "Equipment rate is far above the rate sheet's monthly rate." },
+  // scope
+  sawcut: { level: "ask", lesson: "Don't include saw cutting unless the work needs it." },
+  new_work: { level: "warn", lesson: "New construction (new slab, mat slab, footing) is not demo scope." },
+  ceiling_grid: { level: "ask", lesson: "Ceiling tiles and grid are separate; say whether the grid stays." },
+  ceiling_devices: { level: "ask", lesson: "Ceiling devices need counts or a 'by others' decision." },
+  ceiling_height: { level: "ask", lesson: "Ceiling height decides the lift." },
+  work_order: { level: "warn", lesson: "Interior demo order: millwork, carpet/base, doors/walls, ceiling, then what stays." },
+  access: { level: "ask", lesson: "Access (single man door vs roll-up) changes handling time and hauling." },
+  lifts_recompaction: { level: "ask", lesson: "Grading: include 12\" lifts and recompaction when the plans or soils report require it." },
+  excavation_chain: { level: "ask", lesson: "Excavation: show footprint, depth, volume and loads." },
+  excavation_math: { level: "warn", lesson: "Footprint x depth should match the stated volume." },
+  // quantities
+  quantity_gap: { level: "warn", lesson: "Takeoff quantity doesn't match the plan dimensions." },
+  quantity_unchecked: { level: "ask", lesson: "Cross-check key takeoff quantities against plan dimensions." },
+};
+
+const money = (v) => "$" + Number(v).toLocaleString("en-US", { maximumFractionDigits: 2 });
+const lc = (s) => String(s || "").toLowerCase();
+
+function checkEstimate(est, opts = {}) {
+  const rates = opts.rates || null;
+  const confirmed = new Set((est.confirmed || []).map(String));
+  const issues = [];
+  const add = (id, where, message) => {
+    if (confirmed.has(id) && RULES[id].level !== "block") return;
+    issues.push({ id, level: RULES[id].level, where, message, lesson: RULES[id].lesson });
+  };
+
+  const sections = est.sections || [];
+  const allLines = [];
+  sections.forEach((s) => (s.lines || []).forEach((ln, i) => allLines.push({ ...ln, section: s.name, where: `${s.name} line ${i + 1}` })));
+  const scopes = est.scopes || [];
+  const scopeText = scopes.map((s) => [s.name, ...(s.lines || [])].join("\n")).join("\n");
+  const allText = lc(scopeText + "\n" + allLines.map((l) => l.description).join("\n"));
+
+  // ---- math and structure ----
+  let lineProblem = false;
+  for (const l of allLines) {
+    const q = Number(l.qty), r = Number(l.rate);
+    if (l.qty == null || l.rate == null || l.qty === "" || l.rate === "" || !isFinite(q) || !isFinite(r) || q < 0 || r < 0) {
+      add("line_values", l.where, `"${l.description || l.category}" is missing a quantity or rate.`); lineProblem = true;
+    } else if (q === 0 || r === 0) add("empty_line", l.where, `"${l.description || l.category}" is $0. Remove it if it doesn't apply.`);
+  }
+  const hasMarkup = est.markup != null && est.markup !== "";
+  if (!hasMarkup && !est.final_price) add("price_basis", "pricing", "No markup and no final price.");
+  if (hasMarkup && Number(est.markup) > 5) add("markup_format", "pricing", `Markup is ${est.markup}. Did you mean ${Number(est.markup) / 100} (${est.markup}%)?`);
+
+  const base = scopes.filter((s) => !s.alternate);
+  if (base.length > 1 && base.some((s) => s.price == null || s.price === "")) add("scope_prices", "scopes", "Several base scopes, but not all have a price.");
+
+  let priced = null;
+  if (!lineProblem && (hasMarkup || est.final_price)) {
+    try { priced = computeEstimate(est); }
+    catch (e) {
+      if (/Scope prices add to/.test(e.message)) add("scope_sum", "scopes", e.message);
+      else add("line_values", "estimate", e.message);
+      // still price it without the scope check so the rest of the rules can run
+      try { priced = computeEstimate({ ...est, scopes: [] }); } catch (_) { priced = null; }
+    }
+  }
+  if (priced) {
+    if (priced.final_price < priced.total_cost) add("below_cost", "pricing", `Final ${money(priced.final_price)} is below cost ${money(priced.total_cost)}.`);
+    if (priced.computed_price != null && Math.abs(priced.final_price - priced.computed_price) > 0.5 && !est.pricing_note)
+      add("bid_vs_markup", "pricing", `Price at markup is ${money(priced.computed_price)} but the bid is ${money(priced.final_price)}. Add a pricing_note saying why.`);
+    if (priced.effective_markup != null && priced.effective_markup < 1 && priced.final_price >= priced.total_cost && !est.pricing_note)
+      add("low_markup", "pricing", `Effective markup is ${Math.round(priced.effective_markup * 100)}% (margin ${Math.round(priced.margin * 100)}%). Add a pricing_note saying why.`);
+  }
+  if (["transcript", "notes", "memory", "verbal"].includes(lc(est.price_source)))
+    add("unconfirmed_price", "pricing", `Price came from ${est.price_source}. Check it against the proposal or costing sheet, then set price_source to "proposal" or "costing_sheet".`);
+
+  const demoWords = /\bdemo|demolition|demolish/;
+  const gradeWords = /grading|excavat|export|import|over.?ex/;
+  for (const s of base) {
+    const n = lc(s.name);
+    if (demoWords.test(n) && gradeWords.test(n)) add("mixed_scope", `scope "${s.name}"`, "Demolition and grading/excavation are in one scope. Split them so each has its own price.");
+  }
+
+  // ---- cost lines ----
+  const drafts = allLines.filter((l) => l.draft);
+  if (drafts.length) add("draft_inputs", "cost lines", `${drafts.length} cost line${drafts.length === 1 ? " is a draft" : "s are drafts"} (${drafts.map((l) => l.description).slice(0, 4).join("; ")}${drafts.length > 4 ? "; ..." : ""}). Confirm the crew-days, loads and equipment.`);
+  for (const l of allLines.filter((x) => lc(x.category) === "labor")) {
+    const r = Number(l.rate), d = lc(l.description);
+    const ok = r === STANDARD.worker_day || r === STANDARD.crew_day_4man || STANDARD.hourly.includes(r) || /sub|lump|per sf|per lf/.test(d);
+    if (!ok) add("labor_rate", l.where, `Labor rate ${money(r)} isn't a standard rate. Confirm the basis.`);
+  }
+  const equip = allLines.filter((x) => lc(x.category) === "equipment" || /lift|excavator|skid|bobcat|breaker|scraper/.test(lc(x.description)));
+  const hasDelivery = /deliver|pick.?up|transport|mobiliz/.test(allText);
+  if (equip.some((l) => /lift|excavator|skid steer|scraper/.test(lc(l.description))) && !hasDelivery)
+    add("lift_delivery", "equipment", "Rented equipment has no delivery or pickup line. Add them or confirm they're included.");
+  for (const l of equip) {
+    const ext = Number(l.qty) * Number(l.rate);
+    if (ext >= 10000 || /verify|quote|tbd/.test(lc(l.description))) add("equipment_quote", l.where, `${l.description} (${money(ext)}). Confirm with a current quote.`);
+    if (rates && rates.rate_sheet) {
+      const size = (lc(l.description).match(/(\d+)\s?k\b/) || [])[1];
+      const kind = ["excavator", "skid steer", "scissor lift", "scraper"].find((k) => lc(l.description).includes(k));
+      if (kind) {
+        const rows = rates.rate_sheet.filter((x) => lc(x.item).includes(kind.split(" ")[0]) && (!size || lc(x.item).includes(size + "k")) && x.per === "Month");
+        const month = rows.length ? Math.max(...rows.map((x) => x.rate)) : null;
+        if (month && Number(l.rate) > month * 2)
+          add("equipment_vs_sheet", l.where, `${money(l.rate)} for ${l.description}, but the rate sheet's highest monthly rate is ${money(month)}.`);
+      }
+    }
+  }
+  const haul = allLines.filter((x) => lc(x.category) === "hauling");
+  const subHaul = haul.filter((l) => /sub|super ?ten|super ?10|trucking co/.test(lc(l.description)));
+  for (const l of haul) if (Number(l.rate) !== STANDARD.load && !subHaul.includes(l)) add("haul_rate", l.where, `Haul at ${money(l.rate)}/load instead of $850. If it's subcontracted, say "sub" in the description.`);
+  if (subHaul.length && allLines.some((l) => lc(l.category) === "fuel" && /haul|truck/.test(lc(l.description))))
+    add("sub_haul_fuel", "fuel", "Hauling is subcontracted but there's also a hauling fuel line.");
+
+  // ---- scope ----
+  if (/saw.?cut/.test(allText)) add("sawcut", "scope", "Saw cutting is in the estimate. Confirm the work needs it.");
+  if (/(new|\(n\)|proposed)\s+[^\n]{0,20}(slab|footing|foundation)|mat slab/.test(allText)) add("new_work", "scope", "Mentions new slab/footing/foundation work. That's new construction, not demo; exclude it unless intended.");
+  const ceiling = /ceiling|\bact\b|acoustic/.test(lc(scopeText));
+  if (ceiling) {
+    if (!/grid/.test(lc(scopeText))) add("ceiling_grid", "scope", "Ceiling work but no mention of the grid. Does it stay or go?");
+    if (/light|diffuser|grille|speaker|security|sensor|detector/.test(lc(scopeText))) add("ceiling_devices", "scope", "Ceiling devices listed. Confirm counts for each, or mark them by others.");
+    if (!(est.job && est.job.ceiling_height_ft)) add("ceiling_height", "job", "Ceiling work but no ceiling height (job.ceiling_height_ft). Needed to size the lift.");
+  }
+  const interior = scopes.length && /interior|millwork|carpet|ceiling|walls?|doors?/.test(lc(scopeText)) && !gradeWords.test(lc(scopeText));
+  if (interior) {
+    const order = [/millwork|cabinet|casework|counter/, /carpet|flooring|base\b|vct|tile floor/, /\bdoors?\b|\bwalls?\b|partition/, /ceiling|\bact\b/];
+    const lines = scopes.flatMap((s) => s.lines || []).map(lc);
+    const firstIdx = order.map((re) => lines.findIndex((t) => re.test(t))).filter((i) => i >= 0);
+    for (let i = 1; i < firstIdx.length; i++) if (firstIdx[i] < firstIdx[i - 1]) {
+      add("work_order", "scope", "Scope lines are out of work order (millwork, carpet/base, doors/walls, ceiling)."); break;
+    }
+    if (!(est.job && est.job.access)) add("access", "job", "Access isn't stated (job.access), e.g. single man door or roll-up door.");
+  }
+  const grading = gradeWords.test(lc(scopeText));
+  if (grading && !/lift|recompact|compact/.test(lc(scopeText))) add("lifts_recompaction", "scope", "Grading scope doesn't mention lifts or recompaction. Required by the plans or soils report?");
+  const excavating = /excavat|basement|over.?ex/.test(lc(scopeText));
+  if (excavating) {
+    const x = est.excavation || {};
+    const missing = ["footprint_sf", "depth_ft", "volume_cy", "loads"].filter((k) => !(Number(x[k]) > 0));
+    if (missing.length) add("excavation_chain", "excavation", `Missing ${missing.join(", ")}.`);
+    else {
+      const calc = (Number(x.footprint_sf) * Number(x.depth_ft)) / 27;
+      if (Math.abs(calc - x.volume_cy) / calc > 0.15)
+        add("excavation_math", "excavation", `${x.footprint_sf} SF x ${x.depth_ft} ft = ${Math.round(calc).toLocaleString()} CY, but volume says ${Number(x.volume_cy).toLocaleString()} CY.`);
+    }
+  }
+
+  // ---- quantities ----
+  const qc = est.quantity_checks || [];
+  for (const q of qc) {
+    const t = Number(q.takeoff_qty), p = Number(q.plan_qty);
+    if (t > 0 && p > 0 && Math.max(t, p) / Math.min(t, p) > 1.25)
+      add("quantity_gap", q.item, `Takeoff ${t.toLocaleString()} ${q.unit || ""} vs plans ${p.toLocaleString()} ${q.unit || ""}${q.source ? ` (${q.source})` : ""}.`);
+  }
+  if (!qc.length && (est.takeoff || est.has_takeoff)) add("quantity_unchecked", "quantities", "No takeoff quantities were cross-checked against plan dimensions.");
+
+  const order = { block: 0, ask: 1, warn: 2 };
+  issues.sort((a, b) => order[a.level] - order[b.level]);
+  return { ok: !issues.some((i) => i.level === "block"), priced, issues };
+}
+
+function formatIssues(res) {
+  if (!res.issues.length) return "CHECKS: all clear";
+  const tag = { block: "BLOCK", ask: "ASK  ", warn: "WARN " };
+  return ["CHECKS:", ...res.issues.map((i) => `  ${tag[i.level]} [${i.id}] ${i.where}: ${i.message}`)].join("\n");
+}
+
+module.exports = { checkEstimate, formatIssues, RULES };
+
+},
+"./comps": function (module, exports, require) {
+"use strict";
+// Find the closest past A2Z jobs to a new STACK takeoff.
+//
+// Scoring (deterministic):
+//   - Library jobs WITH a STACK takeoff: 0.75 x cosine similarity of log-quantities
+//     by (activity group, unit) + 0.25 x overlap of groups. The size ratio in shared
+//     buckets (sizeMatch) is reported for explanation, not scored: weighting it did
+//     not improve the backtest.
+//   - Library jobs WITHOUT a takeoff: overlap of groups found in the proposal scope
+//     text, scaled by 0.6 (no quantities to compare).
+// Backtest (2026-10-16, leave-one-out, 36 jobs with takeoffs): median of the top-3
+// comps within +/-50% of the real sent total on 14/36, within 2x on 22/36.
+// Comps are context and a sanity range, never a price.
+const C = require("./common");
+
+function scoreJob(newProf, newGroups, job) {
+  if (job.takeoff && job.takeoff.length) {
+    const jp = C.profile(job.takeoff);
+    const jg = C.groupsOf(jp);
+    return { score: 0.75 * C.cosine(newProf, jp) + 0.25 * C.jaccard(newGroups, jg), jp, jg, basis: "takeoff" };
+  }
+  const tg = C.textGroups(job.scopeText);
+  return { score: 0.6 * C.jaccard(newGroups, tg), jp: new Map(), jg: tg, basis: "scope text only" };
+}
+
+const r1 = (x) => Math.round(x * 10) / 10;
+
+function findComps(items, library, { top = 5, exclude = [] } = {}) {
+  if (!items.length) throw new Error("No usable takeoff lines found.");
+  const newProf = C.profile(items);
+  const newGroups = C.groupsOf(newProf);
+  const scored = [];
+  for (const job of library.jobs) {
+    if (exclude.some((x) => job.name.toLowerCase().includes(String(x).toLowerCase()))) continue;
+    const { score, jp, jg, basis } = scoreJob(newProf, newGroups, job);
+    if (score <= 0) continue;
+    const qtyCompare = [];
+    for (const k of [...newProf.keys()].sort()) {
+      if (!jp.has(k)) continue;
+      const [group, unit] = k.split("|");
+      const q = newProf.get(k), cq = jp.get(k);
+      qtyCompare.push({ group, unit, new: r1(q), comp: r1(cq), ratio: cq ? Math.round((q / cq) * 100) / 100 : null });
+    }
+    scored.push({
+      name: job.name, customer: job.customer || "", date: job.date || "",
+      sentTotal: job.sentTotal, outcome: job.outcome, stages: job.stages || [], priceStatus: job.priceStatus,
+      score: Math.round(score * 1000) / 1000, basis,
+      sharedGroups: [...newGroups].filter((g) => jg.has(g)).sort(),
+      onlyInNew: [...newGroups].filter((g) => !jg.has(g)).sort(),
+      onlyInComp: [...jg].filter((g) => !newGroups.has(g)).sort(),
+      qtyCompare, sizeMatch: jp.size ? Math.round(C.scaleMatch(newProf, jp) * 100) / 100 : null,
+      scopeTotals: job.scopeTotals || [], scopeText: String(job.scopeText || "").slice(0, 1200),
+      takeoff: (job.takeoff || []).slice(0, 40),
+    });
+  }
+  scored.sort((a, b) => b.score - a.score);
+  const comps = scored.slice(0, top);
+  const prices = comps.map((c) => c.sentTotal);
+  const won = comps.filter((c) => c.outcome === "won").map((c) => c.sentTotal);
+  return {
+    newJob: {
+      lines: items.length, groups: [...newGroups].sort(),
+      profile: [...newProf.entries()].sort().map(([k, q]) => ({ group: k.split("|")[0], unit: k.split("|")[1], qty: r1(q) })),
+      items,
+    },
+    comps,
+    range: {
+      min: prices.length ? Math.min(...prices) : null, max: prices.length ? Math.max(...prices) : null,
+      wonMin: won.length ? Math.min(...won) : null, wonMax: won.length ? Math.max(...won) : null,
+    },
+    librarySize: library.jobs.length, libraryVersion: library.version,
+  };
+}
+
+function formatComps(res) {
+  const L = [];
+  L.push(`New job: ${res.newJob.lines} takeoff lines in groups: ${res.newJob.groups.join(", ")}`);
+  L.push(`Library: ${res.librarySize} priced past jobs (version ${res.libraryVersion})`, "");
+  L.push("| # | Past job | Sent total | Outcome | Match | Basis | Shared scope | Only in new job |", "|---|---|---|---|---|---|---|---|");
+  res.comps.forEach((r, n) => L.push(`| ${n + 1} | ${r.name} | ${C.money0(r.sentTotal)} | ${r.outcome} | ${r.score.toFixed(2)} | ${r.basis} | ${r.sharedGroups.join(", ") || "-"} | ${r.onlyInNew.join(", ") || "-"} |`));
+  L.push("", "Quantity comparison (new vs comp) for shared groups:");
+  for (const r of res.comps) if (r.qtyCompare.length) L.push(`- ${r.name}: ` + r.qtyCompare.map((q) => `${q.group} ${q.new} vs ${q.comp} ${q.unit}`).join("; "));
+  const g = res.range;
+  L.push("", `Comp price range: ${C.money0(g.min)} to ${C.money0(g.max)}` + (g.wonMin != null ? ` | won comps: ${C.money0(g.wonMin)} to ${C.money0(g.wonMax)}` : " | no won comps in shortlist"));
+  return L.join("\n");
+}
+
+module.exports = { findComps, formatComps, scoreJob };
+
+},
+"./auto": function (module, exports, require) {
+"use strict";
+// Auto mode: STACK takeoff (+ plan facts + draft crew/haul/equipment quantities) -> a full draft estimate.
+// Pure code. The only judgment it takes in is `facts` (read from the plans) and `inputs`
+// (draft quantities for labor, loads and equipment); everything else is rules.
+//
+// autoEstimate({ items, facts, inputs, job, defaults, rates }) -> estimate (ready for checkEstimate / computeEstimate)
+// reviewSheet(priced, checks, comps, facts) -> markdown review sheet for the estimator
+//
+// facts (all optional, every value should carry the sheet it came from in `sources`):
+//   { job: { name, location, customer, access, ceiling_height_ft, floor_level },
+//     ceiling: { grid: "remain" | "remove", devices: { lights: 12, diffusers: 6, ... } },
+//     recompaction_required: true, excavation: { footprint_sf, depth_ft, volume_cy, loads },
+//     quantity_checks: [ { item, takeoff_qty, plan_qty, unit, source } ],
+//     exclusions: [ "..." ], notes: [ "..." ], questions: [ "..." ], sources: { "job.access": "A101", ... } }
+// inputs: { lines: [ { section, category, description, qty, rate?, per?, basis } ] }
+//   rate is filled from A2Z standards / the rate sheet when left out.
+
+const { money0 } = require("./common");
+
+const DEFAULTS = { markup: 1.3 };
+
+// Order the crew works an interior demo (training notes): millwork, flooring, doors/walls, ceiling, then the rest.
+const ORDER = ["furniture_contents", "millwork_casework", "plumbing_fixtures", "flooring", "doors", "walls_partitions", "windows_storefront",
+  "ceilings", "mep_electrical_hvac", "signage_specialties", "other", "roofing", "exterior_finishes", "whole_structure",
+  "concrete_sawcut_slab", "hardscape_site", "block_wall_fence"];
+const GRADING = new Set(["grading_excavation", "erosion_control"]);
+const SKIP = new Set(["haul_containers", "labor_equipment"]);
+const EXTERIOR = new Set(["roofing", "exterior_finishes", "whole_structure", "concrete_sawcut_slab", "hardscape_site", "block_wall_fence"]);
+const VERB = { walls_partitions: "demolish", whole_structure: "demolish", block_wall_fence: "demolish", roofing: "remove", grading_excavation: "" };
+
+const fmtQty = (q) => Number(q).toLocaleString("en-US", { maximumFractionDigits: q < 10 ? 2 : 0 });
+const sheetCode = (plan) => { const m = String(plan || "").match(/^\s*([A-Z]{1,3}[-.]?\d{1,3}(\.\d+)?[A-Z]?)\b/); return m ? m[1] : ""; };
+
+function cleanName(name) {
+  return String(name).trim()
+    .replace(/^(cut\s*(and|&)\s*)?(demo(lish)?|remove|removal of|r\s*&\s*r|take out|tear out)\s+/i, "")
+    .replace(/\s+/g, " ").toLowerCase();
+}
+
+function scopeLine(it) {
+  const g = it.group, sheets = [...it.sheets].filter(Boolean);
+  const where = sheets.length ? `, per plans ${sheets.join(", ")}` : "";
+  if (GRADING.has(g)) return `${cap(cleanName(it.item))} (approx. ${fmtQty(it.qty)} ${it.unit}${where})`;
+  const verb = /saw ?cut/i.test(it.item) ? "saw cut, break and haul" : VERB[g] || "remove";
+  return `Properly ${verb} ${cleanName(it.item).replace(/^saw ?cut,?\s*(break\s*(and|&)\s*haul\s*)?/i, "")} (approx. ${fmtQty(it.qty)} ${it.unit}${where})`;
+}
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+function draftScopes(items, facts = {}) {
+  // merge repeated STACK lines (same name + unit)
+  const merged = new Map();
+  for (const it of items) {
+    if (SKIP.has(it.group)) continue;
+    const k = it.item.toLowerCase() + "|" + it.unit;
+    const m = merged.get(k) || { ...it, qty: 0, sheets: new Set() };
+    m.qty += it.qty; m.sheets.add(sheetCode(it.plan));
+    merged.set(k, m);
+  }
+  const all = [...merged.values()];
+  const demo = all.filter((i) => !GRADING.has(i.group)).sort((a, b) => rank(a.group) - rank(b.group));
+  const grade = all.filter((i) => GRADING.has(i.group));
+  const scopes = [];
+  if (demo.length) {
+    const lines = [];
+    for (const it of demo) {
+      let line = scopeLine(it);
+      if (it.group === "ceilings" && facts.ceiling && facts.ceiling.grid === "remain" && !/grid/i.test(line)) line += ", leave existing ceiling grid in place";
+      lines.push(line);
+      if (it.group === "ceilings" && facts.ceiling && facts.ceiling.grid === "remove" && !demo.some((d) => /grid/i.test(d.item))) lines.push("Properly remove ceiling grid");
+      if (it.group === "ceilings" && facts.ceiling && facts.ceiling.devices && !lines.some((l) => /devices/.test(l))) {
+        const d = Object.entries(facts.ceiling.devices).filter(([, n]) => Number(n) > 0).map(([k, n]) => `(${n}) ${k.replace(/_/g, " ")}`);
+        if (d.length) lines.push(`Properly remove ceiling devices: ${d.join(", ")}`);
+      }
+    }
+    scopes.push({ name: "Demolition", lines, _sections: ["Interior", "Exterior"] });
+  }
+  if (grade.length || (facts.excavation && Number(facts.excavation.depth_ft) > 0)) {
+    const lines = grade.map(scopeLine);
+    if (facts.recompaction_required) lines.push("Moisture condition and recompact soils in maximum 12\" lifts (per soils report)");
+    scopes.push({ name: "GRADING/EXCAVATION", lines, _sections: ["Grading"] });
+  }
+  return { scopes, sectionOf: (it) => (GRADING.has(it.group) ? "Grading" : EXTERIOR.has(it.group) ? "Exterior" : "Interior") };
+}
+const rank = (g) => { const i = ORDER.indexOf(g); return i < 0 ? ORDER.indexOf("other") : i; };
+
+// Fill rates from A2Z standards and the rate sheet; mark every line as a draft unless confirmed.
+function draftLines(inputs, rates) {
+  const sheet = (rates && rates.rate_sheet) || [];
+  const std = (rates && rates.standard) || {};
+  const crewDay = (std.crew_day_4man && std.crew_day_4man.rate) || 1600;
+  const workerDay = (std.worker_day && std.worker_day.rate) || 400;
+  const load = (std.truck_load_all_in && std.truck_load_all_in.rate) || 850;
+  const by = {};
+  const problems = [];
+  for (const raw of (inputs && inputs.lines) || []) {
+    const l = { ...raw };
+    const d = String(l.description || "").toLowerCase();
+    if (l.rate == null || l.rate === "") {
+      if (l.category === "Labor") l.rate = /crew/.test(d) ? crewDay : workerDay;
+      else if (l.category === "Hauling" && !/sub/.test(d)) l.rate = load;
+      else if (l.category === "Equipment") {
+        const per = l.per || "Day";
+        const hit = sheet.filter((r) => r.per === per && d.includes(r.item.toLowerCase().split(" - ")[0].slice(0, 18)))[0]
+          || sheet.filter((r) => r.per === per).find((r) => r.item.toLowerCase().split(/[ (]/).filter((w) => w.length > 2).every((w) => d.includes(w)));
+        if (hit) { l.rate = hit.rate; l.basis = (l.basis ? l.basis + "; " : "") + `rate sheet: ${hit.item} per ${hit.per}`; }
+      }
+    }
+    if (l.rate == null || l.rate === "") problems.push(`No rate for "${l.description}". Add one.`);
+    const section = l.section || "Interior";
+    delete l.section; delete l.per;
+    if (!l.confirmed) l.draft = true;
+    (by[section] = by[section] || []).push(l);
+  }
+  const sections = ["Interior", "Exterior", "Grading"].filter((s) => by[s]).map((s) => ({ name: s, lines: by[s] }));
+  return { sections, problems };
+}
+
+function autoEstimate({ items, facts = {}, inputs = {}, job = {}, defaults = DEFAULTS, rates = null, markup = null }) {
+  const { scopes } = draftScopes(items, facts);
+  const { sections, problems } = draftLines(inputs, rates);
+  const m = markup != null ? Number(markup) : Number(defaults.markup);
+  const est = {
+    job: { ...(facts.job || {}), ...job },
+    sections,
+    markup: m,
+    scopes,
+    exclusions: undefined,
+    quantity_checks: facts.quantity_checks || [],
+    excavation: facts.excavation || {},
+    has_takeoff: items.length > 0,
+    confirmed: [],
+    auto: { mode: "draft", markup_source: markup != null ? "this job" : "default", problems, from_plans: facts.sources || {}, questions: facts.questions || [] },
+  };
+  if (facts.exclusions && facts.exclusions.length) est.extra_exclusions = facts.exclusions;
+  if (facts.notes && facts.notes.length) est.extra_notes = facts.notes;
+  // price per scope at the markup, whole dollars, so the scope totals add up exactly
+  const cost = (names) => sections.filter((s) => names.includes(s.name)).reduce((t, s) => t + s.lines.reduce((u, l) => u + Number(l.qty || 0) * Number(l.rate || 0), 0), 0);
+  const base = scopes.filter((s) => !s.alternate);
+  if (sections.length && base.length) {
+    if (base.length === 1) {
+      est.final_price = Math.round(cost(["Interior", "Exterior", "Grading"]) * (1 + m));
+    } else {
+      // costs in a section no scope claims go to the first scope
+      const claimed = new Set(base.flatMap((s) => s._sections));
+      const orphan = cost(["Interior", "Exterior", "Grading"].filter((n) => !claimed.has(n)));
+      base.forEach((s, i) => { s.price = Math.round((cost(s._sections) + (i === 0 ? orphan : 0)) * (1 + m)); });
+      est.final_price = base.reduce((t, s) => t + s.price, 0);
+    }
+    est.pricing_note = `${Math.round(m * 100)}% markup on cost (${est.auto.markup_source}), rounded to whole dollars${base.length > 1 ? " per scope" : ""}.`;
+  }
+  scopes.forEach((s) => delete s._sections);
+  return est;
+}
+
+function reviewSheet(priced, chk, comps, facts = {}) {
+  const L = [];
+  const job = priced.job || {};
+  const m2 = (v) => "$" + Number(v).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  L.push(`# DRAFT estimate: ${job.name || job.location || "New job"}`, "");
+  L.push(`Auto-drafted from the STACK takeoff${Object.keys(facts).length ? " and plan set" : ""}. Nothing here is approved. Review, answer the questions, then build the proposal.`, "");
+  L.push("## Price", "");
+  if (priced.total_cost != null) {
+    L.push(`| | |`, `|---|---|`, `| Estimated cost | ${m2(priced.total_cost)} |`, `| Markup (on cost) | ${Math.round(priced.markup * 100)}% (${(priced.auto || {}).markup_source || "set"}) |`,
+      `| **Proposed bid** | **${m2(priced.final_price)}** |`, `| Margin | ${Math.round(priced.margin * 100)}% |`);
+    for (const s of priced.scopes || []) if (s.price != null) L.push(`| ${s.name} | ${m2(s.price)} |`);
+  } else L.push("Not priced yet: no cost lines.");
+  if (comps && comps.comps && comps.comps.length) {
+    const top = comps.comps.slice(0, 3);
+    const prices = top.map((c) => c.sentTotal).sort((a, b) => a - b);
+    const med = prices[Math.floor(prices.length / 2)];
+    L.push("", `Closest past jobs: ${top.map((c) => `${c.name} ${money0(c.sentTotal)} (${c.outcome}, match ${c.score.toFixed(2)})`).join("; ")}.`);
+    if (priced.final_price) {
+      const r = priced.final_price / med;
+      L.push(`Bid is ${r >= 1 ? Math.round((r - 1) * 100) + "% above" : Math.round((1 - r) * 100) + "% below"} the median of the top 3 (${money0(med)}). Comps are a sanity check, not the price.`);
+    }
+  }
+  L.push("", "## Scope included", "");
+  for (const s of priced.scopes || []) { L.push(`**${s.name}**`); for (const l of s.lines || []) L.push(`- ${l}`); L.push(""); }
+  L.push("## Cost lines (labor, equipment, hauling, other)", "", "| Section | Category | Description | Qty | Rate | Extended | Basis |", "|---|---|---|---|---|---|---|");
+  for (const s of priced.sections || []) for (const l of s.lines) L.push(`| ${s.name} | ${l.category} | ${l.description} | ${l.qty} | ${m2(l.rate)} | ${m2(l.extended)} | ${l.draft ? "DRAFT: " : ""}${l.basis || ""} |`);
+  const src = (priced.auto || {}).from_plans || {};
+  if (Object.keys(src).length) { L.push("", "## Taken from the plans (confirm)", ""); for (const [k, v] of Object.entries(src)) L.push(`- ${k}: ${v}`); }
+  const qs = (priced.auto || {}).questions || [];
+  const fix = chk.issues.filter((i) => i.level === "block"), ask = chk.issues.filter((i) => i.level === "ask"), warn = chk.issues.filter((i) => i.level === "warn");
+  L.push("", "## Needs a person", "");
+  if (!fix.length && !ask.length && !warn.length && !qs.length) L.push("Nothing open. Ready for the estimator's OK.");
+  for (const i of fix) L.push(`- **FIX** ${i.message}`);
+  for (const i of ask) L.push(`- **QUESTION** ${i.message}`);
+  for (const q of qs) L.push(`- **QUESTION (plans)** ${q}`);
+  for (const i of warn) L.push(`- **CHECK** ${i.message}`);
+  if ((priced.extra_exclusions || []).length) { L.push("", "## Suggested exclusions (from plans)", ""); for (const x of priced.extra_exclusions) L.push(`- ${x}`); }
+  return L.join("\n");
+}
+
+module.exports = { autoEstimate, draftScopes, draftLines, reviewSheet, DEFAULTS, cleanName };
+
+}
+};
+var cache = {};
+function req(n) { if (cache[n]) return cache[n].exports; var m = cache[n] = { exports: {} }; defs[n](m, m.exports, req); return m.exports; }
+var price = req("./price"), checks = req("./checks"), common = req("./common"), comps = req("./comps"), auto = req("./auto");
+window.A2ZEstimator = { computeEstimate: price.computeEstimate, checkEstimate: checks.checkEstimate, RULES: checks.RULES, parseStackCsv: common.parseStackCsv, prepareLibrary: common.prepareLibrary, findComps: comps.findComps, autoEstimate: auto.autoEstimate };
+})();
+</script>
+<script>
+const RATES = {"_source":"Concrete & Cost Reference tab of the A2Z job cost workbook (600 PCH copy, Sep 2026). Use only as a menu; the estimator confirms each rate.","standard":{"crew_day_4man":{"rate":1600,"per":"crew-day","note":"4 men x 8 hr x $50/hr; confirmed by Jesse"},"truck_load_all_in":{"rate":850,"per":"load","note":"all-in cost per load incl. dump; confirmed by Jesse. The $375/trip + dump rows below are NOT used for estimating."},"worker_day":{"rate":400,"per":"worker-day","note":"1 worker x 8 hr x $50/hr; same basis as the 4-man crew-day. Use when the estimator gives crew size x days."}},"rate_sheet":[{"category":"Labor Services","item":"General Clean Up Labor - 8 HR Minimum / Trash Pick Up Labor - 4 HR Minimum","rate":50,"per":"Hour","note":""},{"category":"Labor Services","item":"Leadsman - General Clean Up Labor - 8 HR Minimum / Driver - Trash Pick Up Labor - 5 HR Minimum","rate":50,"per":"Hour","note":""},{"category":"Labor Services","item":"Skilled Labor - 8 HR Minimum","rate":65,"per":"Hour","note":""},{"category":"Labor Services","item":"Skilled Leadsman Labor - 8 HR Minimum","rate":85,"per":"Hour","note":""},{"category":"Trucking & Hauling","item":"Full Truck Load","rate":375,"per":"Trip","note":"Excludes dump fees"},{"category":"Trucking & Hauling","item":"1/2 Truck Load","rate":175,"per":"Trip","note":"Excludes dump fees"},{"category":"Trucking & Hauling","item":"Dump Fees","rate":106,"per":"Ton","note":"Starting rate; cost per ton varies by disposal center"},{"category":"Trucking & Hauling","item":"Bobcat with Operator","rate":155,"per":"Hour","note":""},{"category":"Trucking & Hauling","item":"Mini Excavator with Operator","rate":155,"per":"Hour","note":""},{"category":"Trucking & Hauling","item":"Bobcat with Operator and Breaker","rate":185,"per":"Hour","note":""},{"category":"Trucking & Hauling","item":"Mini Excavator with Operator and Breaker","rate":185,"per":"Hour","note":""},{"category":"Roll-Off Containers","item":"40 Yard Container - Within Orange County","rate":800,"per":"Container","note":"Includes up to 5 tons; going rate per ton thereafter"},{"category":"Roll-Off Containers","item":"40 Yard Container - Outside Orange County","rate":900,"per":"Container","note":"Includes up to 5 tons; going rate per ton thereafter"},{"category":"Roll-Off Containers","item":"Low Boy - Clean Concrete or Dirt Only","rate":800,"per":"Container","note":""},{"category":"Roll-Off Containers","item":"Low Boy - Mixed Dirt and Concrete Only","rate":850,"per":"Container","note":""},{"category":"Daily Equipment Rentals","item":"Gas Compressor","rate":110,"per":"Day","note":""},{"category":"Daily Equipment Rentals","item":"Compactor","rate":110,"per":"Day","note":""},{"category":"Daily Equipment Rentals","item":"Generator","rate":125,"per":"Day","note":""},{"category":"Daily Equipment Rentals","item":"Pressure Washer","rate":95,"per":"Day","note":""},{"category":"Daily Equipment Rentals","item":"Gas Water Pump","rate":65,"per":"Day","note":""},{"category":"Daily Equipment Rentals","item":"Fan Blowers","rate":35,"per":"Day","note":""},{"category":"Daily Equipment Rentals","item":"Multi-Tool and Blade","rate":25,"per":"Day","note":"Blade charges may apply"},{"category":"Daily Equipment Rentals","item":"Shop Vac","rate":25,"per":"Day","note":""},{"category":"Daily Equipment Rentals","item":"Chipping Hammer","rate":65,"per":"Day","note":""},{"category":"Daily Equipment Rentals","item":"60 lb. Jack Hammer and Cord","rate":85,"per":"Day","note":""},{"category":"Daily Equipment Rentals","item":"Tow-Behind Compressor, 90 lb. Jack Hammer, Hoses, Diesel Fuel and Delivery","rate":575,"per":"Day","note":""},{"category":"Daily Equipment Rentals","item":"Bobcat Breaker","rate":275,"per":"Day","note":""},{"category":"Daily Equipment Rentals","item":"Cordless Rotary Hammer Drill Set","rate":30,"per":"Day","note":""},{"category":"Daily Equipment Rentals","item":"Skill Saw and Blade","rate":25,"per":"Day","note":"Blade charges may apply"},{"category":"Daily Equipment Rentals","item":"Quickie Saw and Blade","rate":135,"per":"Day","note":"Blade charges may apply"},{"category":"Daily Equipment Rentals","item":"Small Grinder and Blade","rate":35,"per":"Day","note":"Blade charges may apply"},{"category":"Daily Equipment Rentals","item":"Large Grinder and Blade","rate":65,"per":"Day","note":"Blade charges may apply"},{"category":"Daily Equipment Rentals","item":"Industrial Weed Cutter and Blade","rate":45,"per":"Day","note":"Blade charges may apply"},{"category":"Daily Equipment Rentals","item":"Sawzall and Blade","rate":25,"per":"Day","note":"Blade charges may apply"},{"category":"Daily Equipment Rentals","item":"Chain Saw and Chain","rate":85,"per":"Day","note":""},{"category":"Daily Equipment Rentals","item":"50 ft. 12 Gauge Extension Cord","rate":25,"per":"Day","note":""},{"category":"Equipment Rentals - LGP","item":"Mini Skid Steer - 37 in. Wide Wheeled","rate":265,"per":"Day","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Mini Skid Steer - 37 in. Wide Wheeled","rate":900,"per":"Week","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Mini Skid Steer - 37 in. Wide Wheeled","rate":1950,"per":"Month","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Full Sized Skid Steer - 72 in. Wide Wheeled","rate":340,"per":"Day","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Full Sized Skid Steer - 72 in. Wide Wheeled","rate":1200,"per":"Week","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Full Sized Skid Steer - 72 in. Wide Wheeled","rate":2400,"per":"Month","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"8k Mini Excavator","rate":325,"per":"Day","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"8k Mini Excavator","rate":900,"per":"Week","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"8k Mini Excavator","rate":2200,"per":"Month","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"20k Excavator","rate":450,"per":"Day","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"20k Excavator","rate":1500,"per":"Week","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"20k Excavator","rate":3400,"per":"Month","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"30k Excavator","rate":550,"per":"Day","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"30k Excavator","rate":1900,"per":"Week","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"30k Excavator","rate":5400,"per":"Month","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"56k Excavator","rate":750,"per":"Day","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"56k Excavator","rate":2700,"per":"Week","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"56k Excavator","rate":6300,"per":"Month","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Breaker Attachment 500lb (Skidsteer/Mini Ex)","rate":250,"per":"Day","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Breaker Attachment 500lb (Skidsteer/Mini Ex)","rate":700,"per":"Week","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Breaker Attachment 500lb (Skidsteer/Mini Ex)","rate":2000,"per":"Month","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Breaker Attachment 1,000lb (20k Excavator)","rate":300,"per":"Day","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Breaker Attachment 1,000lb (20k Excavator)","rate":1100,"per":"Week","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Breaker Attachment 1,000lb (20k Excavator)","rate":2600,"per":"Month","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Blue Island Attachment","rate":200,"per":"Day","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Blue Island Attachment","rate":800,"per":"Week","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Blue Island Attachment","rate":2000,"per":"Month","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Ride On Scraper (Ride Along Floor Scraper)","rate":575,"per":"Day","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Ride On Scraper (Ride Along Floor Scraper)","rate":2300,"per":"Week","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Ride On Scraper (Ride Along Floor Scraper)","rate":4800,"per":"Month","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Scissor Lift 15 ft Electric","rate":115,"per":"Day","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Scissor Lift 15 ft Electric","rate":350,"per":"Week","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Scissor Lift 15 ft Electric","rate":500,"per":"Month","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Scissor Lift 19 ft Electric","rate":120,"per":"Day","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Scissor Lift 19 ft Electric","rate":295,"per":"Week","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Scissor Lift 19 ft Electric","rate":400,"per":"Month","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Scissor Lift 26 ft Electric","rate":150,"per":"Day","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Scissor Lift 26 ft Electric","rate":375,"per":"Week","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Scissor Lift 26 ft Electric","rate":625,"per":"Month","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Scissor Lift 32 ft Electric","rate":200,"per":"Day","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Scissor Lift 32 ft Electric","rate":475,"per":"Week","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Scissor Lift 32 ft Electric","rate":850,"per":"Month","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Scissor Lift 40 ft Electric","rate":250,"per":"Day","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Scissor Lift 40 ft Electric","rate":750,"per":"Week","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Rentals - LGP","item":"Scissor Lift 40 ft Electric","rate":1300,"per":"Month","note":"LGP Equipment Rentals Inc. - Bell Gardens, CA"},{"category":"Equipment Delivery","item":"Scissor Lift Delivery","rate":150,"per":"Trip","note":"From Montebello training session (Oct 2026); confirm with rental yard"},{"category":"Equipment Delivery","item":"Scissor Lift Pickup","rate":150,"per":"Trip","note":"From Montebello training session (Oct 2026); confirm with rental yard"}]};
+const LIBRARY = {"version":"2026-10-16","notes":"Sent totals reconciled GHL vs Dropbox; disagreements confirmed by Jesse. Outcome from GHL stage. Takeoff items from STACK. When several bids share one STACK takeoff, the takeoff stays on the largest bid only.","jobs":[{"id":"1 half","name":"1 HALF MOON BAY","customer":"MWC CONSTRUCTORS","date":"2026-09-28","sentTotal":258098,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[["DEMOLITION",38695],["HARDSCAPE/SOFTSCAPE",28990],["BASEMENT EXCAVATION/GRADING",190413]],"scopeText":"DEMOLITION\n\nFull Demolition of a single story 2796 sqft house & foundation in its entirety (per plans)\n\nDEMOLITION TOTAL:  $38,695.00\n\nHARDSCAPE/SOFTSCAPE\n\nRemove all existing hardscape softscape & all existing trees (per plans)\n\nHARDSCAPE/SOFTSCAPE TOTAL:  $28,990.00\n\nBASEMENT EXCAVATION/GRADING\n\nExcavate the proposed basement area to the elevations indicated on the approved plans\n\nperform over excavation & recompaction of the basement subgrade & at grade building  pad for portion of house & garage to a depth of approx (36\") (Per soils report)\n\nMoisture condition & recompact soils in maximum (12\") lifts (per soils report)\n\nBASEMENT EXCAVATION/GRADING TOTAL:  $190,413.00","takeoff":[{"item":"Slab Removal","qty":3662.43,"unit":"Sq Ft","count":3,"stackProject":"1 Half Moon Bay MWC"},{"item":"remove site wall and foundation","qty":374.46,"unit":"Ln Ft","count":5,"stackProject":"1 Half Moon Bay MWC"},{"item":"Remove brick hardscape","qty":3974,"unit":"Sq Ft","count":1,"stackProject":"1 Half Moon Bay MWC"},{"item":"remove concrete hardscape","qty":1543.09,"unit":"Sq Ft","count":4,"stackProject":"1 Half Moon Bay MWC"},{"item":"ext footings","qty":314.33,"unit":"Ln Ft","count":3,"stackProject":"1 Half Moon Bay MWC"}]},{"id":"1 la","name":"1 LA SALLE LN LADERA RANCH CA 92694","customer":"TODD CUSTOM HOMES","date":"2026-10-01","sentTotal":25495,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"INTERIOR\n\nProperly demolish jack and jill bathroom in its entirety\n\nCarefully demolish primary shower and tub\n\nRemove carpet flooring in bedroom 4\n\nRemove closet shelf and pole\n\nProperly remove walls per plan\n\nEXTERIOR\n\nCarefully remove roof tiles and stack on site\n\nRemove stucco in areas of new proposed addition only\n\nRemove windows in areas of new proposed addition only\n\nCut back eaves and roofing for new proposed addition only","takeoff":[]},{"id":"101 radial","name":"101 RADIAL, IRVINE, CA 92618","customer":"Easton Design","date":"2026-08-18","sentTotal":17950,"priceSource":"GHL only","priceStatus":"single-source","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"EXTERIOR\n   Properly remove stucco and demolish wall per plans\n\nHARDSCAPE/SOFTSCAPE\nRemove all existing hardscape and softscape per plans\n\nTRENCHING\nProperly dig footings per plans","takeoff":[{"item":"demo wall/stucco","qty":72.92,"unit":"Ln Ft","count":7,"stackProject":"101 Radial, Irvine"},{"item":"dig footing","qty":24.38,"unit":"Sq Ft","count":1,"stackProject":"101 Radial, Irvine"},{"item":"dig 18\" posts","qty":6,"unit":"Ea","count":6,"stackProject":"101 Radial, Irvine"},{"item":"hardscape","qty":254.4,"unit":"Sq Ft","count":1,"stackProject":"101 Radial, Irvine"}]},{"id":"10165 redeye","name":"10165 Redeye Cir Fountain Valley, CA 92708","customer":"Todd Custom Homes","date":"2026-07-21","sentTotal":23620,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Pending Decision"],"scopeTotals":[],"scopeText":"HOUSE DEMO\n   Properly sawcut and remove all stucco for new proposed addition (per plan A301)\nRemove windows & doors (per plan A301)\nRemove roofing material for new proposed addition (per plan S3)\nRemove all drywall (per plans A203)\nRemove all non load bearing walls (per plan A203)\nTOTAL: $10,625\nSOFTSCAPE/HARDSCAPE\nRemove all softscape, & two trees for new proposed addition\nSawcut, Break, & Haul a portion of the garage slab, driveway, & all hardscape walkways only for new proposed addition \nTOTAL: $12,995\nDRIVEWAY\nProperly remove remaining driveway \nTOTAL: $2,454","takeoff":[{"item":"remove for new slab","qty":655.1,"unit":"Sq Ft","count":1,"stackProject":"10165 Redeye cir Fountain Valley"},{"item":"Remove walls","qty":49.97,"unit":"Ln Ft","count":4,"stackProject":"10165 Redeye cir Fountain Valley"},{"item":"Garage slab","qty":21.5,"unit":"Ln Ft","count":1,"stackProject":"10165 Redeye cir Fountain Valley"}]},{"id":"1020 madison","name":"1020 MADISON PL, LAGUNA BEACH","customer":"HARPER BUILD","date":"2026-10-01","sentTotal":8495,"priceSource":"GHL (Jesse)","priceStatus":"confirmed","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[["DEMOLITION",8295]],"scopeText":"DEMOLITION\n\nCarefully deconstruct bathroom in its entirety down to studs\n\nProperly Sawcut/Break/Haul 4inch concrete for new proposed plumbing\n\nProperly protect all working areas and provide air scrubbers to minimize all dust\n\nDEMOLITION TOTAL:  $8,295.00","takeoff":[]},{"id":"104 huntington","name":"104 Huntington st, Hunington beach","customer":"Todd Custom Homes","date":"2026-06-30","sentTotal":35000,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Job Completed"],"scopeTotals":[],"scopeText":"","takeoff":[{"item":"Roof demo","qty":986.49,"unit":"Sq Ft","count":1,"stackProject":"104 Huntington St - 011326"},{"item":"Rear balcony deck demo","qty":56.93,"unit":"Sq Ft","count":1,"stackProject":"104 Huntington St - 011326"},{"item":"Remove windows","qty":15,"unit":"Ea","count":15,"stackProject":"104 Huntington St - 011326"},{"item":"All exterior siding and trim","qty":269.93,"unit":"Ln Ft","count":2,"stackProject":"104 Huntington St - 011326"},{"item":"Int. walls demo","qty":100.05,"unit":"Ln Ft","count":16,"stackProject":"104 Huntington St - 011326"},{"item":"Ext walls demo","qty":51.68,"unit":"Ln Ft","count":8,"stackProject":"104 Huntington St - 011326"},{"item":"Floor area","qty":1769.86,"unit":"Sq Ft","count":5,"stackProject":"104 Huntington St - 011326"},{"item":"Slab saw cutting","qty":42.3,"unit":"Ln Ft","count":3,"stackProject":"104 Huntington St - 011326"},{"item":"concrete demo","qty":147.66,"unit":"Sq Ft","count":4,"stackProject":"104 Huntington St - 011326"}]},{"id":"107 via","name":"107 Via Mentone, Newport Beach","customer":"Olive Tree Construction","date":"2026-08-27","sentTotal":67674,"priceSource":"GHL only","priceStatus":"single-source","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"DEMOLITON\nFull demolition of a residential structure of 1,183 square feet & foundation in it's entirety per plans.\nRemove all hardscape & softscape per plan\nSITE WORK | GRADING\nPerform 4' over-excavation of approx. 2,926 S.F for new proposed\nfoundation (Per Plan s1) and soils report.\nPerform sewer cut & cap, not to exceed 3’ dept of excavation.\nALTERNATE #1 - EROSION CONTROL\nPurchase 180 gravel bags (Per Plan) and grading phase, delivery & labor to lay, install gravel bags\nProperly lay 10'x10' of Filter fabric  ","takeoff":[{"item":"Driveway Aproch","qty":40.61,"unit":"Ln Ft","count":1,"stackProject":"107 Via Mentone, Newport Beach"},{"item":"erosion control - sand bags","qty":159.54,"unit":"Ln Ft","count":4,"stackProject":"107 Via Mentone, Newport Beach"}]},{"id":"111 berry","name":"111 S BERRY ST, BREA","customer":"HANSEN CONCRETE","date":"2026-10-07","sentTotal":43945,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[["DEMOLITION",43945]],"scopeText":"DEMOLITION\n\nRemove drywall (per jobwalk)\n\nRemove finished flooring (per jobwalk)\n\nRemove ceilings (per jobwalk)\n\nDemolish mens bathroom in its entirety (per jobwalk)\n\nRemove necessary ductwork (per jobwalk)\n\nRemove light fixtures (per jobwalk)\n\nDEMOLITION TOTAL:  $43,945.00","takeoff":[]},{"id":"11133 washington","name":"11133 WASHINGTON BLVD. WHITTIER, CA 90606","customer":"RUMSEY CONSTRUCTION","date":"2026-07-21","sentTotal":32135,"priceSource":"sum of 3 scopes","priceStatus":"confirmed","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"DEMOLITION\n   Remove existing wall finishes\nRemove all bathroom fixtures\nRemove non load bearing walls\nRemove all existing flooring and scrap clean of all adhesive and\nthin set\nRemove all t bar/gypsm board ceilings and light fixtures\nTOTAL: $13,245\nSAWCUT/BREAK/HAUL\nProperly Sawcut/Break/Haul 300 sqft of 6inch concrete for plumbing & electrical \nTOTAL: $9,245\nCONCRETE POURBACK\nProperly lay #4 rebar @ 12” on center with #4 dowels at 12” on center &\nepoxy set into existing slab\nPour 300 sqft of 6 inch concrete at 4,000 psi for new proposed plumbing\nand electrical\nTOTAL: $9,645","takeoff":[]},{"id":"1121 kings","name":"1121 KINGS RD","customer":"HARPER CONSTRUCTION","date":"2026-10-01","sentTotal":69495,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Proposal Sent","New Lead"],"scopeTotals":[["INTERIOR",0],["EXTERIOR",0],["SOILS EXPORT",0]],"scopeText":"INTERIOR\n\nRemove walls\n\nRemove interior finishes along walls that will be removed for proposed addition only\n\nINTERIOR TOTAL:  $0.00\n\nEXTERIOR\n\nRemove all existing stucco along side yards and backyard for proposed addition only\n\nRemove windows and doors for proposed addition only\n\nDemo existing old roof for remodel\n\nRemove exterior walls for proposed addition only\n\nDemolish concrete deck in its entirety\n\nDemolish stairs to deck in its entirety\n\nRemove all soft scape in backyard only\n\nEXTERIOR TOTAL:  $0.00\n\nSOILS EXPORT\n\nProperly haul away 8 super 10 loads of soils ($800 per load) while we are still on site\n\nSOILS EXPORT TOTAL:  $0.00","takeoff":[{"item":"Sawcut for new Pads","qty":15.84,"unit":"Ln Ft","count":2,"stackProject":"1121 Kings Rd Due Asap"},{"item":"Cut Raised floor for new pads","qty":23.92,"unit":"Ln Ft","count":2,"stackProject":"1121 Kings Rd Due Asap"},{"item":"Walls to be removed","qty":118.24,"unit":"Ln Ft","count":9,"stackProject":"1121 Kings Rd Due Asap"},{"item":"Peel Back roofing","qty":266.14,"unit":"Sq Ft","count":2,"stackProject":"1121 Kings Rd Due Asap"},{"item":"Remove Concrete Slab","qty":498.65,"unit":"Sq Ft","count":1,"stackProject":"1121 Kings Rd Due Asap"},{"item":"Demo Fireplace in its entirety","qty":9.93,"unit":"Ln Ft","count":1,"stackProject":"1121 Kings Rd Due Asap"},{"item":"bathroom trenching","qty":54.2,"unit":"Ln Ft","count":2,"stackProject":"1121 Kings Rd Due Asap"},{"item":"SE-6 Gravel Bag Berm","qty":325.78,"unit":"Ln Ft","count":3,"stackProject":"1121 Kings Rd"},{"item":"SE-1 Silt Fence","qty":130.67,"unit":"Ln Ft","count":2,"stackProject":"1121 Kings Rd"},{"item":"TC-1 Stabilized Construction Exit","qty":77.97,"unit":"Sq Ft","count":1,"stackProject":"1121 Kings Rd"},{"item":"NS-3 Paving Operations Area (driveway approach)","qty":282.22,"unit":"Sq Ft","count":1,"stackProject":"1121 Kings Rd"},{"item":"WM-1 Material Storage Area","qty":1,"unit":"Ea","count":1,"stackProject":"1121 Kings Rd"},{"item":"WM-5 Solid Waste (Dumpster)","qty":1,"unit":"Ea","count":1,"stackProject":"1121 Kings Rd"},{"item":"WM-8 Concrete Washout","qty":1,"unit":"Ea","count":1,"stackProject":"1121 Kings Rd"},{"item":"WM-9 Sanitary Facility (Porta-John)","qty":1,"unit":"Ea","count":1,"stackProject":"1121 Kings Rd"},{"item":"block wall","qty":88.41,"unit":"Ln Ft","count":1,"stackProject":"1121 Kings Rd"}]},{"id":"113 las","name":"113 s las posas rd San Marcos","customer":"Rumsey Construction","date":"2026-06-22","sentTotal":21699,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Job Completed","Job Completed","Job Completed","Job Completed"],"scopeTotals":[],"scopeText":"Went back to patch and repair some stucco that was damaged during our contracted work. This T&M can be pulled from the profit of this Job-","takeoff":[]},{"id":"1210 washington","name":"1210 E. WASHINGTON ST, COLTON","customer":"SEQUOIA PACIFIC BUILDERS","date":"2026-09-10","sentTotal":68413,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[["INTERIOR",12454],["EXTERIOR",55959]],"scopeText":"INTERIOR\n\nRemove doors frames and hardware per plans.\n\nRemove storefront door hardware per plans.\n\nRemove lockers and millwork per plans.\n\nRemove millwork and shelving per plans.\n\nDemolish bathrooms in their entirety per plans.\n\nRemove all plumbing fixtures per plans.\n\nRemove floor drains and seal per plans.\n\nRemove bathroom and shower finishes per plans.\n\nRemove interior walls and partitions per plans.\n\nRemove all floor finishes per plans.\n\nRemove light fixtures and electrical equipment per plans.\n\nRemove acoustic ceiling systems gypsum board ceilings soffits and wall finishes per plans.\n\nRemove mechanical equipment ductwork grilles and accessories per plans.\n\nINTERIOR TOTAL:  $12,454.00\n\nEXTERIOR\n\nRemove partial storefront glazing per plans.\n\nRemove bollards per plans.\n\nRemove truck dock components and associated concrete as required per plans.\n\nRemove existing RTUs and associated equipment per plans.\n\nRemove roof ladder and hatch per plans.\n\nRemove satellite dish steel support frame and accessories per plans.\n\nCut new openings for new mechanical units per plans.\n\nRemove exterior signs per plans.\n\nEXTERIOR TOTAL:  $55,959.00","takeoff":[{"item":"remove steel can","qty":1,"unit":"Ea","count":1,"stackProject":"1210 E. Washington St, Colton"},{"item":"remove storefront film","qty":65.85,"unit":"Ln Ft","count":3,"stackProject":"1210 E. Washington St, Colton"},{"item":"remove doors","qty":12,"unit":"Ea","count":12,"stackProject":"1210 E. Washington St, Colton"},{"item":"sawcut concrete","qty":295.99,"unit":"Sq Ft","count":6,"stackProject":"1210 E. Washington St, Colton"},{"item":"sawcut linear concrete","qty":354.15,"unit":"Ln Ft","count":6,"stackProject":"1210 E. Washington St, Colton"},{"item":"remove light fixtures","qty":2,"unit":"Ea","count":2,"stackProject":"1210 E. Washington St, Colton"},{"item":"Remove interior walls","qty":969.43,"unit":"Ln Ft","count":34,"stackProject":"1210 E. Washington St, Colton"},{"item":"remove plumbing fixtures","qty":2,"unit":"Ea","count":2,"stackProject":"1210 E. Washington St, Colton"},{"item":"remove furniture?","qty":61.74,"unit":"Sq Ft","count":1,"stackProject":"1210 E. Washington St, Colton"},{"item":"remove flooring, ceiling, shelving, etc.","qty":21928,"unit":"Sq Ft","count":1,"stackProject":"1210 E. Washington St, Colton"},{"item":"remove electric boxes","qty":5,"unit":"Ea","count":5,"stackProject":"1210 E. Washington St, Colton"},{"item":"remove wall finish","qty":11.96,"unit":"Ln Ft","count":1,"stackProject":"1210 E. Washington St, Colton"},{"item":"remove exterior billboard","qty":1,"unit":"Ea","count":1,"stackProject":"1210 E. Washington St, Colton"},{"item":"drill 18\"x26\" concrete","qty":1,"unit":"Ea","count":1,"stackProject":"1210 E. Washington St, Colton"},{"item":"remove truck dock","qty":56.92,"unit":"Sq Ft","count":2,"stackProject":"1210 E. Washington St, Colton"},{"item":"remove gas meter","qty":1,"unit":"Ea","count":1,"stackProject":"1210 E. Washington St, Colton"},{"item":"remove RTUs and ductwork","qty":4,"unit":"Ea","count":4,"stackProject":"1210 E. Washington St, Colton"},{"item":"remove partial roof for new RTU","qty":217.54,"unit":"Sq Ft","count":10,"stackProject":"1210 E. Washington St, Colton"},{"item":"remove exhaust fan, hood, and vent","qty":6,"unit":"Ea","count":6,"stackProject":"1210 E. Washington St, Colton"},{"item":"remove metal access door","qty":1,"unit":"Ea","count":1,"stackProject":"1210 E. Washington St, Colton"},{"item":"remove satellite dish and frame","qty":1,"unit":"Ea","count":1,"stackProject":"1210 E. Washington St, Colton"}]},{"id":"1234 francisquito","name":"1234 W. FRANCISQUITO AVE, WEST COVINA","customer":"TFD CONSTRUCTION","date":"2026-09-10","sentTotal":69700,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"lost","stages":["Proposal Sent"],"scopeTotals":[["DEMOLITION",69700]],"scopeText":"DEMOLITION\n\nRemove millwork per plans (D1.1)\n\nRemove doors per plans (D1.1)\n\nRemove all furniture and equipment per plans (D1.1)\n\nRemove bathroom finishes per plans (D1.1)\n\nRemove all flooring per plans (D1.1)\n\nRemove walls per plans (D1.1)\n\nRemove all HVAC grills and ductwork per plans (M1.0)\n\nRemove existing lights per plans (E1.0)\n\nRemove all existing ceilings and soffits per plans (D1.1)\n\nDEMOLITION TOTAL:  $69,700.00","takeoff":[]},{"id":"12591 harbor","name":"12591 Harbor Blvd, Garden Grove, CA","customer":"","date":"2026-08-27","sentTotal":2592.21,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Job Completed"],"scopeTotals":[],"scopeText":"Fixbid/Contract- Started saw cutting per our C.O this is needed for underground plumbing-","takeoff":[]},{"id":"12625 frederick","name":"12625 FREDERICK ST SUITE B4 & B5 MORENO VALLEY","customer":"RT STEVENS","date":"2026-09-10","sentTotal":29625,"priceSource":"GHL (Jesse)","priceStatus":"confirmed","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[["INTERIOR",42065]],"scopeText":"Interior\n\nRemove flooring and base per plans.\n\nRemove partitions and finishes per plans.\n\nRemove millwork per plans.\n\nRemove doors per plans.\n\nRemove bathroom finishes and fixtures per plans.\n\nDemolish restroom per plans.\n\nRemove electrical box per plans.\n\nRemove ceiling per plans.\n\nRemove ceiling lighting fixtures and finishes per plans.\n\nRemove wall sconce per plans.\n\nINTERIOR TOTAL:  $42,065.00","takeoff":[{"item":"remove flooring and base","qty":4813.94,"unit":"Sq Ft","count":11,"stackProject":"12625 Frederick St, Moreno Valley"},{"item":"remove partitions and finishes","qty":138.81,"unit":"Ln Ft","count":16,"stackProject":"12625 Frederick St, Moreno Valley"},{"item":"remove millwork","qty":32.34,"unit":"Sq Ft","count":2,"stackProject":"12625 Frederick St, Moreno Valley"},{"item":"remove doors","qty":9,"unit":"Ea","count":9,"stackProject":"12625 Frederick St, Moreno Valley"},{"item":"remove bathroom finishes and fixtures","qty":4,"unit":"Ea","count":4,"stackProject":"12625 Frederick St, Moreno Valley"},{"item":"demolish restroom","qty":45.48,"unit":"Sq Ft","count":1,"stackProject":"12625 Frederick St, Moreno Valley"},{"item":"remove electric box","qty":1,"unit":"Ea","count":1,"stackProject":"12625 Frederick St, Moreno Valley"},{"item":"remove ceiling","qty":4770.63,"unit":"Sq Ft","count":4,"stackProject":"12625 Frederick St, Moreno Valley"},{"item":"remove ceiling and lighting fixtures, finishes","qty":41,"unit":"Ea","count":41,"stackProject":"12625 Frederick St, Moreno Valley"},{"item":"remove wall sconce","qty":27.24,"unit":"Ln Ft","count":1,"stackProject":"12625 Frederick St, Moreno Valley"}]},{"id":"12681 harbor","name":"12681 harbor blvd, garden grove","customer":"","date":"2026-07-28","sentTotal":400000,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Work In Progress"],"scopeTotals":[],"scopeText":"-","takeoff":[]},{"id":"12844 excelsior","name":"12844 EXCELSIOR DR NORWALK CA","customer":"LACY CONSTRUCTION","date":"2026-10-01","sentTotal":21454,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"DEMOLITION\n\nProperly remove 500LF of chain link fencing and all post footings.","takeoff":[]},{"id":"14 morning","name":"14 Morning View Dr","customer":"Olive Tree Construction","date":"2026-08-12","sentTotal":44995,"priceSource":"GHL only","priceStatus":"single-source","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"INTERIOR\nCarefully remove and stage all appliances including all toilets in the garage \nCarefully remove all chandeliers, light fixtures and curtains Per Note #22 &12\nDemolish kitchen, pantry and butlers pantry in its entirely to be left to the studs Per Note #5\nCarefully remove all cabinetry throughout Per Note #15\nCarefully remove all baseboard, casing and crown molding per note #10\nCarefully demolish interior walls Per Note # 8 & 26\nCarefully disconnect and demolish 8' soffit at the kitchens upper cabinets Per Note #6\nCarefully remove and scrape all wallpaper throughout Per Note #11\nRemove all 3 fireplace mantles and fireplace boxes Per Note #13 & 14 \nDemolish all closets including garage built ins throughout Per Note #19\nDemolish office and laundry room in its entirely Per Note #17&18\nDemolish all bathrooms throughout left to drywall Per Note 16,20,25,27,28 29\nRemove all tile and carpet flooring throughout Per Note #9\n\nEXTERIOR\nRemove all exterior windows and doors Per Note #1\nDemolish primary bedroom balcony and guard rail to the plywood Per Note #23 & 24\nCarefully remove roof tiles where needed for scaffolding to be installed Per Note #32","takeoff":[{"item":"remove windows","qty":43,"unit":"Ea","count":43,"stackProject":"14 Morning View Dr, Newport Coast, CA 92657"},{"item":"remove doors","qty":16,"unit":"Ea","count":16,"stackProject":"14 Morning View Dr, Newport Coast, CA 92657"},{"item":"remove kitchen applicances","qty":5,"unit":"Ea","count":5,"stackProject":"14 Morning View Dr, Newport Coast, CA 92657"},{"item":"remove bathroom finishes","qty":20,"unit":"Ea","count":20,"stackProject":"14 Morning View Dr, Newport Coast, CA 92657"},{"item":"remove bar and laundry room appliances/sinks","qty":4,"unit":"Ea","count":4,"stackProject":"14 Morning View Dr, Newport Coast, CA 92657"},{"item":"remove staircase","qty":2,"unit":"Ea","count":2,"stackProject":"14 Morning View Dr, Newport Coast, CA 92657"},{"item":"demolish linen closet","qty":19.49,"unit":"Sq Ft","count":2,"stackProject":"14 Morning View Dr, Newport Coast, CA 92657"},{"item":"remove closet walls","qty":30.61,"unit":"Ln Ft","count":7,"stackProject":"14 Morning View Dr, Newport Coast, CA 92657"},{"item":"remove balcony guard rail","qty":27.04,"unit":"Ln Ft","count":1,"stackProject":"14 Morning View Dr, Newport Coast, CA 92657"},{"item":"remove columns?","qty":2,"unit":"Ea","count":2,"stackProject":"14 Morning View Dr, Newport Coast, CA 92657"},{"item":"remove tile floor","qty":4889.06,"unit":"Sq Ft","count":23,"stackProject":"14 Morning View Dr, Newport Coast, CA 92657"},{"item":"remove fireplace fascade","qty":37.92,"unit":"Sq Ft","count":3,"stackProject":"14 Morning View Dr, Newport Coast, CA 92657"},{"item":"remove spiral staircase rail","qty":72.53,"unit":"Ln Ft","count":8,"stackProject":"14 Morning View Dr, Newport Coast, CA 92657"}]},{"id":"14006 riverside","name":"14006 RIVERSIDE DR, SHERMAN OAKS","customer":"ALLEN HEJAZI","date":"2026-09-10","sentTotal":46013,"priceSource":"Dropbox only","priceStatus":"single-source","outcome":"unknown","stages":[],"scopeTotals":[],"scopeText":"Interior\n\nProperly remove furniture.\n\nProperly remove decorative furniture.\n\nProperly remove curtains.\n\nProperly remove fridge and microwave.\n\nProperly remove safe.\n\nProperly remove fire extinguishers.\n\nProperly remove wall-mounted panel and shelves.\n\nProperly remove doors.\n\nProperly remove molding.\n\nProperly remove baseboard.\n\nProperly remove walls.\n\nProperly remove wood flooring and prepare the area for new flooring.\n\nProperly remove access panel.\n\nProperly remove air return grill.\n\nProperly remove recessed lights.\n\nProperly remove track lights.\n\nProperly remove gypsum board ceiling.\n\nExterior\n\nProperly remove signage.\n\nProperly remove shopwindow cladding.","takeoff":[{"item":"remove safe","qty":1,"unit":"Ea","count":1,"stackProject":"14006 Riverside Dr, Sherman Oaks"},{"item":"remove wall mounted panel and shelves","qty":51.32,"unit":"Sq Ft","count":6,"stackProject":"14006 Riverside Dr, Sherman Oaks"},{"item":"remove doors","qty":9,"unit":"Ea","count":9,"stackProject":"14006 Riverside Dr, Sherman Oaks"},{"item":"remove fire extinguishers","qty":2,"unit":"Ea","count":2,"stackProject":"14006 Riverside Dr, Sherman Oaks"},{"item":"remove walls","qty":29.06,"unit":"Ln Ft","count":7,"stackProject":"14006 Riverside Dr, Sherman Oaks"},{"item":"remove fridge and microwave","qty":1,"unit":"Ea","count":1,"stackProject":"14006 Riverside Dr, Sherman Oaks"},{"item":"remove furniture","qty":185.1,"unit":"Sq Ft","count":13,"stackProject":"14006 Riverside Dr, Sherman Oaks"},{"item":"remove curtains","qty":11.71,"unit":"Ln Ft","count":2,"stackProject":"14006 Riverside Dr, Sherman Oaks"},{"item":"remove wood flooring, prep for new","qty":1365.13,"unit":"Sq Ft","count":1,"stackProject":"14006 Riverside Dr, Sherman Oaks"},{"item":"remove shopwindow cladding","qty":2,"unit":"Ea","count":2,"stackProject":"14006 Riverside Dr, Sherman Oaks"},{"item":"remove decorative furniture","qty":4,"unit":"Ea","count":4,"stackProject":"14006 Riverside Dr, Sherman Oaks"},{"item":"remove baseboard","qty":4.53,"unit":"Sq Ft","count":1,"stackProject":"14006 Riverside Dr, Sherman Oaks"},{"item":"remove molding","qty":1.4,"unit":"Sq Ft","count":2,"stackProject":"14006 Riverside Dr, Sherman Oaks"},{"item":"remove recessed lights","qty":38,"unit":"Ea","count":38,"stackProject":"14006 Riverside Dr, Sherman Oaks"},{"item":"remove track lights","qty":79,"unit":"Ea","count":79,"stackProject":"14006 Riverside Dr, Sherman Oaks"},{"item":"remove air return grill","qty":4,"unit":"Ea","count":4,"stackProject":"14006 Riverside Dr, Sherman Oaks"},{"item":"remove access panel","qty":2,"unit":"Ea","count":2,"stackProject":"14006 Riverside Dr, Sherman Oaks"},{"item":"remove signage","qty":1,"unit":"Ea","count":1,"stackProject":"14006 Riverside Dr, Sherman Oaks"},{"item":"remove gypsum board ceiling","qty":1275.84,"unit":"Sq Ft","count":1,"stackProject":"14006 Riverside Dr, Sherman Oaks"}]},{"id":"1412 lincoln","name":"1412 Lincoln Ln, Newport Beach","customer":"ATP Builders","date":"2026-07-21","sentTotal":16995,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Job Completed","Job Completed"],"scopeTotals":[],"scopeText":"Started new fixbid job per our scope-Dumpster, Tow-Behind Compressor, 90 lb. Jack Hammer, Hoses, Diesel Fuel & Delivery","takeoff":[{"item":"for the over excavation","qty":471,"unit":"Sq Ft","count":1,"stackProject":"1412 Lincoln Ln Newport"}]},{"id":"14851 yorba","name":"14851 Yorba street, Tustin","customer":"NEWCASTLE CONSTRUCTION","date":"2026-08-18","sentTotal":258598,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Accepted"],"scopeTotals":[],"scopeText":"LEVEL 0\nProperly remove all non-load bearing walls (per plan XA-2.0)\nProperly remove finished flooring (per plan XA-2.0)\nProperly remove hard lid ceilings (per plan )\nLEVEL 1\nProperly remove all furniture in areas of demolition\nProperly demolish all finished cabinetry\nRemove all doors\nDemolish bathrooms in their entirety\nDemolish all non-load bearing walls \nRemove all vct, tile, & carpet flooring \nRemove tbar ceiling \nLEVEL 2\nProperly remove all furniture in areas of demolition\nProperly demolish all finished cabinetry \nRemove all doors\nRemove all wheel chair bumpers\nDemolish bathrooms in their entirety\nCarefully remove & save interior windows  \nDemolish all non-load bearing walls \nRemove all vct, tile, & carpet flooring \nRemove soffits, & tbar ceilings \n-","takeoff":[{"item":"remove walls","qty":754.05,"unit":"Ln Ft","count":207,"stackProject":"14851 Yorba St, Tustin"},{"item":"remove doors","qty":59,"unit":"Ea","count":59,"stackProject":"14851 Yorba St, Tustin"},{"item":"remove ceiling","qty":703.74,"unit":"Sq Ft","count":17,"stackProject":"14851 Yorba St, Tustin"},{"item":"bathrooms","qty":4,"unit":"Ea","count":4,"stackProject":"14851 Yorba St, Tustin"},{"item":"remove flooring","qty":1134.02,"unit":"Sq Ft","count":7,"stackProject":"14851 Yorba St, Tustin"},{"item":"sf","qty":2467.28,"unit":"Sq Ft","count":1,"stackProject":"14851 Yorba St, Tustin"},{"item":"sf","qty":35387.04,"unit":"Sq Ft","count":1,"stackProject":"14851 Yorba St, Tustin"}]},{"id":"16 downfield","name":"16 DOWNFIELD, COTO DE CAZA","customer":"TODD CUSTOM HOMES","date":"2026-08-27","sentTotal":2495,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"DEMOLITION\n\nDemolish & haul away cover patio, wood fountain base, wood fence in sideyard","takeoff":[]},{"id":"1623 santa","name":"1623 Santa Crus St, Laguna Beach ","customer":"Vaughn Construction","date":"2026-07-21","sentTotal":14495,"priceSource":"GHL only","priceStatus":"single-source","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"","takeoff":[]},{"id":"1720 w","name":"1720 W 135TH ST, GARDENA","customer":"BRADY CONSTRUCTION","date":"2026-09-08","sentTotal":13425,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"won","stages":["Accepted","Proposal Sent","Priced too low"],"scopeTotals":[],"scopeText":"SAWCUT/BREAK/HAUL\n\nProperly demolish concrete for new proposed plumbing","takeoff":[{"item":"demo walls","qty":342.01,"unit":"Ln Ft","count":14,"stackProject":"1720 W 135th St, Gardena"},{"item":"remove tile floor and prep","qty":1523.51,"unit":"Sq Ft","count":2,"stackProject":"1720 W 135th St, Gardena"},{"item":"sawcut concrete","qty":132.3,"unit":"Sq Ft","count":4,"stackProject":"1720 W 135th St, Gardena"},{"item":"sawcut linear concrete","qty":59.07,"unit":"Ln Ft","count":3,"stackProject":"1720 W 135th St, Gardena"},{"item":"sawcut 2","qty":74.56,"unit":"Ln Ft","count":2,"stackProject":"1720 W 135th St, Gardena"}]},{"id":"18191 von","name":"18191 Von Karman Ave, Irvine Steel Beam Removal ","customer":"Kukbo Design","date":"2026-07-01","sentTotal":4150,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Job Completed"],"scopeTotals":[],"scopeText":"","takeoff":[]},{"id":"20 city","name":"20 City Blvd West, Orange","customer":"Tom Rectenwald Construction","date":"2026-09-22","sentTotal":24150,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[["DEMOLITION",24150]],"scopeText":"Demolition\n\nRemove signage per plans (AD101).\n\nRemove plumbing fixtures per plans (AD101).\n\nRemove millwork per plans (AD101).\n\nRemove partition walls per plans (AD101).\n\nRemove blade sign per plans (AD101).\n\nRemove thermostat per plans (AD101).\n\nRemove door per plans (AD101).\n\nRemove flooring and base per plans (AD101).\n\nRemove telecom panel per plans (AD101).\n\nRemove security panel per plans (AD101).\n\nRemove traffic counter per plans (AD101).\n\nRemove speakers and associated wiring per plans (AD102).\n\nRemove security cameras per plans (AD102).\n\nRemove track lights per plans (AD102).\n\nRemove ductwork per plans (M100).\n\nRemove supply and return ducts per plans (M100).\n\nRemove exhaust fan and remaining ductwork per plans (M100).\n\nRemove exhaust fan and remaining ductwork quantities per plans (M100).\n\nRemove supply and return duct quantities per plans (M100).\n\nDEMOLITION TOTAL:  $24,150.00","takeoff":[{"item":"remove signage ad101","qty":1,"unit":"Ea","count":1,"stackProject":"20 City Blvd West, Orange"},{"item":"remove flooring and base ad101","qty":591.27,"unit":"Sq Ft","count":2,"stackProject":"20 City Blvd West, Orange"},{"item":"remove plumbing fixtures ad101","qty":3,"unit":"Ea","count":3,"stackProject":"20 City Blvd West, Orange"},{"item":"remove millwork ad101","qty":192.61,"unit":"Sq Ft","count":20,"stackProject":"20 City Blvd West, Orange"},{"item":"remove partition walls ad101","qty":12.27,"unit":"Ln Ft","count":1,"stackProject":"20 City Blvd West, Orange"},{"item":"remove blade sign ad101","qty":3.85,"unit":"Ln Ft","count":1,"stackProject":"20 City Blvd West, Orange"},{"item":"remove thermostat ad101","qty":1,"unit":"Ea","count":1,"stackProject":"20 City Blvd West, Orange"},{"item":"remove door ad101","qty":1,"unit":"Ea","count":1,"stackProject":"20 City Blvd West, Orange"},{"item":"remove telecom panel ad101","qty":1,"unit":"Ea","count":1,"stackProject":"20 City Blvd West, Orange"},{"item":"remove security panel ad101","qty":1,"unit":"Ea","count":1,"stackProject":"20 City Blvd West, Orange"},{"item":"remove traffic counter ad102","qty":1,"unit":"Ea","count":1,"stackProject":"20 City Blvd West, Orange"},{"item":"remove speakers and wiring ad102","qty":1,"unit":"Ea","count":1,"stackProject":"20 City Blvd West, Orange"},{"item":"remove security cameras ad102","qty":3,"unit":"Ea","count":3,"stackProject":"20 City Blvd West, Orange"},{"item":"remove track lights ad102","qty":25.66,"unit":"Ln Ft","count":5,"stackProject":"20 City Blvd West, Orange"},{"item":"remove ductwork m100","qty":115.4,"unit":"Ln Ft","count":8,"stackProject":"20 City Blvd West, Orange"},{"item":"remove supply and return ducts m100","qty":3.43,"unit":"Sq Ft","count":2,"stackProject":"20 City Blvd West, Orange"},{"item":"remove exhaust fan and remaining ductwork m100","qty":0.99,"unit":"Sq Ft","count":1,"stackProject":"20 City Blvd West, Orange"},{"item":"remove exhaust fan and remaining ductwork qty m100","qty":1,"unit":"Ea","count":1,"stackProject":"20 City Blvd West, Orange"},{"item":"remove supply and return ducts qty m100","qty":2,"unit":"Ea","count":2,"stackProject":"20 City Blvd West, Orange"}]},{"id":"20 talmont","name":"20 Talmont newport beach","customer":"SLS Construction, Inc.","date":"2026-07-28","sentTotal":26000,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Job Completed"],"scopeTotals":[],"scopeText":"Continued working per our scope of work. Removed garage cabinetry, removed 1 fireplace box hauled off all debris off site into a dump truck. Removed all appliances off site into the dump truck.-","takeoff":[]},{"id":"2012 apollo","name":"2012 Apollo CT","customer":"","date":"2026-08-25","sentTotal":26775,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Job Completed"],"scopeTotals":[],"scopeText":"","takeoff":[]},{"id":"202 oceanfront","name":"202 E OCEANFRONT NEWPORT BEACH CA 92661","customer":"ATP CONSTRUCTION","date":"2026-08-27","sentTotal":26240,"priceSource":"GHL (Jesse)","priceStatus":"confirmed","outcome":"won","stages":["Accepted"],"scopeTotals":[["STUCCO REMOVAL",13845],["WINDOW REMOVAL",8945],["INTERIOR DEMOLITION",6295]],"scopeText":"STUCCO REMOVAL\n\nCarefully cut and remove plaster on backside of house (per jobwalk)\n\nClean all studs of nails & paper\n\nSTUCCO REMOVAL TOTAL:  $13,845.00\n\nWINDOW REMOVAL\n\nCarefully remove all windows (within a week of a two man crew)\n\n(Every day passed a week will be $1360 for a two man crew)\n\nWINDOW REMOVAL TOTAL:  $8,945.00\n\nINTERIOR DEMOLITION\n\nCarefully remove all drywall (per jobwalk)\n\nClean all studs by cutting screws\n\nRemove 2 fireplace finishes\n\nINTERIOR DEMOLITION TOTAL:  $6,295.00","takeoff":[]},{"id":"2032 racquet","name":"2032 RACQUET HILL, SANTA ANA, CA 92705","customer":"THT Construction","date":"2026-08-12","sentTotal":7645,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Job Completed"],"scopeTotals":[],"scopeText":"DEMOLITION\n   Properly Demolish kitchen & wet bar down to studs \nRemove kitchen ceiling joists for new proposed ceiling heights\nProperly plastic off area of work for dust control and provide air scrubber to minimize dust","takeoff":[]},{"id":"208 towne","name":"208 TOWNE CENTER DR, COMPTON, CA 90220","customer":"RETAIL TRANSFORMATION SPECIALIST, INC.","date":"2026-10-05","sentTotal":31754,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[["DEMOLITION",31754]],"scopeText":"DEMOLITION\n\nRemove casework per plans (D10)\n\nRemove doors per plans (D10)\n\nRemove plumbing fixtures per plans (D10)\n\nRemove wall furring per plans (D10)\n\nRemove interior walls per plans (D10)\n\nRemove all finished flooring & scrape all adhesive per plans (D10)\n\nRemove all lights per plans (D10)\n\nRemove ceilings per plans (D10)\n\nRemove cart railing per plans (D10)\n\nDEMOLITION TOTAL:  $31,754.00","takeoff":[]},{"id":"21010 pch","name":"21010 PCH HWY, HUNTINGTON BEACH, CA","customer":"RT STEVENS CONSTRUCTION","date":"2026-08-19","sentTotal":8695,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"DEMOLITION\n\nRemove all walls (Per Plan A20.01)\n\nDemolish all hardwood flooring throughout (Per Plan A20.01)","takeoff":[{"item":"remove walls","qty":65.65,"unit":"Ln Ft","count":6,"stackProject":"21010 PCH, Huntington Beach"},{"item":"remove flooring","qty":1174.27,"unit":"Sq Ft","count":1,"stackProject":"21010 PCH, Huntington Beach"},{"item":"remove lights","qty":32,"unit":"Ea","count":32,"stackProject":"21010 PCH, Huntington Beach"}]},{"id":"2158 glendale","name":"2158 Glendale Galleria, Glendale","customer":"JAC Construction","date":"2026-06-30","sentTotal":17895,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Job Completed"],"scopeTotals":[],"scopeText":"","takeoff":[]},{"id":"216 avenida","name":"216 W AVENIDA CORDOBA","customer":"GRANT MUARY CONSTRUCTION","date":"2026-09-11","sentTotal":20467,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[["INTERIOR",17640]],"scopeText":"INTERIOR\n\nCarefully remove all finished cabinetry & carpentry throughout\n\nRemove all existing doors & door frames (Per Plan AD1)\n\nCarefully demolish non-load walls (Per Plan AD1)\n\nRemove all (3) fireplace mantels surrounds & fireplace boxes\n\nProperly protect all areas in our scope\n\nEXTERIOR\n\nRemove all exterior windows for new proposed addition only\n\nProperly remove roofing materials cut back rafter tails & eaves back to the face of all the wall for new proposed addition only\n\nRemove deck & handrail in its entirety\n\nINTERIOR TOTAL:  $17,640.00\n\nALTERNATE #1 - SAWCUT/BREAK\n\nSawcut/Break/Haul off all concrete for new proposed addition\n\nDemolish concrete underneath the deck\n\nALTERNATE #1 - SAWCUT/BREAK TOTAL:  $2,827.50","takeoff":[{"item":"Remove Doors","qty":8,"unit":"Ea","count":8,"stackProject":"216 W Avenida Cordoba, San Clemente"},{"item":"Door Frames","qty":20.3,"unit":"Ln Ft","count":7,"stackProject":"216 W Avenida Cordoba, San Clemente"},{"item":"Existing Walls To Be Removed","qty":111.64,"unit":"Ln Ft","count":17,"stackProject":"216 W Avenida Cordoba, San Clemente"},{"item":"Remove Fireplace","qty":1,"unit":"Ea","count":1,"stackProject":"216 W Avenida Cordoba, San Clemente"},{"item":"Remove All Existing Cabnetry","qty":106.03,"unit":"Sq Ft","count":7,"stackProject":"216 W Avenida Cordoba, San Clemente"},{"item":"Remove All Windows & Frames","qty":7,"unit":"Ea","count":7,"stackProject":"216 W Avenida Cordoba, San Clemente"},{"item":"Remove All Flooring","qty":476.18,"unit":"Sq Ft","count":4,"stackProject":"216 W Avenida Cordoba, San Clemente"},{"item":"REMOVE DECK & GUARDRAIL","qty":150.39,"unit":"Sq Ft","count":1,"stackProject":"216 W Avenida Cordoba, San Clemente"},{"item":"Remove Stairs","qty":6.05,"unit":"Sq Ft","count":1,"stackProject":"216 W Avenida Cordoba, San Clemente"}]},{"id":"2185 south","name":"2185 E South St, Long Beach","customer":"Tilton Builders","date":"2026-06-30","sentTotal":17000,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Job Completed"],"scopeTotals":[],"scopeText":"","takeoff":[]},{"id":"2200 harbor","name":"2200 HARBOR BLVD, COSTA MESA","customer":"TILTON BUILDERS","date":"2026-07-21","sentTotal":242495,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"lost","stages":["Priced too low"],"scopeTotals":[],"scopeText":"INTERIOR\n   Remove all industrial racks on sales floor and walls (per plan D1.0) \nRemove all signage (per plan D1.0)\nDemolish all restrooms in their entirety (per plan D1.0)\nDemolish 565LF of metals stud walls (per plan D1.0) \nRemove all finished and rough MEPS (per plan D1.0, HD1.0, PD1.0) \nRemove roof ladder and hatch system\n\nEXTERIOR\nDemolish existing canopy, columns, & footings in their entirety (per plan D2.0)\nDemolish existing garden center concrete walls, slab, & footings in their entirety (per plan D2.0)\nRemove garden center fence (per plan D2.0)\nRemove all signage (per plan D2.0)\nRemove all stucco, lath, paper on front of building (per plan D2.0)\nDemolish all vegetation & planters (per plan D2.0)\nDemolish 2,500 sqft of sidewalk (per plan D1.0)\nRemove storefront, glazing, & all doors (per plan D2.0)\nSawcut 7 opening for new man doors (per plan D2.0)\nRemove 5 rtu units in their entirety (per plan D1.1)\nCut 11 openings in roof for new proposed rtu units (per plan D1.1)\nRemove 3,500 sqft of roofing membrane & rigid insulation to accommodate for new entry \n(per plan D1.1)\nRemove compactor door (per plan D2.0)\nRemove exterior lights (per plan D2.0)\n\nALTERNATE #1\nProperly sawcut/break/haul for all new proposed plumbing lines\nTOTAL: $41,254","takeoff":[{"item":"flooring to be removed","qty":90187.57,"unit":"Sq Ft","count":1,"stackProject":"Dicks Costa Mesa"},{"item":"Protect columns","qty":5,"unit":"Ea","count":5,"stackProject":"Dicks Costa Mesa"},{"item":"note check off","qty":32,"unit":"Ea","count":32,"stackProject":"Dicks Costa Mesa"},{"item":"Remove glazed storefront doors","qty":105.45,"unit":"Ln Ft","count":3,"stackProject":"Dicks Costa Mesa"},{"item":"Remove entry awning","qty":29.12,"unit":"Ln Ft","count":1,"stackProject":"Dicks Costa Mesa"},{"item":"Cut opening in exterior walls","qty":26.96,"unit":"Ln Ft","count":7,"stackProject":"Dicks Costa Mesa"},{"item":"Remove ladder system","qty":1,"unit":"Ea","count":1,"stackProject":"Dicks Costa Mesa"},{"item":"Remove metal doors","qty":7,"unit":"Ea","count":7,"stackProject":"Dicks Costa Mesa"},{"item":"Remove tenants floor stripping","qty":17.67,"unit":"Ln Ft","count":1,"stackProject":"Dicks Costa Mesa"},{"item":"Remove garden center","qty":3504.87,"unit":"Sq Ft","count":1,"stackProject":"Dicks Costa Mesa"},{"item":"Remove sidewalk for new ext wall","qty":69.67,"unit":"Ln Ft","count":2,"stackProject":"Dicks Costa Mesa"},{"item":"Remove sidewalk","qty":2554.73,"unit":"Sq Ft","count":1,"stackProject":"Dicks Costa Mesa"},{"item":"Remove existing columns s","qty":8,"unit":"Ea","count":8,"stackProject":"Dicks Costa Mesa"},{"item":"Remove garden center fence","qty":261.45,"unit":"Ln Ft","count":1,"stackProject":"Dicks Costa Mesa"},{"item":"Remove vegetation planters","qty":620.35,"unit":"Sq Ft","count":3,"stackProject":"Dicks Costa Mesa"},{"item":"Remove interior walls","qty":564.77,"unit":"Ln Ft","count":13,"stackProject":"Dicks Costa Mesa"},{"item":"Remove bathroom","qty":744.72,"unit":"Sq Ft","count":1,"stackProject":"Dicks Costa Mesa"},{"item":"Remove roof in its entirety","qty":2762.24,"unit":"Sq Ft","count":1,"stackProject":"Dicks Costa Mesa"},{"item":"Remove roofing membrain","qty":3429.3,"unit":"Sq Ft","count":1,"stackProject":"Dicks Costa Mesa"},{"item":"Remove entrance tower and roofing system","qty":824.62,"unit":"Sq Ft","count":1,"stackProject":"Dicks Costa Mesa"},{"item":"Remove coping cap","qty":273.1,"unit":"Ln Ft","count":2,"stackProject":"Dicks Costa Mesa"},{"item":"Remove rtu unit","qty":5,"unit":"Ea","count":5,"stackProject":"Dicks Costa Mesa"},{"item":"cut roof openings","qty":11,"unit":"Ea","count":11,"stackProject":"Dicks Costa Mesa"},{"item":"cut roofing openings area","qty":914.92,"unit":"Sq Ft","count":11,"stackProject":"Dicks Costa Mesa"},{"item":"Remove exhaust fan","qty":3,"unit":"Ea","count":3,"stackProject":"Dicks Costa Mesa"},{"item":"Remove roof hatch","qty":1,"unit":"Ea","count":1,"stackProject":"Dicks Costa Mesa"},{"item":"Remove canopies","qty":1807.51,"unit":"Sq Ft","count":2,"stackProject":"Dicks Costa Mesa"},{"item":"garden center roof","qty":3410.55,"unit":"Sq Ft","count":1,"stackProject":"Dicks Costa Mesa"},{"item":"Remove tenants at home sign","qty":31.73,"unit":"Ln Ft","count":2,"stackProject":"Dicks Costa Mesa"},{"item":"Remove stucco","qty":8809.92,"unit":"Sq Ft","count":5,"stackProject":"Dicks Costa Mesa"},{"item":"columns measurement","qty":11.89,"unit":"Ln Ft","count":2,"stackProject":"Dicks Costa Mesa"},{"item":"sawcut exterior walls area for sqft of concrete","qty":171.35,"unit":"Sq Ft","count":7,"stackProject":"Dicks Costa Mesa"},{"item":"LF for exterior concrete walls","qty":148.27,"unit":"Ln Ft","count":8,"stackProject":"Dicks Costa Mesa"},{"item":"garden center measurements","qty":166.91,"unit":"Ln Ft","count":3,"stackProject":"Dicks Costa Mesa"},{"item":"Remove compactor door","qty":1,"unit":"Ea","count":1,"stackProject":"Dicks Costa Mesa"},{"item":"Remove duct work","qty":210.68,"unit":"Ln Ft","count":4,"stackProject":"Dicks Costa Mesa"},{"item":"remove units","qty":6,"unit":"Ea","count":6,"stackProject":"Dicks Costa Mesa"},{"item":"Remove exterior light s","qty":22,"unit":"Ea","count":22,"stackProject":"Dicks Costa Mesa"},{"item":"Sawcut for plumbing","qty":808.11,"unit":"Ln Ft","count":12,"stackProject":"Dicks Costa Mesa"},{"item":"Remove slab for plumbing","qty":3654,"unit":"Sq Ft","count":2,"stackProject":"Dicks Costa Mesa"}]},{"id":"2211 vista","name":"2211 E VISTA ROYAL DR, ORANGE","customer":"Pyramid Construction","date":"2026-07-21","sentTotal":8000,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Job Completed"],"scopeTotals":[],"scopeText":"REMOVED TILE FLOORING AND CARPET PER OUR SCOPE-","takeoff":[]},{"id":"23441 via","name":"23441 Via Alondra C/O Erosion Control","customer":"SC Homes","date":"2026-07-21","sentTotal":6999,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Job Completed"],"scopeTotals":[],"scopeText":"erosion control laying out 760 gravel bags and a 10'x29' construction entrance of 3-5\" rock \nproposal total $6,999-Dumpster","takeoff":[],"takeoffNote":"STACK takeoff 'SC HOMES VIA ALONDRA 23441' belongs to the main bid at this address; this record is a smaller/related bid"},{"id":"23465 civic","name":"23465 Civic Center Way Malibu, CA 90265","customer":"JAC Carpentry","date":"2026-08-12","sentTotal":3454,"priceSource":"Dropbox (Jesse)","priceStatus":"confirmed","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"Properly Remove 8ft x 16ft wood framed wall (per plans)","takeoff":[]},{"id":"2352 fordam","name":"2352 Fordam Drive ","customer":"Ray Lewis","date":"2026-08-18","sentTotal":45190,"priceSource":"GHL only","priceStatus":"single-source","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"","takeoff":[]},{"id":"2360 long","name":"2360 LONG BEACH BLVD","customer":"AYDEN STONE","date":"2026-09-11","sentTotal":33110,"priceSource":"GHL (Jesse)","priceStatus":"confirmed","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"Interior Demolition\n\nRemove doors and walls per plans\n\nRemove cabinetry per plans","takeoff":[{"item":"remove doors","qty":30,"unit":"Ea","count":30,"stackProject":"2360 Long Beach Blvd Long Beach"},{"item":"demo walls","qty":510.77,"unit":"Ln Ft","count":49,"stackProject":"2360 Long Beach Blvd Long Beach"},{"item":"demo cabinetry and fixtures","qty":188.34,"unit":"Sq Ft","count":11,"stackProject":"2360 Long Beach Blvd Long Beach"}]},{"id":"24708 5th highland","name":"24708 5th Highland","customer":"Viraj Patel Harikrishna Gas Llc","date":"2026-07-06","sentTotal":101695,"priceSource":"GHL only","priceStatus":"single-source","outcome":"lost","stages":["Proposal Declined -Hot"],"scopeTotals":[],"scopeText":"","takeoff":[{"item":"Pad SqFt","qty":4558.02,"unit":"Sq Ft","count":1,"stackProject":"24708 5th st Highland, CA Due 5/16/25"},{"item":"gas station canopies","qty":8406.29,"unit":"Sq Ft","count":3,"stackProject":"24708 5th st Highland, CA Due 5/16/25"},{"item":"New Pad","qty":4611.58,"unit":"Sq Ft","count":1,"stackProject":"24708 5th st Highland, CA Due 5/16/25"},{"item":"site sqft","qty":55455.98,"unit":"Sq Ft","count":1,"stackProject":"24708 5th st Highland, CA Due 5/16/25"},{"item":"gravel bags","qty":273.1,"unit":"Ln Ft","count":24,"stackProject":"24708 5th st Highland, CA Due 5/16/25"},{"item":"Shoring linear footage","qty":278.71,"unit":"Ln Ft","count":1,"stackProject":"24708 5th st Highland, CA Due 5/16/25"}]},{"id":"24762 anchor","name":"24762 Anchor Lantern, Dana Point","customer":"Todd Custom Homes","date":"2026-07-06","sentTotal":9717,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Accepted","In Negotiation"],"scopeTotals":[],"scopeText":"ALTERNATE #1\nRemove backyard slider door, exterior stucco wall and deconstruct chiminey by hand for new\nproposed slider doors-","takeoff":[]},{"id":"25533 marguerite","name":"25533 MARGUERITE PKWY MISSION VIEJO","customer":"GM NORTHRUP CONSTRUCTION","date":"2026-09-24","sentTotal":89454,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[["INTERIOR",35737],["EXTERIOR",53917]],"scopeText":"INTERIOR\n\nProperly remove VCT flooring or carpet per plans (D1.0)\n\nProperly remove partition walls per plans (D1.0)\n\nProperly remove ACT and ceiling grid per plans (D1.1)\n\nProperly remove doors per plans (D1.0)\n\nProperly remove plumbing fixtures per plans (D1.0)\n\nProperly remove light fixtures per plans (D1.1)\n\nProperly remove branch duct per plans (M1.0)\n\nINTERIOR TOTAL:  $35,737.00\n\nEXTERIOR\n\nProperly remove tiles per plans (A3.0)\n\nProperly remove exterior wall per plans (D1.0)\n\nProperly remove glazing per plans (D1.0/A3.0)\n\nProperly remove sliding doors per plans (D1.0)\n\nProperly remove drive-thru window per plans (D1.0)\n\nProperly remove exterior light per plans (A3.1)\n\nProperly remove drive-thru canopy per plans (D1.1)\n\nProperly remove bollards per plans (D1.0)\n\nProperly remove drive-thru lane per plans (D1.0)\n\nEXTERIOR TOTAL:  $53,917.00","takeoff":[{"item":"remove glazing d1.0","qty":15.56,"unit":"Ln Ft","count":3,"stackProject":"Oreillys Mission Viejo"},{"item":"remove sliding doors d1.0","qty":2,"unit":"Ea","count":2,"stackProject":"Oreillys Mission Viejo"},{"item":"remove exterior wall d1.0","qty":3.21,"unit":"Ln Ft","count":1,"stackProject":"Oreillys Mission Viejo"},{"item":"remove vct flooring or carpet d1.0","qty":6996.66,"unit":"Sq Ft","count":1,"stackProject":"Oreillys Mission Viejo"},{"item":"remove partition walls d1.0","qty":179.77,"unit":"Ln Ft","count":15,"stackProject":"Oreillys Mission Viejo"},{"item":"remove doors d1.0","qty":3,"unit":"Ea","count":3,"stackProject":"Oreillys Mission Viejo"},{"item":"remove plumbing fixtures d1.0","qty":8,"unit":"Ea","count":8,"stackProject":"Oreillys Mission Viejo"},{"item":"remove drivethru window d1.0","qty":4.88,"unit":"Ln Ft","count":1,"stackProject":"Oreillys Mission Viejo"},{"item":"remove drivethru lane d1.0","qty":99.15,"unit":"Sq Ft","count":1,"stackProject":"Oreillys Mission Viejo"},{"item":"remove bollards d1.0","qty":7,"unit":"Ea","count":7,"stackProject":"Oreillys Mission Viejo"},{"item":"remove light fixtures d1.1","qty":198,"unit":"Ea","count":198,"stackProject":"Oreillys Mission Viejo"},{"item":"remove ACT and ceiling grid d1.1","qty":5215.96,"unit":"Sq Ft","count":2,"stackProject":"Oreillys Mission Viejo"},{"item":"remove drivethru canopy d1.1","qty":458.27,"unit":"Sq Ft","count":1,"stackProject":"Oreillys Mission Viejo"},{"item":"remove glazing a3.0","qty":191.36,"unit":"Sq Ft","count":1,"stackProject":"Oreillys Mission Viejo"},{"item":"remove tiles a3.0","qty":739.47,"unit":"Sq Ft","count":2,"stackProject":"Oreillys Mission Viejo"},{"item":"remove drivethru window a3.1","qty":1,"unit":"Ea","count":1,"stackProject":"Oreillys Mission Viejo"},{"item":"remove exterior light a3.1","qty":1,"unit":"Ea","count":1,"stackProject":"Oreillys Mission Viejo"},{"item":"remove branch duct m1.0","qty":8,"unit":"Ea","count":8,"stackProject":"Oreillys Mission Viejo"}]},{"id":"25686 rolling","name":"25686 Rolling Hills Rd, laguna Hills","customer":"Grant Muary Construction","date":"2026-07-01","sentTotal":9245,"priceSource":"GHL only","priceStatus":"single-source","outcome":"lost","stages":["Proposal Declined -Hot"],"scopeTotals":[],"scopeText":"","takeoff":[]},{"id":"26 blue","name":"26 Blue Heron ","customer":"Grace Built ","date":"2026-08-18","sentTotal":26477,"priceSource":"GHL only","priceStatus":"single-source","outcome":"lost","stages":["Proposal Declined -Warm"],"scopeTotals":[],"scopeText":"Interior & Exterior Demolition \n\nINTERIOR\nDemolish all gypsum board and walls per plan only for new proposed second story addition. \n\nEXTERIOR\nCarefully deconstruct roof structure per plans only for new proposed second story addition. \n\nRemove windows and door per plans. \n26477","takeoff":[]},{"id":"267 e","name":"267 E 16TH ST, COSTA MESA, CA 92627","customer":"RIDEGEWAY DEVOLPMENT","date":"2026-10-08","sentTotal":48964,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Generate Proposal"],"scopeTotals":[],"scopeText":"DEMOLITION\n\nFull demolition of a residential structure of 2000 square feet & foundation in its entirety (Per Plan D1)\n\nRemove all Hardscape & Softscape (Per Plan D1)\n\nSITEWORK | GRADING\n\nPerform","takeoff":[{"item":"House & foundation","qty":2000.28,"unit":"Sq Ft","count":1,"stackProject":"267 E. 16TH STREET, COSTA MESA"},{"item":"Hardscape","qty":2269.11,"unit":"Sq Ft","count":3,"stackProject":"267 E. 16TH STREET, COSTA MESA"},{"item":"Construction Entrance","qty":274.57,"unit":"Sq Ft","count":1,"stackProject":"267 E. 16TH STREET, COSTA MESA"},{"item":"Block wall","qty":290.93,"unit":"Ln Ft","count":1,"stackProject":"267 E. 16TH STREET, COSTA MESA"},{"item":"Sand bags","qty":80.75,"unit":"Ln Ft","count":2,"stackProject":"267 E. 16TH STREET, COSTA MESA"}]},{"id":"26891 soria","name":"26891 SORIA CIR, IRVINE, CA 92691","customer":"HUNTER CONSTRUCTION","date":"2026-08-10","sentTotal":4000,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"won","stages":["Job Completed","CO Sent","Job Completed"],"scopeTotals":[],"scopeText":"DEMOLITION\n\nProperly demolish shake roof down to board sheathing","takeoff":[{"item":"sawcut pads","qty":194.31,"unit":"Sq Ft","count":16,"stackProject":"26891 Soria Cir Mission Viejo"}]},{"id":"27 waves","name":"27 Waves End, Newport Beach","customer":"Grace Built","date":"2026-09-04","sentTotal":65000,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Accepted","Job Completed","Cancelled","Cancelled"],"scopeTotals":[],"scopeText":"Continued grading around the property per our scope of work.-","takeoff":[{"item":"Rooms","qty":15945.76,"unit":"Sq Ft","count":18,"stackProject":"27 Waves End, Crystal Cove"},{"item":"Interior Wall","qty":1517.8,"unit":"Ln Ft","count":65,"stackProject":"27 Waves End, Crystal Cove"},{"item":"Exterior Wall","qty":399.7,"unit":"Ln Ft","count":20,"stackProject":"27 Waves End, Crystal Cove"},{"item":"Double Swing Door","qty":3,"unit":"Ea","count":3,"stackProject":"27 Waves End, Crystal Cove"},{"item":"Single Swing Door","qty":2,"unit":"Ea","count":2,"stackProject":"27 Waves End, Crystal Cove"}]},{"id":"2740 pt","name":"2740 PT DEL MAR, CORONA DEL MAR","customer":"RDM GENERAL CONTRACTING","date":"2026-09-22","sentTotal":4295,"priceSource":"Dropbox (Jesse)","priceStatus":"confirmed","outcome":"won","stages":["Job Completed"],"scopeTotals":[["DEMOLITION",4295]],"scopeText":"DEMOLITION\n\nDemolish primary shower in its entirety down to studs & subfloor\n\nCarefully remove vanities in all (3) bathrooms\n\nRemove all tile flooring down to the subfloor in primary & hallway bathroom\n\nCarefully remove closet doors per walk\n\nA2Z will provide all necessary protection to protect all finishes with plastic, zippers, & to minimize dust we will supply (2) air scrubbers in the areas of construction.\n\nDEMOLITION TOTAL:  $4,295.00","takeoff":[]},{"id":"2741 ocean","name":"2741 OCEAN BLVD, CORONA DEL MAR, CA 92625","customer":"DUGALLY OBERGELD","date":"2026-09-03","sentTotal":6745,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"won","stages":["Job Completed"],"scopeTotals":[],"scopeText":"EROSION CONTROL\n\nPurchase, deliver, & install 900 gravel bags, 4ftx100ft of filter fabric, & 170LF of straw waddle","takeoff":[]},{"id":"3080 airway","name":"3080 AIRWAY AVE, COSTA MESA","customer":"DOUG ZALAR HOMES","date":"2026-10-13","sentTotal":5645,"priceSource":"GHL only","priceStatus":"single-source","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"INTERIOR\n\nRemove air vent (Per Walk)\n\nRemove all drywall for new proposed addition (Per Walk)\n\nRemove all hand railings (Per Walk)\n\nSawcut & break out concrete (Per walk)","takeoff":[]},{"id":"31722 florence","name":"31722 FLORENCE AVE, LAGUNA BEACH, CA 92651","customer":"TAMAR BALIAN","date":"2026-08-20","sentTotal":14989,"priceSource":"Dropbox (Jesse)","priceStatus":"confirmed","outcome":"lost","stages":["Proposal Declined -Warm"],"scopeTotals":[],"scopeText":"INTERIOR\n\nRemove kitchen appliances (save vent)\n\nDemolish kitchen down to studs and remove kitchen/dining room wall\n\nDemolish bathroom on top floor down to studs (leaving ceiling)\n\nRemove approx 4 ft of drywall to adjacent room\n\nRemove all flooring down to subfloor throughout top floor\n\nEXTERIOR\n\nRemove siding on street side of house, keeping stucco behind siding in place (pad and protect deck)\n\nRemove 3 windows and slider, including 8 inches of stucco around windows and slider, from kitchen to dining room (All windows to be left in place ready to be removed)\n\nRemove stucco, windows, and drywall facing the street on lower level (leaving 6 inches of stucco below the second story deck for new waterproofing)\n\nRemove door on west side (to be framed in) (all openings to be covered up)\n\nCut and remove floor tiles at grout line, where concrete to be demolished for new proposed plumbing\n\nTrench from 18 in down to 3 ft to locate clean out and dig 5 ft x 5 ft x 3 ft for tie in\n\nProperly backfill and compact after drains are installed\n\nSAWCUT/BREAK/HAUL\n\n25 feet x 24 in x 4 in for new proposed plumbing","takeoff":[]},{"id":"31792 via","name":"31792 Via Perdiz, Coto de Caza","customer":"Todd Custom Homes","date":"2026-07-21","sentTotal":12795,"priceSource":"GHL only","priceStatus":"single-source","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"","takeoff":[]},{"id":"31882 via","name":"31882 VIA OSO, COTO DE CAZA","customer":"TODD CUSTOM HOMES","date":"2026-08-27","sentTotal":27604,"priceSource":"GHL (Jesse)","priceStatus":"confirmed","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[["DEMOLITION",21454],["SAWCUT/BREAK/HAUL",8250]],"scopeText":"DEMOLITION\n\nRemove all roofing material down to sheeting\n\nRemove all siding, windows, doors, and framing for new proposed additions and opening\n\nRemove railing on balcony above front door\n\nRemove necessary pavers for new proposed deck\n\nDEMOLITION TOTAL:  $21,454.00\n\nSAWCUT/BREAK/HAUL\n\nProperly remove 4-inch concrete in garage for new proposed junior ADU\n\nSAWCUT/BREAK/HAUL TOTAL:  $8,250.00","takeoff":[]},{"id":"32891 calle","name":"32891 Calle Perfecto, San Juan Capistrano","customer":"MWC Constructors","date":"2026-06-22","sentTotal":32495,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Job Completed"],"scopeTotals":[],"scopeText":"test SOW","takeoff":[]},{"id":"3310 macarthur","name":"3310 W MacArthur Blvd","customer":"Lacy Construction","date":"2026-07-06","sentTotal":13890,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["In Negotiation","Job Completed"],"scopeTotals":[],"scopeText":"-","takeoff":[]},{"id":"334 beverly","name":"334 N BEVERLY HILLS DRIVE","customer":"JUSTIN VROOMAN","date":"2026-09-10","sentTotal":23845,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"INTERIOR\n\nRemove GWB, ACT ceilings, soffits, & connections to structure above per plans.\n\nRemove finished lighting, hvac registers, ductwork, & electrical conduits per plans.\n\nRemove abandoned electrical wiring, & conduit per plans.\n\nRemove existing flooring and scrape adhesive per plans.\n\nRemove partition walls per plans.\n\nEXTERIOR\n\nRemove signage per plans.\n\nRemove storefront glazing & plaster in its entirety per plans.\n\nCarefully remove decorative coping & parapet cap per plans.","takeoff":[{"item":"remove parapet cap","qty":4.6,"unit":"Ln Ft","count":1,"stackProject":"334 N Beverly Hills Drive"},{"item":"remove decorative coping","qty":14.56,"unit":"Ln Ft","count":1,"stackProject":"334 N Beverly Hills Drive"},{"item":"remove signage","qty":13.45,"unit":"Ln Ft","count":1,"stackProject":"334 N Beverly Hills Drive"},{"item":"remove floor and adhesive","qty":202.96,"unit":"Sq Ft","count":3,"stackProject":"334 N Beverly Hills Drive"},{"item":"remove storefront","qty":931.12,"unit":"Sq Ft","count":3,"stackProject":"334 N Beverly Hills Drive"},{"item":"remove partition walls","qty":34.19,"unit":"Ln Ft","count":2,"stackProject":"334 N Beverly Hills Drive"},{"item":"remove decorative coping","qty":36.8,"unit":"Sq Ft","count":1,"stackProject":"334 N Beverly Hills Drive"},{"item":"remove signage","qty":2,"unit":"Ea","count":2,"stackProject":"334 N Beverly Hills Drive"},{"item":"remove life safety and exit signage","qty":1,"unit":"Ea","count":1,"stackProject":"334 N Beverly Hills Drive"},{"item":"remove GWB or ACT ceilings","qty":330.83,"unit":"Sq Ft","count":2,"stackProject":"334 N Beverly Hills Drive"}]},{"id":"33611 camino","name":"33611 Camino Capistrano, San Juan Capistrano","customer":"SLS Construction, Inc.","date":"2026-07-28","sentTotal":5989,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"DEMOLITION\nCarefully deconstruct five (5) walls at the existing office and cubicle areas, approximately 10' long x 10' high each.\n\nRemove existing glue-down carpet at the side entrance and scrape the substrate clean of remaining carpet adhesive and residue.\n\nProvide all necessary protection for adjacent areas, finishes, and surfaces affected by A2Z's scope of work.","takeoff":[]},{"id":"33633 san","name":"33633 San Juan Capistrano","customer":"SLS Construction, Inc.","date":"2026-08-05","sentTotal":7295,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Job Completed"],"scopeTotals":[],"scopeText":"Interior demo per our scope of work-","takeoff":[]},{"id":"380 main","name":"380 S MAIN ST, ORANGE, CA 92868 UNITED STATES","customer":"PYRAMID CONSTRUCTION","date":"2026-08-26","sentTotal":6930,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Generate Proposal"],"scopeTotals":[["DEMOLITION",4265]],"scopeText":"DEMOLITION\n\nProperly protect all flooring throughout\n\nCarefully remove 857 sqft of T-Bar, light fixtures & any abandoned duct work at the main room & hallway (Per walk)\n\nDEMOLITION TOTAL:  $4,265.00\n\nALTERNATE #1\n\nCarefully remove 763 sqft of T-Bar, light fixtures & any abandoned duct work at the kitchen area (Per walk)\n\nALTERNATE #1 TOTAL:  $2,665.00","takeoff":[]},{"id":"385 colorado","name":"385 E COLORADO BLVD STE 110","customer":"BRADY CONSTRUCTION","date":"2026-06-22","sentTotal":21454,"priceSource":"GHL (Jesse)","priceStatus":"confirmed","outcome":"won","stages":["Job Completed","Job Completed"],"scopeTotals":[["DEMOLITION",18150]],"scopeText":"DEMOLITION\n\nProperly demolish all walls (per plans)\n\nProperly remove acoustic ceiling, lighting & venting (per plans)\n\nDEMOLITION TOTAL:  $18,150.00","takeoff":[{"item":"demolish office","qty":672.21,"unit":"Sq Ft","count":2,"stackProject":"385 E Colorado Blvd Ste 110"},{"item":"remove walls","qty":231.74,"unit":"Ln Ft","count":14,"stackProject":"385 E Colorado Blvd Ste 110"},{"item":"remove acoustic ceiling, lighting, and venting","qty":1321.7,"unit":"Sq Ft","count":2,"stackProject":"385 E Colorado Blvd Ste 110"},{"item":"sqft","qty":7399.34,"unit":"Sq Ft","count":1,"stackProject":"385 E Colorado Blvd Ste 110"}]},{"id":"4 merrimac","name":"4 MERRIMAC, IRVINE, CA 92620","customer":"EASTON DESIGN","date":"2026-08-18","sentTotal":14545,"priceSource":"GHL only","priceStatus":"single-source","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"DEMOLITION\n   Remove doors, walls, windows, and portion of roof per plans","takeoff":[{"item":"demo roof","qty":78.43,"unit":"Sq Ft","count":2,"stackProject":"4 Merrimac, Irvine"},{"item":"remove windows","qty":9,"unit":"Ea","count":9,"stackProject":"4 Merrimac, Irvine"},{"item":"remove walls","qty":138.13,"unit":"Ln Ft","count":15,"stackProject":"4 Merrimac, Irvine"},{"item":"remove doors","qty":2,"unit":"Ea","count":2,"stackProject":"4 Merrimac, Irvine"},{"item":"Patio cover","qty":151.53,"unit":"Sq Ft","count":1,"stackProject":"4 Merrimac, Irvine"}]},{"id":"411 truman","name":"411 Truman Ave","customer":"P B Contracting","date":"2026-06-19","sentTotal":1709.4,"priceSource":"GHL only","priceStatus":"single-source","outcome":"lost","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"","takeoff":[]},{"id":"416 south","name":"416 SOUTH ATLANTIC BLVD, MONTEREY PARK","customer":"KEVIN SIEBALD","date":"2026-08-19","sentTotal":178692,"priceSource":"Dropbox only","priceStatus":"single-source","outcome":"unknown","stages":[],"scopeTotals":[["DEMOLITION",154239]],"scopeText":"DEMOLITION\n\nRemove all finished cabinetry and carpentry per plans (AD2.0).\n\nRemove plumbing fixtures per plans (AD2.0).\n\nRemove doors per plans (AD2.1).\n\nRemove walls and partitions per plans (AD2.0-AD2.1).\n\nRemove finished flooring\n\nRemove air return grilles and diffusers per plans (AD2.0-AD2.2).\n\nRemove T-bar & gypsum board ceiling per plans (AD2.2).\n\nRemove recessed lights per plans (AD2.3).\n\nRemove glazing per plans (AD2.1).\n\nRemove exterior signs per plans (AD2.4).\n\nDEMOLITION TOTAL:  $154,239.00\n\nALTERNATE #1\n\nSawcut/break/haul 8in concrete per plans (P2.0)(E2.0).\n\nALTERNATE #1 TOTAL:  $24,454.00","takeoff":[{"item":"demo walls and partitions","qty":1041.97,"unit":"Ln Ft","count":54,"stackProject":"416 S. Atlantic Blvd, Monterey Park"},{"item":"demo glazing","qty":149.22,"unit":"Ln Ft","count":10,"stackProject":"416 S. Atlantic Blvd, Monterey Park"},{"item":"demo plumbing fixture","qty":50,"unit":"Ea","count":50,"stackProject":"416 S. Atlantic Blvd, Monterey Park"},{"item":"remove doors","qty":17,"unit":"Ea","count":17,"stackProject":"416 S. Atlantic Blvd, Monterey Park"},{"item":"demo millwork","qty":244.84,"unit":"Sq Ft","count":8,"stackProject":"416 S. Atlantic Blvd, Monterey Park"},{"item":"remove benches","qty":6,"unit":"Ea","count":6,"stackProject":"416 S. Atlantic Blvd, Monterey Park"},{"item":"remove drinking fountain","qty":1,"unit":"Ea","count":1,"stackProject":"416 S. Atlantic Blvd, Monterey Park"},{"item":"remove diffusers","qty":67,"unit":"Ea","count":67,"stackProject":"416 S. Atlantic Blvd, Monterey Park"},{"item":"remove air return grill","qty":29,"unit":"Ea","count":29,"stackProject":"416 S. Atlantic Blvd, Monterey Park"},{"item":"remove t bar ceiling","qty":17047.2,"unit":"Sq Ft","count":5,"stackProject":"416 S. Atlantic Blvd, Monterey Park"},{"item":"remove gypsum board ceiling","qty":1103.49,"unit":"Sq Ft","count":1,"stackProject":"416 S. Atlantic Blvd, Monterey Park"},{"item":"remove tile ceiling","qty":25955.36,"unit":"Sq Ft","count":4,"stackProject":"416 S. Atlantic Blvd, Monterey Park"},{"item":"remove recessed lights","qty":139,"unit":"Ea","count":139,"stackProject":"416 S. Atlantic Blvd, Monterey Park"},{"item":"remove exterior signs","qty":2,"unit":"Ea","count":2,"stackProject":"416 S. Atlantic Blvd, Monterey Park"},{"item":"sawcut for plumbing","qty":127.67,"unit":"Ln Ft","count":4,"stackProject":"416 S. Atlantic Blvd, Monterey Park"},{"item":"sawcut","qty":604.86,"unit":"Ln Ft","count":4,"stackProject":"416 S. Atlantic Blvd, Monterey Park"},{"item":"concrete removal","qty":4955.95,"unit":"Sq Ft","count":2,"stackProject":"416 S. Atlantic Blvd, Monterey Park"}]},{"id":"416 atlantic","name":"416 South Atlantic Blvd, Monterey Park","customer":"Kevin Siebald","date":"2026-08-20","sentTotal":178692,"priceSource":"GHL only","priceStatus":"single-source","outcome":"lost","stages":["Cancelled"],"scopeTotals":[],"scopeText":"DEMOLITION\nRemove all finished cabinetry and carpentry per plans (AD2.0).\nRemove plumbing fixtures per plans (AD2.0).\nRemove doors per plans (AD2.1).\nRemove walls and partitions per plans (AD2.0-AD2.1).\nRemove finished flooring \nRemove air return grilles and diffusers per plans (AD2.0-AD2.2).\nRemove T-bar & gypsum board ceiling per plans (AD2.2).\nRemove recessed lights per plans (AD2.3).\nRemove glazing per plans (AD2.1).\nRemove exterior signs per plans (AD2.4).\n154239\nALTERNATE #1\nSawcut/break/haul 8in concrete per plans (P2.0)(E2.0).\n24454","takeoff":[],"takeoffNote":"STACK takeoff '416 S. Atlantic Blvd, Monterey Park' belongs to the main bid at this address; this record is a smaller/related bid"},{"id":"421 marguerite","name":"421 Marguerite, Corona Del Mar","customer":"Templeton Custom Homes","date":"2026-06-10","sentTotal":10000,"priceSource":"GHL only","priceStatus":"single-source","outcome":"lost","stages":["Pending Decision"],"scopeTotals":[],"scopeText":"","takeoff":[{"item":"3ft over-ex","qty":1327.47,"unit":"Sq Ft","count":2,"stackProject":"421 Marguerite, Corona Del Mar"}]},{"id":"427 cabrillo","name":"427 CABRILLO ST, COSTA MESA, CA 92627","customer":"INTERIOR HABITAT","date":"2026-10-14","sentTotal":18695,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[["GRADING",18695]],"scopeText":"GRADING\n\nProperly perform a 3ft over ex & recompact in 12\" lifts for new 1137 sqft addition in the back\n\nProperly perform a 10\" scarify & recompact for new 543 sqft addition in the front\n\nGRADING TOTAL:  $18,695.00","takeoff":[]},{"id":"4521 orrington","name":"4521 Orrington Rd, Corona Del Mar","customer":"MWC Constructors","date":"2026-06-25","sentTotal":1077449,"priceSource":"GHL only","priceStatus":"single-source","outcome":"lost","stages":["Priced too low"],"scopeTotals":[],"scopeText":"","takeoff":[{"item":"basement sqft","qty":6065.96,"unit":"Sq Ft","count":1,"stackProject":"4521 Orrington Rd CDM MWC Constructors"},{"item":"sand bags","qty":294.99,"unit":"Ln Ft","count":5,"stackProject":"4521 Orrington Rd CDM MWC Constructors"},{"item":"straw waddle","qty":76.2,"unit":"Ln Ft","count":1,"stackProject":"4521 Orrington Rd CDM MWC Constructors"},{"item":"Silt fence","qty":340.12,"unit":"Ln Ft","count":4,"stackProject":"4521 Orrington Rd CDM MWC Constructors"}]},{"id":"4800 laurel","name":"4800 Laurel Canyon Blvd Valley Village","customer":"Brady Construction","date":"2026-08-03","sentTotal":12000,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Job Completed"],"scopeTotals":[],"scopeText":"","takeoff":[]},{"id":"48650 seminole","name":"48650 SEMINOLE DR, STE 206 CABAZON","customer":"JAC CARPENTRY","date":"2026-06-30","sentTotal":4250,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"won","stages":["Proposal Sent","Job Completed","Job Completed","Cancelled","Job Completed","Job Completed","Job Completed"],"scopeTotals":[],"scopeText":"Replace and paint several pieces of insulation per request\n\nPerform two drywall patches\n\nHaul away materials","takeoff":[]},{"id":"5012 old","name":"5012 Old Ranch Rd, La Verne","customer":"","date":"2026-06-25","sentTotal":11645,"priceSource":"GHL only","priceStatus":"single-source","outcome":"lost","stages":["Proposal Declined -Warm"],"scopeTotals":[],"scopeText":"","takeoff":[]},{"id":"555 the","name":"555 THE SHOPS AT MISSION VIEJO","customer":"PHILLIP PLAKE","date":"2026-09-07","sentTotal":16169,"priceSource":"GHL (Jesse)","priceStatus":"confirmed","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"Demolition\n\nProperly sawcut and haul concrete per plans","takeoff":[{"item":"sawcut concrete","qty":197.93,"unit":"Sq Ft","count":24,"stackProject":"Sur La Table- Mission Viejo"},{"item":"sawcut linear concrete","qty":750.47,"unit":"Ln Ft","count":32,"stackProject":"Sur La Table- Mission Viejo"}]},{"id":"5757 santa","name":"5757 E SANTA ANA CANYON RD, ANAHEIM","customer":"TILTON PACIFIC CONSTRUCTION","date":"2026-08-31","sentTotal":52957,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Generate Proposal"],"scopeTotals":[["INTERIOR",31775],["EXTERIOR",21182]],"scopeText":"Interior\n\nRemove doors per plans.\n\nRemove lockers and millwork per plans.\n\nRemove millwork per plans.\n\nRemove bathroom partitions per plans.\n\nRemove shower heads and finishes per plans.\n\nRemove bathroom finishes per plans.\n\nRemove acoustic ceiling per plans.\n\nRemove gypsum board ceiling per plans.\n\nRemove mechanical ducts per plans.\n\nRemove walls per plans.\n\nRemove floor finishes per plans.\n\nRemove wood flooring per plans.\n\nINTERIOR TOTAL:  $31,775.00\n\nExterior\n\nRemove partial storefront and curb per plans.\n\nRemove railing and stairs per plans.\n\nRemove rooftop units per plans.\n\nRemove roof ladder and chute per plans.\n\nRemove roof hatch per plans.\n\nRemove TPO roofing per plans.\n\nEXTERIOR TOTAL:  $21,182.00","takeoff":[{"item":"remove walls","qty":942.63,"unit":"Ln Ft","count":27,"stackProject":"5757 E Santa Ana Canyon Rd"},{"item":"demo floor finish","qty":7234.82,"unit":"Sq Ft","count":3,"stackProject":"5757 E Santa Ana Canyon Rd"},{"item":"demo wood flooring","qty":7866.14,"unit":"Sq Ft","count":4,"stackProject":"5757 E Santa Ana Canyon Rd"},{"item":"remove doors","qty":27,"unit":"Ea","count":27,"stackProject":"5757 E Santa Ana Canyon Rd"},{"item":"remove millwork","qty":4,"unit":"Ea","count":4,"stackProject":"5757 E Santa Ana Canyon Rd"},{"item":"demo lockers & millwork","qty":467.48,"unit":"Sq Ft","count":10,"stackProject":"5757 E Santa Ana Canyon Rd"},{"item":"remove shower heads & finishes","qty":14,"unit":"Ea","count":14,"stackProject":"5757 E Santa Ana Canyon Rd"},{"item":"remove bathroom finishes","qty":14,"unit":"Ea","count":14,"stackProject":"5757 E Santa Ana Canyon Rd"},{"item":"remove bathroom partitions","qty":45.89,"unit":"Ln Ft","count":9,"stackProject":"5757 E Santa Ana Canyon Rd"},{"item":"demo railing and stairs","qty":862.74,"unit":"Sq Ft","count":1,"stackProject":"5757 E Santa Ana Canyon Rd"},{"item":"remove roof ladder and shoot","qty":1,"unit":"Ea","count":1,"stackProject":"5757 E Santa Ana Canyon Rd"},{"item":"remove partial storefront and curb","qty":1,"unit":"Ea","count":1,"stackProject":"5757 E Santa Ana Canyon Rd"},{"item":"remove acoustic ceiling","qty":25391.48,"unit":"Sq Ft","count":1,"stackProject":"5757 E Santa Ana Canyon Rd"},{"item":"remove gypsum board ceiling","qty":4664.57,"unit":"Sq Ft","count":1,"stackProject":"5757 E Santa Ana Canyon Rd"},{"item":"remove mechanical ducts","qty":4,"unit":"Ea","count":4,"stackProject":"5757 E Santa Ana Canyon Rd"},{"item":"remove rt units","qty":11,"unit":"Ea","count":11,"stackProject":"5757 E Santa Ana Canyon Rd"},{"item":"remove roof hatch","qty":1,"unit":"Ea","count":1,"stackProject":"5757 E Santa Ana Canyon Rd"},{"item":"remove tpo roofing","qty":33138.5,"unit":"Sq Ft","count":1,"stackProject":"5757 E Santa Ana Canyon Rd"}]},{"id":"600 pch","name":"600 PACIFIC COAST HWY SEAL BEACH","customer":"CRM CONSTRUCTION","date":"2026-09-24","sentTotal":21454,"priceSource":"sent PDF (Jesse)","priceStatus":"confirmed","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[["DEMOLITION",11060]],"scopeText":"Demolition\n\nProperly remove cabinetry per plans (A101)\n\nProperly demolish metal stud walls and wall segment per plans (A101)\n\nProperly cut and remove carpet per plans (A101)\n\nDEMOLITION TOTAL:  $11,060.00","takeoff":[{"item":"demo metal stud walls","qty":53.27,"unit":"Ln Ft","count":8,"stackProject":"600 PCH, Seal Beach"},{"item":"cut and demo floor carpet","qty":1783.81,"unit":"Sq Ft","count":1,"stackProject":"600 PCH, Seal Beach"},{"item":"remove millwork","qty":66.61,"unit":"Sq Ft","count":1,"stackProject":"600 PCH, Seal Beach"},{"item":"demo sink","qty":1,"unit":"Ea","count":1,"stackProject":"600 PCH, Seal Beach"}]},{"id":"6131 telegraph","name":"6131 TELEGRAPH RD, COMMERCE, CA 90040","customer":"BLACKSTAR BUILDERS","date":"2026-10-14","sentTotal":5495,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"won","stages":["Accepted","Cancelled"],"scopeTotals":[],"scopeText":"DEMOLITION\n\nProperly remove metal railing & blinds","takeoff":[]},{"id":"622 el","name":"622 E EL SEGUNDO BLVD","customer":"GM NORTHRUP CONSTRUCTION","date":"2026-09-10","sentTotal":27674,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[["DEMOLITION",27674]],"scopeText":"Demolition\n\nRemove all doors (per plan D1.0)\n\nRemove all plumbing fixtures (per plan D1.0)\n\nRemove all partition walls (per plan D1.0)\n\nRemove steps (per plan D1.0)\n\nRemove all VCT/Carpet flooring and scrape all adhesive (per plan D1.0)\n\nRemove all gypsum board ceiling & tiles (leaving grid) (per plan D1.1)\n\nRemove all light fixtures (per plan D1.1)\n\nDEMOLITION TOTAL:  $27,674.00","takeoff":[{"item":"remove doors","qty":12,"unit":"Ea","count":12,"stackProject":"622 E El Segundo Blvd"},{"item":"remove steps","qty":6.8,"unit":"Sq Ft","count":1,"stackProject":"622 E El Segundo Blvd"},{"item":"remove plumbing fixtures","qty":4,"unit":"Ea","count":4,"stackProject":"622 E El Segundo Blvd"},{"item":"remove partition walls","qty":107.45,"unit":"Ln Ft","count":11,"stackProject":"622 E El Segundo Blvd"},{"item":"remove vct flooring or carpet where applicable","qty":10754.24,"unit":"Sq Ft","count":2,"stackProject":"622 E El Segundo Blvd"},{"item":"gypsum board ceiling","qty":626.84,"unit":"Sq Ft","count":1,"stackProject":"622 E El Segundo Blvd"},{"item":"remove act tiles","qty":4374.2,"unit":"Sq Ft","count":1,"stackProject":"622 E El Segundo Blvd"}]},{"id":"624 loretta","name":"624 Loretta Drive","customer":"Terin Dumas","date":"2026-08-18","sentTotal":78461,"priceSource":"GHL only","priceStatus":"single-source","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"","takeoff":[]},{"id":"647 spectrum","name":"647 Spectrum Center Drive Irvine","customer":"JAC Construction","date":"2026-07-01","sentTotal":16495,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Job Completed"],"scopeTotals":[],"scopeText":"","takeoff":[]},{"id":"705 orchid","name":"705 Orchid Ave Corona Del Mar","customer":"","date":"2026-08-13","sentTotal":54854,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Job Completed"],"scopeTotals":[],"scopeText":"Started working per our scope of workRemoved and recycled $600 of copper-","takeoff":[]},{"id":"8421 melrose","name":"8421 MELROSE PL, WEST HOLLYWOOD, CA 90069","customer":"BLACKSTAR CONTRACTORS","date":"2026-08-12","sentTotal":1150,"priceSource":"GHL = Dropbox","priceStatus":"agree","outcome":"open","stages":["Proposal Sent","Proposal Sent"],"scopeTotals":[],"scopeText":"DEMOLITION\n\nProperly remove all rocks from two planter & remove metal flange that makes of the planter","takeoff":[{"item":"remove gate","qty":9.99,"unit":"Ln Ft","count":1,"stackProject":"8421 Melrose Pl - Joe Rosales"},{"item":"Remove interior walls","qty":48.01,"unit":"Ln Ft","count":8,"stackProject":"8421 Melrose Pl - Joe Rosales"},{"item":"Remove doors","qty":7,"unit":"Ea","count":7,"stackProject":"8421 Melrose Pl - Joe Rosales"},{"item":"remove bathroom fixtures","qty":4,"unit":"Ea","count":4,"stackProject":"8421 Melrose Pl - Joe Rosales"},{"item":"Remove Flooring finish","qty":1228.23,"unit":"Sq Ft","count":8,"stackProject":"8421 Melrose Pl - Joe Rosales"},{"item":"remove furniture","qty":18,"unit":"Ea","count":18,"stackProject":"8421 Melrose Pl - Joe Rosales"},{"item":"exterior patio flooring","qty":196.25,"unit":"Sq Ft","count":1,"stackProject":"8421 Melrose Pl - Joe Rosales"},{"item":"remove palm trees","qty":4,"unit":"Ea","count":4,"stackProject":"8421 Melrose Pl - Joe Rosales"},{"item":"remove ceiling","qty":68.46,"unit":"Sq Ft","count":1,"stackProject":"8421 Melrose Pl - Joe Rosales"},{"item":"remove spotlights","qty":6,"unit":"Ea","count":6,"stackProject":"8421 Melrose Pl - Joe Rosales"}]},{"id":"888 lincoln","name":"888 Lincoln Boulevard","customer":"Ray Lewis ","date":"2026-07-28","sentTotal":106675,"priceSource":"GHL only","priceStatus":"single-source","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"DEMOLITION\nDemolish and remove existing non-structural interior partition/demising walls as required. Existing restroom walls and restroom facilities are to remain and will be protected during demolition.\n\nRemove existing suspended/drop ceiling, including ceiling tiles and grid.\n\nRemove and dispose of existing furniture, retail fixtures, gondolas, shelving, displays, register counters, cabinetry, casework, millwork, and miscellaneous tenant improvements.\n\nRemove existing pharmacy-related casework, counters, cabinetry, shelving, and miscellaneous fixtures.\n\nRemove existing walk-in cooler/freezer panels and associated fixtures. Refrigerant recovery and mechanical/electrical disconnects are to be performed by others prior to demolition.\n\nRemove existing lighting fixtures after electrical systems have been properly disconnected, de-energized, and made safe by others.\n\nRemove existing HVAC ductwork, associated distribution components  and vents only.  HVAC units not included in our price. \n\nRemove doors, frames, and miscellaneous components associated with walls being demolished.\n\nLoad, haul, and legally dispose of demolition-generated debris.\n\nProvide all necessary protection for adjacent areas, finishes, and components designated to remain within A2Z's scope of work.\n\nUpon completion of demolition, leave the work area broom swept and free of demolition-generated debris.\n\n76,777.00","takeoff":[]},{"id":"co backfill for 32891 calle perfecto, san juan capistrano","name":"CO Backfill for 32891 Calle Perfecto, San Juan Capistrano","customer":"MWC Constructors","date":"2026-07-28","sentTotal":5145,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Job Completed"],"scopeTotals":[],"scopeText":"","takeoff":[]},{"id":"co stump grind 23441 via alondra, trabucco canyon","name":"CO Stump Grind 23441 Via Alondra, Trabucco Canyon","customer":"","date":"2026-07-28","sentTotal":788,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Job Completed"],"scopeTotals":[],"scopeText":"","takeoff":[],"takeoffNote":"STACK takeoff 'SC HOMES VIA ALONDRA 23441' belongs to the main bid at this address; this record is a smaller/related bid"},{"id":"co#1 3310 w macarthur blvd","name":"CO#1 3310 W MacArthur Blvd","customer":"LACY CONSTRUCTION","date":"2026-10-06","sentTotal":2997,"priceSource":"GHL only","priceStatus":"single-source","outcome":"open","stages":["Generate CO"],"scopeTotals":[],"scopeText":"DEMOLITION\nRemove ACT flooring.\nRemove walls.\nRemove t-bar ceiling.","takeoff":[]},{"id":"ewb 385 e colorado blvd 2nd floor ","name":"EWB 385 E Colorado blvd 2nd floor ","customer":"Brady Construction","date":"2026-06-22","sentTotal":21454,"priceSource":"GHL (Jesse)","priceStatus":"confirmed","outcome":"lost","stages":["Cancelled"],"scopeTotals":[],"scopeText":"","takeoff":[{"item":"Remove ceiling","qty":899.48,"unit":"Sq Ft","count":2,"stackProject":"EWB Los Robles Pasadena Office 2nd Floor"}]},{"id":"kia cerritos","name":"Kia Cerritos","customer":"Sauer Lopez","date":"2026-08-18","sentTotal":857000,"priceSource":"GHL only","priceStatus":"single-source","outcome":"open","stages":["Proposal Sent"],"scopeTotals":[],"scopeText":"","takeoff":[]},{"id":"marriott - shadow ridge ","name":"Marriott - Shadow Ridge ","customer":"McGuire Builders","date":"2026-09-22","sentTotal":129898,"priceSource":"GHL only","priceStatus":"single-source","outcome":"open","stages":["Pending Decision"],"scopeTotals":[],"scopeText":"","takeoff":[]},{"id":"via alondra 23441 coto de caza ","name":"Via Alondra 23441 Coto De Caza ","customer":"SC Homes","date":"2026-06-22","sentTotal":49000,"priceSource":"GHL only","priceStatus":"single-source","outcome":"won","stages":["Work In Progress"],"scopeTotals":[],"scopeText":"Fixbid/contract\nHelp the concrete subs compact with  a compactor-","takeoff":[{"item":"sand bags","qty":376.72,"unit":"Ln Ft","count":1,"stackProject":"SC HOMES VIA ALONDRA 23441"},{"item":"gravel entry","qty":290.37,"unit":"Sq Ft","count":1,"stackProject":"SC HOMES VIA ALONDRA 23441"}]}]};
+const DEFAULTS = {"markup":1.3,"_markup_note":"Set by Jesse 2026-10-27: run markup at 130%. Markup on cost: price = cost x 2.3 (about 57% margin). Auto mode uses it; the estimator can change it per job with --markup.","draft_prefix":"DRAFT - "} || { markup: 1.3 };
+let COMPS = null;
+const E = window.A2ZEstimator;
+const THEME_KEY = "a2z-bot-theme";
+function setTheme(t) {
+  document.documentElement.dataset.gc = t;
+  const b = document.getElementById("btnTheme");
+  if (b) b.textContent = t === "color" ? "Dark theme" : "Colorful theme";
+  try { localStorage.setItem(THEME_KEY, t); } catch (e) {}
+}
+setTheme((() => { const q = new URLSearchParams(location.search).get("theme"); if (q === "color" || q === "dark") return q; try { return localStorage.getItem(THEME_KEY) === "color" ? "color" : "dark"; } catch (e) { return "dark"; } })());
+document.getElementById("btnTheme").addEventListener("click", () => setTheme(document.documentElement.dataset.gc === "color" ? "dark" : "color"));
+const STORE = "a2z-checker-draft";
+const SECTIONS = ["Interior", "Exterior", "Grading"];
+const CATS = ["Labor", "Hotel", "Hauling", "Equipment", "Fuel", "Misc"];
+const blank = () => ({ job: {}, markup: DEFAULTS.markup, sections: [], scopes: [{ name: "Demolition", lines: [], price: null }], confirmed: [], quantity_checks: [], excavation: {} });
+let est = load();
+
+function load() {
+  try { const s = localStorage.getItem(STORE); if (s) return normalize(JSON.parse(s)); } catch (e) {}
+  return blank();
+}
+function save() { try { localStorage.setItem(STORE, JSON.stringify(est)); } catch (e) {} }
+function normalize(e) {
+  e = Object.assign(blank(), e || {});
+  e.job = e.job || {}; e.excavation = e.excavation || {}; e.confirmed = e.confirmed || []; e.quantity_checks = e.quantity_checks || []; e.scopes = e.scopes || []; e.sections = e.sections || [];
+  return e;
+}
+const money = (v) => v == null || isNaN(v) ? "" : "$" + Number(v).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const get = (o, p) => p.split(".").reduce((a, k) => (a == null ? a : a[k]), o);
+function set(o, p, v) { const k = p.split("."); let t = o; k.slice(0, -1).forEach((x) => (t = t[x] = t[x] || {})); t[k[k.length - 1]] = v; }
+const numOrNull = (v) => (v === "" || v == null ? null : Number(v));
+
+// flat list of lines <-> sections
+function flatLines() { const out = []; est.sections.forEach((s) => (s.lines || []).forEach((l) => out.push(Object.assign({ section: s.name }, l)))); return out; }
+function setLines(flat) {
+  const by = {}; flat.forEach((l) => { const { section, ...rest } = l; (by[section] = by[section] || []).push(rest); });
+  est.sections = SECTIONS.filter((s) => by[s]).map((s) => ({ name: s, lines: by[s] }));
+}
+
+function renderForm() {
+  document.querySelectorAll("[data-f]").forEach((el) => {
+    const v = get(est, el.dataset.f);
+    if (el.dataset.bool !== undefined) el.checked = !!v; else el.value = v == null ? "" : v;
+  });
+  document.getElementById("markupPct").value = est.markup == null || est.markup === "" ? "" : Math.round(est.markup * 10000) / 100;
+  renderLines(); renderScopes(); renderQcs();
+}
+function renderLines() {
+  const fl = flatLines();
+  document.getElementById("lines").innerHTML = fl.map((l, i) => `<tr data-i="${i}">
+    <td><select data-k="section">${SECTIONS.map((s) => `<option${s === l.section ? " selected" : ""}>${s}</option>`).join("")}</select></td>
+    <td><select data-k="category">${CATS.map((s) => `<option${s === l.category ? " selected" : ""}>${s}</option>`).join("")}</select></td>
+    <td class="desc"><input data-k="description" list="rateItems" value="${esc(l.description)}"></td>
+    <td><input data-k="qty" type="number" step="any" value="${esc(l.qty)}" style="width:80px"></td>
+    <td><input data-k="rate" type="number" step="any" value="${esc(l.rate)}" style="width:100px"></td>
+    <td class="num" data-ext>${money(Number(l.qty) * Number(l.rate))}</td>
+    <td><button class="x" data-del title="Remove">&times;</button></td></tr>`).join("");
+}
+function renderScopes() {
+  document.getElementById("scopes").innerHTML = est.scopes.map((s, i) => `<div class="scope" data-i="${i}">
+    <div class="row"><div><label>Scope name</label><input data-k="name" value="${esc(s.name)}"></div>
+    <div><label>Price ($)</label><input data-k="price" type="number" step="1" value="${esc(s.price)}"></div>
+    <label class="chk"><input type="checkbox" data-k="alternate"${s.alternate ? " checked" : ""}> Alternate</label>
+    <button class="x" data-del title="Remove">&times;</button></div>
+    <textarea data-k="lines" placeholder="Properly remove ...">${esc((s.lines || []).join("\n"))}</textarea></div>`).join("");
+}
+function renderQcs() {
+  document.getElementById("qcs").innerHTML = est.quantity_checks.map((q, i) => `<tr data-i="${i}">
+    <td><input data-k="item" value="${esc(q.item)}"></td><td><input data-k="takeoff_qty" type="number" value="${esc(q.takeoff_qty)}"></td>
+    <td><input data-k="plan_qty" type="number" value="${esc(q.plan_qty)}"></td><td><input data-k="unit" value="${esc(q.unit)}" style="width:60px"></td>
+    <td><input data-k="source" value="${esc(q.source)}"></td><td><button class="x" data-del>&times;</button></td></tr>`).join("");
+}
+
+function run() {
+  const res = E.checkEstimate(est, { rates: RATES });
+  const p = res.priced;
+  document.getElementById("totals").innerHTML = p ? `
+    <div><span>Total cost</span><b>${money(p.total_cost)}</b></div>
+    ${p.computed_price != null ? `<div><span>Price at ${Math.round(p.markup * 100)}% markup</span><span>${money(p.computed_price)}</span></div>` : ""}
+    <div><span>Effective markup</span><span>${Math.round(p.effective_markup * 100)}%</span></div>
+    <div><span>Margin</span><span>${Math.round(p.margin * 100)}%</span></div>
+    <div class="big"><span>Final bid</span><span>${money(p.final_price)}</span></div>` : `<div class="hint">Add cost lines and a markup or final price.</div>`;
+  renderComps(p);
+  const n = (l) => res.issues.filter((i) => i.level === l).length;
+  const st = document.getElementById("status");
+  if (!res.issues.length) { st.className = "status ok"; st.textContent = "All checks pass. Ready to build the proposal."; }
+  else if (n("block")) { st.className = "status bad"; st.textContent = `${n("block")} to fix before building, ${n("ask")} question${n("ask") === 1 ? "" : "s"}, ${n("warn")} warning${n("warn") === 1 ? "" : "s"}`; }
+  else { st.className = "status mid"; st.textContent = `No blockers. ${n("ask")} question${n("ask") === 1 ? "" : "s"}, ${n("warn")} warning${n("warn") === 1 ? "" : "s"}`; }
+  document.getElementById("issues").innerHTML = res.issues.map((i) => `<div class="issue ${i.level}">
+    <div class="tag">${{ block: "FIX", ask: "QUESTION", warn: "CHECK" }[i.level]}</div>
+    <div>${esc(i.message)}</div><div class="where">${esc(i.where)}</div><div class="lesson">${esc(i.lesson)}</div>
+    ${i.level !== "block" ? `<button class="link" data-confirm="${i.id}">Mark answered</button>` : ""}</div>`).join("");
+  document.getElementById("answered").innerHTML = est.confirmed.length ? "Answered: " + est.confirmed.map((c) => `<span>${esc(c)} <button class="x" data-unconfirm="${esc(c)}" title="Undo">&times;</button></span>`).join("") : "";
+  // refresh extended cells without re-rendering inputs
+  const fl = flatLines();
+  document.querySelectorAll("#lines tr").forEach((tr, i) => { const l = fl[i]; if (l) tr.querySelector("[data-ext]").textContent = money(Number(l.qty) * Number(l.rate)); });
+  save();
+}
+
+function renderComps(p) {
+  const card = document.getElementById("compsCard");
+  const c = COMPS || est._comps;
+  if (!c || !c.length) { card.hidden = true; return; }
+  card.hidden = false;
+  document.getElementById("comps").innerHTML = c.map((x) => `<div class="comp"><span>${esc(x.name)}</span><span class="amt">${money(x.sentTotal).replace(/\.00$/, "")}</span><span class="meta">${esc(x.outcome)} · match ${x.score.toFixed(2)}${x.onlyInNew && x.onlyInNew.length ? " · new job also has " + esc(x.onlyInNew.join(", ").replace(/_/g, " ")) : ""}</span></div>`).join("");
+  const top = c.slice(0, 3).map((x) => x.sentTotal).sort((a, b) => a - b), med = top[Math.floor(top.length / 2)];
+  let t = `Median of the top 3: ${money(med).replace(/\.00$/, "")}.`;
+  if (p && p.final_price) { const r = p.final_price / med; t += ` This bid is ${r >= 1 ? Math.round((r - 1) * 100) + "% above" : Math.round((1 - r) * 100) + "% below"} it.`; }
+  document.getElementById("compRange").textContent = t + " Comps are a sanity check, not the price.";
+}
+function loadTakeoff(text, fileName) {
+  const items = E.parseStackCsv(text);
+  if (!items.length) throw new Error("No takeoff lines found. Export it from STACK as Reports, Takeoff Quantity, CSV.");
+  const lib = E.prepareLibrary(JSON.parse(JSON.stringify(LIBRARY)));
+  const res = E.findComps(items, lib, { top: 5 });
+  COMPS = res.comps.map((x) => ({ name: x.name, sentTotal: x.sentTotal, outcome: x.outcome, score: x.score, onlyInNew: x.onlyInNew }));
+  const draft = E.autoEstimate({ items, rates: RATES, defaults: DEFAULTS, job: { name: String(fileName || "").replace(/\.csv$/i, "").replace(/[_-]+/g, " ").trim() } });
+  est = normalize(Object.assign(draft, { sections: [], _comps: COMPS }));
+  delete est.auto;
+  document.getElementById("exPick") && (document.getElementById("exPick").value = "");
+  renderForm(); run();
+}
+async function takeCsv(f) {
+  try { loadTakeoff(await f.text(), f.name); }
+  catch (e) { const st = document.getElementById("status"); st.className = "status bad"; st.textContent = e.message; }
+}
+document.getElementById("btnCsv").addEventListener("click", () => document.getElementById("csvFile").click());
+document.getElementById("csvFile").addEventListener("change", (ev) => { const f = ev.target.files[0]; if (f) takeCsv(f); ev.target.value = ""; });
+const dz = document.getElementById("drop");
+["dragenter", "dragover"].forEach((t) => document.addEventListener(t, (ev) => { ev.preventDefault(); dz.classList.add("over"); }));
+["dragleave", "drop"].forEach((t) => document.addEventListener(t, (ev) => { ev.preventDefault(); if (t === "dragleave" && ev.relatedTarget) return; dz.classList.remove("over"); }));
+document.addEventListener("drop", (ev) => { const f = [...(ev.dataTransfer.files || [])].find((x) => /\.csv$/i.test(x.name)); if (f) takeCsv(f); });
+
+// ---- events ----
+document.addEventListener("input", (ev) => {
+  const el = ev.target;
+  if (el.dataset.f) {
+    let v = el.dataset.bool !== undefined ? el.checked : el.type === "number" ? numOrNull(el.value) : el.value;
+    set(est, el.dataset.f, v === "" ? null : v);
+  } else if (el.id === "markupPct") est.markup = el.value === "" ? null : Number(el.value) / 100;
+  else if (el.closest("#lines")) {
+    const fl = flatLines(), i = +el.closest("tr").dataset.i, k = el.dataset.k;
+    fl[i][k] = el.type === "number" ? numOrNull(el.value) : el.value;
+    if (k === "description" && RATES) {
+      const hit = RATES.rate_sheet.find((r) => `${r.item} (${r.per})` === el.value);
+      if (hit) { fl[i].description = hit.item; fl[i].rate = hit.rate; fl[i].category = /Trucking|Container/.test(hit.category) ? "Hauling" : /Labor/.test(hit.category) ? "Labor" : "Equipment"; setLines(fl); renderLines(); return run(); }
+    }
+    setLines(fl); if (k === "section") renderLines();
+  } else if (el.closest("#scopes")) {
+    const s = est.scopes[+el.closest(".scope").dataset.i], k = el.dataset.k;
+    if (k === "lines") s.lines = el.value.split("\n").map((x) => x.trim()).filter(Boolean);
+    else if (k === "price") s.price = numOrNull(el.value);
+    else if (k === "alternate") s.alternate = el.checked;
+    else s[k] = el.value;
+  } else if (el.closest("#qcs")) {
+    const q = est.quantity_checks[+el.closest("tr").dataset.i]; q[el.dataset.k] = el.type === "number" ? numOrNull(el.value) : el.value;
+  }
+  run();
+});
+document.addEventListener("change", (ev) => { if (ev.target.type === "checkbox" || ev.target.tagName === "SELECT") ev.target.dispatchEvent(new Event("input", { bubbles: true })); });
+document.addEventListener("click", (ev) => {
+  const b = ev.target.closest("button"); if (!b) return;
+  if (b.id === "addLine") { const fl = flatLines(); fl.push({ section: (fl[fl.length - 1] || {}).section || "Interior", category: "Labor", description: "", qty: null, rate: 400 }); setLines(fl); renderLines(); }
+  else if (b.id === "addScope") { est.scopes.push({ name: "", lines: [], price: null }); renderScopes(); }
+  else if (b.id === "addQc") { est.quantity_checks.push({ item: "", takeoff_qty: null, plan_qty: null, unit: "SF", source: "" }); renderQcs(); }
+  else if (b.dataset.del !== undefined) {
+    if (b.closest("#lines")) { const fl = flatLines(); fl.splice(+b.closest("tr").dataset.i, 1); setLines(fl); renderLines(); }
+    else if (b.closest("#scopes")) { est.scopes.splice(+b.closest(".scope").dataset.i, 1); renderScopes(); }
+    else if (b.closest("#qcs")) { est.quantity_checks.splice(+b.closest("tr").dataset.i, 1); renderQcs(); }
+  }
+  else if (b.dataset.confirm) { if (!est.confirmed.includes(b.dataset.confirm)) est.confirmed.push(b.dataset.confirm); }
+  else if (b.dataset.unconfirm) { est.confirmed = est.confirmed.filter((c) => c !== b.dataset.unconfirm); }
+  else if (b.id === "btnNew") { if (!confirm("Clear this estimate?")) return; est = blank(); COMPS = null; renderForm(); }
+  else if (b.id === "btnImport") { document.getElementById("file").click(); return; }
+  else if (b.id === "btnExport") {
+    const name = (est.job.name || "estimate").replace(/[^A-Za-z0-9 _-]+/g, "").trim() || "estimate";
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(est, null, 1)], { type: "application/json" }));
+    a.download = name + ".estimate.json"; a.click(); return;
+  }
+  else return;
+  run();
+});
+document.getElementById("file").addEventListener("change", async (ev) => {
+  const f = ev.target.files[0]; if (!f) return;
+  try { est = normalize(JSON.parse(await f.text())); renderForm(); run(); } catch (e) { alert("That file isn't a valid estimate.json"); }
+  ev.target.value = "";
+});
+
+// GHL custom menu link / iframe: show the opportunity passed in the URL, if any
+const q = new URLSearchParams(location.search);
+const opp = q.get("opportunityId") || q.get("opportunity_id");
+if (opp) document.getElementById("opp").textContent = "Opportunity " + opp;
+if (q.get("job") && !est.job.name) est.job.name = q.get("job");
+
+if (RATES) document.getElementById("rateItems").innerHTML = RATES.rate_sheet.map((r) => `<option value="${esc(r.item)} (${esc(r.per)})">${money(r.rate)} per ${esc(r.per)}</option>`).join("");
+renderForm(); run();
+</script>
+</body>
+</html>

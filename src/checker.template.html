@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A2Z Estimating Bot</title>
+<style>
+/* Matches the GHL custom theme: warm charcoal + brand orange (default), or the colorful brown / red / gold look. */
+:root{--bg:#141210;--card:#1b1816;--field:#221f1c;--hover:#332e2a;--ink:#f2ede8;--ink2:#c2b9b1;--mute:#9d948c;--line:#3a3430;--line2:#4a433e;
+--accent:#f97316;--accent-strong:#fdba74;--accent-soft:rgba(249,115,22,.16);--btn:#ea580c;--btn-hover:#f97316;--onbtn:#fff;
+--head:#171412;--headsolid:#171412;--headink:#f2ede8;--headmute:#9d948c;--hbtn:#221f1c;--hbtnink:#f2ede8;--hbtnline:#3a3430;
+--block:#ff8f87;--blockbg:#3b1e1e;--ask:#f0c35a;--askbg:#3a2e14;--warn:#c2b9b1;--warnbg:#2c2825;--ok:#7fd894;--okbg:#17301f;--chip:#2c2825;color-scheme:dark}
+html[data-gc="color"]{--bg:#431407;--card:#fffaf6;--field:#fffdfb;--hover:#fbe9d9;--ink:#431407;--ink2:#7c2d12;--mute:#80513d;--line:#fed7aa;--line2:#fdba74;
+--accent:#9a3412;--accent-strong:#9a3412;--accent-soft:#fbe9d9;--btn:#9a3412;--btn-hover:#b45309;--onbtn:#fff;
+--head:linear-gradient(90deg,#7c2d12,#9a3412);--headsolid:#7c2d12;--headink:#fff4ea;--headmute:rgba(255,244,234,.78);--hbtn:#f2c14e;--hbtnink:#431407;--hbtnline:#d99a1e;
+--block:#750e21;--blockbg:#fde4e4;--ask:#6b4300;--askbg:#fbe7b0;--warn:#7c2d12;--warnbg:#fbe9d9;--ok:#14532d;--okbg:#d1fae5;--chip:#fbe9d9;color-scheme:light}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;background:var(--head);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+header h1{font-size:16px;margin:0;font-weight:700;color:var(--headink);letter-spacing:.01em}header .opp{color:var(--headmute);font-size:12px}header .sp{flex:1}
+header .hint,header label{color:var(--headmute)}
+button{font:inherit;border:1px solid var(--line);background:var(--field);color:var(--ink);border-radius:8px;padding:6px 10px;cursor:pointer}
+button:hover{background:var(--hover)}
+header button,header select{background:var(--hbtn);color:var(--hbtnink);border-color:var(--hbtnline);font-weight:600}
+header button:hover{filter:brightness(1.08);background:var(--hbtn)}
+header select{width:auto;max-width:100%}
+html[data-gc="color"] header button.primary{background:#431407;border-color:#431407;color:#fff4ea}html[data-gc="color"] header button.primary:hover{background:#5c1a08}
+button.primary,header button.primary{background:var(--btn);border-color:var(--btn);color:var(--onbtn)}button.primary:hover,header button.primary:hover{background:var(--btn-hover);filter:none}
+button.link,button.link:hover{border:0;background:none;color:var(--accent-strong);padding:2px 4px;font-weight:600}
+button.x,button.x:hover{border:0;background:none;color:var(--mute);font-size:16px;padding:0 6px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+main{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;padding:16px;max-width:1400px;margin:0 auto}
+@media(max-width:980px){main{grid-template-columns:minmax(0,1fr)}aside{position:static}}
+@media(max-width:600px){main{padding:16px 16px}.scope .row{grid-template-columns:1fr 1fr}header h1{font-size:15px}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:16px}
+.card h2{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute);margin:0 0 10px;font-weight:650;display:flex;align-items:center;gap:8px}
+.card h2 .sp{flex:1}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+label{display:block;font-size:12px;color:var(--mute)}
+input,select,textarea{font:inherit;width:100%;border:1px solid var(--line);border-radius:6px;padding:6px 8px;background:var(--field);color:var(--ink)}
+textarea{min-height:70px;resize:vertical}
+table{width:100%;border-collapse:collapse}th{font-size:12px;color:var(--mute);text-align:left;font-weight:600;padding:4px}
+td{padding:3px 4px;vertical-align:top}td.num{text-align:right;white-space:nowrap;padding-top:9px}
+.tablewrap{overflow-x:auto}.lines td input{min-width:60px}.lines td.desc input{min-width:200px}
+.scope{border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:10px}
+.scope .row{display:grid;grid-template-columns:1fr 140px auto auto;gap:8px;align-items:end;margin-bottom:8px}
+.chk{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mute);white-space:nowrap}.chk input{width:auto}
+aside{position:sticky;top:64px;align-self:start}
+.totals div{display:flex;justify-content:space-between;padding:3px 0}.totals .big{font-size:18px;font-weight:700;border-top:1px solid var(--line);margin-top:6px;padding-top:8px}
+.status{border-radius:8px;padding:10px;font-weight:600;margin-bottom:10px}.status.ok{background:var(--okbg);color:var(--ok)}.status.bad{background:var(--blockbg);color:var(--block)}.status.mid{background:var(--askbg);color:var(--ask)}
+.issue{border-left:4px solid;border-radius:6px;padding:8px 10px;margin-bottom:8px}
+.issue.block{border-color:var(--block);background:var(--blockbg)}.issue.ask{border-color:var(--ask);background:var(--askbg)}.issue.warn{border-color:var(--warn);background:var(--warnbg)}
+.issue .tag{font-size:11px;font-weight:700;letter-spacing:.05em}.issue.block .tag{color:var(--block)}.issue.ask .tag{color:var(--ask)}.issue.warn .tag{color:var(--warn)}
+.issue .where{color:var(--mute);font-size:12px}.issue .lesson{color:var(--mute);font-size:12px;margin-top:2px}
+.answered{font-size:12px;color:var(--mute)}.answered span{display:inline-block;background:var(--chip);border-radius:10px;padding:1px 8px;margin:2px}
+details summary{cursor:pointer;color:var(--mute);font-size:12px;text-transform:uppercase;letter-spacing:.04em;font-weight:650}
+.hint{color:var(--mute);font-size:12px}
+.drop{border:2px dashed var(--line);border-radius:10px;padding:16px;margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--card)}
+.drop.over{border-color:var(--accent)}.drop b{font-weight:650}.drop .sp{flex:1}
+.comp{display:grid;grid-template-columns:1fr auto;gap:2px 8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}.comp:last-child{border-bottom:0}
+.comp .meta{color:var(--mute);font-size:12px;grid-column:1/-1}.comp .amt{font-variant-numeric:tabular-nums;font-weight:600}
+</style>
+</head>
+<body>
+<header>
+  <h1>A2Z Estimating Bot</h1><span class="opp" id="opp"></span><span class="sp"></span>
+  <button id="btnTheme" title="Switch theme">Colorful theme</button>
+  <button id="btnNew">New</button>
+  <button id="btnImport">Open estimate.json</button>
+  <button id="btnExport" class="primary">Save estimate.json</button>
+  <input type="file" id="file" accept=".json,application/json" hidden>
+</header>
+<main>
+<div style="min-width:0">
+  <div class="drop" id="drop"><div><b>Drop a STACK Takeoff Quantity CSV</b><div class="hint">Drafts the scope lines in A2Z wording, finds the closest past jobs, and sets the default markup. Add crew-days, loads and equipment below.</div></div><span class="sp"></span><button id="btnCsv">Choose CSV</button><input type="file" id="csvFile" accept=".csv,text/csv" hidden></div>
+  <section class="card"><h2>Job</h2>
+    <div class="grid">
+      <div><label>Job name</label><input data-f="job.name"></div>
+      <div><label>Customer</label><input data-f="job.customer"></div>
+      <div><label>Location</label><input data-f="job.location"></div>
+      <div><label>Estimator</label><input data-f="job.estimator"></div>
+      <div><label>Access</label><input data-f="job.access" placeholder="single man door, roll-up..."></div>
+      <div><label>Ceiling height (ft)</label><input data-f="job.ceiling_height_ft" type="number" step="0.5"></div>
+    </div>
+  </section>
+
+  <section class="card"><h2>Cost lines<span class="sp"></span><button class="link" id="addLine">+ Add line</button></h2>
+    <div class="tablewrap"><table class="lines"><thead><tr><th>Section</th><th>Category</th><th>Description</th><th>Qty</th><th>Rate</th><th style="text-align:right">Extended</th><th></th></tr></thead><tbody id="lines"></tbody></table></div>
+    <p class="hint">Labor: $400 per worker-day, $1,600 per 4-man crew-day. Haul: $850 all-in per load (write "sub" for subcontract hauling). Type in Description to pick from the rate sheet.</p>
+    <datalist id="rateItems"></datalist>
+  </section>
+
+  <section class="card"><h2>Scopes<span class="sp"></span><button class="link" id="addScope">+ Add scope</button></h2>
+    <div id="scopes"></div>
+    <p class="hint">One scope line per row. With several base scopes, each needs a price and they must add up to the total.</p>
+  </section>
+
+  <section class="card"><h2>Pricing</h2>
+    <div class="grid">
+      <div><label>Markup on cost (%)</label><input id="markupPct" type="number" step="1"></div>
+      <div><label>Final bid price ($)</label><input data-f="final_price" type="number" step="1"></div>
+      <div><label>Price source</label><select data-f="price_source"><option value="">New estimate</option><option value="proposal">Proposal</option><option value="costing_sheet">Costing sheet</option><option value="transcript">Transcript</option><option value="notes">Notes</option></select></div>
+    </div>
+    <div style="margin-top:10px"><label>Pricing note (why the bid differs from the markup price, or why markup is low)</label><input data-f="pricing_note"></div>
+  </section>
+
+  <section class="card"><details><summary>Excavation and quantity checks</summary>
+    <div class="grid" style="margin-top:10px">
+      <div><label>Footprint (SF)</label><input data-f="excavation.footprint_sf" type="number"></div>
+      <div><label>Depth (ft)</label><input data-f="excavation.depth_ft" type="number" step="0.5"></div>
+      <div><label>Volume (CY)</label><input data-f="excavation.volume_cy" type="number"></div>
+      <div><label>Loads</label><input data-f="excavation.loads" type="number"></div>
+    </div>
+    <h2 style="margin-top:14px">Takeoff vs plans<span class="sp"></span><button class="link" id="addQc">+ Add check</button></h2>
+    <div class="tablewrap"><table><thead><tr><th>Item</th><th>Takeoff qty</th><th>Plan qty</th><th>Unit</th><th>Source / sheet</th><th></th></tr></thead><tbody id="qcs"></tbody></table></div>
+    <label class="chk" style="margin-top:8px"><input type="checkbox" data-f="has_takeoff" data-bool> This job has a STACK takeoff</label>
+  </details></section>
+</div>
+
+<aside>
+  <section class="card" id="compsCard" hidden><h2>Closest past jobs</h2><div id="comps"></div><p class="hint" id="compRange"></p></section>
+  <section class="card"><h2>Totals</h2><div class="totals" id="totals"></div></section>
+  <section class="card"><h2>Checks</h2><div id="status"></div><div id="issues"></div><div class="answered" id="answered"></div></section>
+</aside>
+</main>
+
+<script>
+/*__ENGINE__*/
+</script>
+<script>
+const RATES = /*__RATES__*/null;
+const LIBRARY = /*__LIBRARY__*/null;
+const DEFAULTS = /*__DEFAULTS__*/null || { markup: 1.3 };
+let COMPS = null;
+const E = window.A2ZEstimator;
+const THEME_KEY = "a2z-bot-theme";
+function setTheme(t) {
+  document.documentElement.dataset.gc = t;
+  const b = document.getElementById("btnTheme");
+  if (b) b.textContent = t === "color" ? "Dark theme" : "Colorful theme";
+  try { localStorage.setItem(THEME_KEY, t); } catch (e) {}
+}
+setTheme((() => { const q = new URLSearchParams(location.search).get("theme"); if (q === "color" || q === "dark") return q; try { return localStorage.getItem(THEME_KEY) === "color" ? "color" : "dark"; } catch (e) { return "dark"; } })());
+document.getElementById("btnTheme").addEventListener("click", () => setTheme(document.documentElement.dataset.gc === "color" ? "dark" : "color"));
+const STORE = "a2z-checker-draft";
+const SECTIONS = ["Interior", "Exterior", "Grading"];
+const CATS = ["Labor", "Hotel", "Hauling", "Equipment", "Fuel", "Misc"];
+const blank = () => ({ job: {}, markup: DEFAULTS.markup, sections: [], scopes: [{ name: "Demolition", lines: [], price: null }], confirmed: [], quantity_checks: [], excavation: {} });
+let est = load();
+
+function load() {
+  try { const s = localStorage.getItem(STORE); if (s) return normalize(JSON.parse(s)); } catch (e) {}
+  return blank();
+}
+function save() { try { localStorage.setItem(STORE, JSON.stringify(est)); } catch (e) {} }
+function normalize(e) {
+  e = Object.assign(blank(), e || {});
+  e.job = e.job || {}; e.excavation = e.excavation || {}; e.confirmed = e.confirmed || []; e.quantity_checks = e.quantity_checks || []; e.scopes = e.scopes || []; e.sections = e.sections || [];
+  return e;
+}
+const money = (v) => v == null || isNaN(v) ? "" : "$" + Number(v).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const get = (o, p) => p.split(".").reduce((a, k) => (a == null ? a : a[k]), o);
+function set(o, p, v) { const k = p.split("."); let t = o; k.slice(0, -1).forEach((x) => (t = t[x] = t[x] || {})); t[k[k.length - 1]] = v; }
+const numOrNull = (v) => (v === "" || v == null ? null : Number(v));
+
+// flat list of lines <-> sections
+function flatLines() { const out = []; est.sections.forEach((s) => (s.lines || []).forEach((l) => out.push(Object.assign({ section: s.name }, l)))); return out; }
+function setLines(flat) {
+  const by = {}; flat.forEach((l) => { const { section, ...rest } = l; (by[section] = by[section] || []).push(rest); });
+  est.sections = SECTIONS.filter((s) => by[s]).map((s) => ({ name: s, lines: by[s] }));
+}
+
+function renderForm() {
+  document.querySelectorAll("[data-f]").forEach((el) => {
+    const v = get(est, el.dataset.f);
+    if (el.dataset.bool !== undefined) el.checked = !!v; else el.value = v == null ? "" : v;
+  });
+  document.getElementById("markupPct").value = est.markup == null || est.markup === "" ? "" : Math.round(est.markup * 10000) / 100;
+  renderLines(); renderScopes(); renderQcs();
+}
+function renderLines() {
+  const fl = flatLines();
+  document.getElementById("lines").innerHTML = fl.map((l, i) => `<tr data-i="${i}">
+    <td><select data-k="section">${SECTIONS.map((s) => `<option${s === l.section ? " selected" : ""}>${s}</option>`).join("")}</select></td>
+    <td><select data-k="category">${CATS.map((s) => `<option${s === l.category ? " selected" : ""}>${s}</option>`).join("")}</select></td>
+    <td class="desc"><input data-k="description" list="rateItems" value="${esc(l.description)}"></td>
+    <td><input data-k="qty" type="number" step="any" value="${esc(l.qty)}" style="width:80px"></td>
+    <td><input data-k="rate" type="number" step="any" value="${esc(l.rate)}" style="width:100px"></td>
+    <td class="num" data-ext>${money(Number(l.qty) * Number(l.rate))}</td>
+    <td><button class="x" data-del title="Remove">&times;</button></td></tr>`).join("");
+}
+function renderScopes() {
+  document.getElementById("scopes").innerHTML = est.scopes.map((s, i) => `<div class="scope" data-i="${i}">
+    <div class="row"><div><label>Scope name</label><input data-k="name" value="${esc(s.name)}"></div>
+    <div><label>Price ($)</label><input data-k="price" type="number" step="1" value="${esc(s.price)}"></div>
+    <label class="chk"><input type="checkbox" data-k="alternate"${s.alternate ? " checked" : ""}> Alternate</label>
+    <button class="x" data-del title="Remove">&times;</button></div>
+    <textarea data-k="lines" placeholder="Properly remove ...">${esc((s.lines || []).join("\n"))}</textarea></div>`).join("");
+}
+function renderQcs() {
+  document.getElementById("qcs").innerHTML = est.quantity_checks.map((q, i) => `<tr data-i="${i}">
+    <td><input data-k="item" value="${esc(q.item)}"></td><td><input data-k="takeoff_qty" type="number" value="${esc(q.takeoff_qty)}"></td>
+    <td><input data-k="plan_qty" type="number" value="${esc(q.plan_qty)}"></td><td><input data-k="unit" value="${esc(q.unit)}" style="width:60px"></td>
+    <td><input data-k="source" value="${esc(q.source)}"></td><td><button class="x" data-del>&times;</button></td></tr>`).join("");
+}
+
+function run() {
+  const res = E.checkEstimate(est, { rates: RATES });
+  const p = res.priced;
+  document.getElementById("totals").innerHTML = p ? `
+    <div><span>Total cost</span><b>${money(p.total_cost)}</b></div>
+    ${p.computed_price != null ? `<div><span>Price at ${Math.round(p.markup * 100)}% markup</span><span>${money(p.computed_price)}</span></div>` : ""}
+    <div><span>Effective markup</span><span>${Math.round(p.effective_markup * 100)}%</span></div>
+    <div><span>Margin</span><span>${Math.round(p.margin * 100)}%</span></div>
+    <div class="big"><span>Final bid</span><span>${money(p.final_price)}</span></div>` : `<div class="hint">Add cost lines and a markup or final price.</div>`;
+  renderComps(p);
+  const n = (l) => res.issues.filter((i) => i.level === l).length;
+  const st = document.getElementById("status");
+  if (!res.issues.length) { st.className = "status ok"; st.textContent = "All checks pass. Ready to build the proposal."; }
+  else if (n("block")) { st.className = "status bad"; st.textContent = `${n("block")} to fix before building, ${n("ask")} question${n("ask") === 1 ? "" : "s"}, ${n("warn")} warning${n("warn") === 1 ? "" : "s"}`; }
+  else { st.className = "status mid"; st.textContent = `No blockers. ${n("ask")} question${n("ask") === 1 ? "" : "s"}, ${n("warn")} warning${n("warn") === 1 ? "" : "s"}`; }
+  document.getElementById("issues").innerHTML = res.issues.map((i) => `<div class="issue ${i.level}">
+    <div class="tag">${{ block: "FIX", ask: "QUESTION", warn: "CHECK" }[i.level]}</div>
+    <div>${esc(i.message)}</div><div class="where">${esc(i.where)}</div><div class="lesson">${esc(i.lesson)}</div>
+    ${i.level !== "block" ? `<button class="link" data-confirm="${i.id}">Mark answered</button>` : ""}</div>`).join("");
+  document.getElementById("answered").innerHTML = est.confirmed.length ? "Answered: " + est.confirmed.map((c) => `<span>${esc(c)} <button class="x" data-unconfirm="${esc(c)}" title="Undo">&times;</button></span>`).join("") : "";
+  // refresh extended cells without re-rendering inputs
+  const fl = flatLines();
+  document.querySelectorAll("#lines tr").forEach((tr, i) => { const l = fl[i]; if (l) tr.querySelector("[data-ext]").textContent = money(Number(l.qty) * Number(l.rate)); });
+  save();
+}
+
+function renderComps(p) {
+  const card = document.getElementById("compsCard");
+  const c = COMPS || est._comps;
+  if (!c || !c.length) { card.hidden = true; return; }
+  card.hidden = false;
+  document.getElementById("comps").innerHTML = c.map((x) => `<div class="comp"><span>${esc(x.name)}</span><span class="amt">${money(x.sentTotal).replace(/\.00$/, "")}</span><span class="meta">${esc(x.outcome)} · match ${x.score.toFixed(2)}${x.onlyInNew && x.onlyInNew.length ? " · new job also has " + esc(x.onlyInNew.join(", ").replace(/_/g, " ")) : ""}</span></div>`).join("");
+  const top = c.slice(0, 3).map((x) => x.sentTotal).sort((a, b) => a - b), med = top[Math.floor(top.length / 2)];
+  let t = `Median of the top 3: ${money(med).replace(/\.00$/, "")}.`;
+  if (p && p.final_price) { const r = p.final_price / med; t += ` This bid is ${r >= 1 ? Math.round((r - 1) * 100) + "% above" : Math.round((1 - r) * 100) + "% below"} it.`; }
+  document.getElementById("compRange").textContent = t + " Comps are a sanity check, not the price.";
+}
+function loadTakeoff(text, fileName) {
+  const items = E.parseStackCsv(text);
+  if (!items.length) throw new Error("No takeoff lines found. Export it from STACK as Reports, Takeoff Quantity, CSV.");
+  const lib = E.prepareLibrary(JSON.parse(JSON.stringify(LIBRARY)));
+  const res = E.findComps(items, lib, { top: 5 });
+  COMPS = res.comps.map((x) => ({ name: x.name, sentTotal: x.sentTotal, outcome: x.outcome, score: x.score, onlyInNew: x.onlyInNew }));
+  const draft = E.autoEstimate({ items, rates: RATES, defaults: DEFAULTS, job: { name: String(fileName || "").replace(/\.csv$/i, "").replace(/[_-]+/g, " ").trim() } });
+  est = normalize(Object.assign(draft, { sections: [], _comps: COMPS }));
+  delete est.auto;
+  document.getElementById("exPick") && (document.getElementById("exPick").value = "");
+  renderForm(); run();
+}
+async function takeCsv(f) {
+  try { loadTakeoff(await f.text(), f.name); }
+  catch (e) { const st = document.getElementById("status"); st.className = "status bad"; st.textContent = e.message; }
+}
+document.getElementById("btnCsv").addEventListener("click", () => document.getElementById("csvFile").click());
+document.getElementById("csvFile").addEventListener("change", (ev) => { const f = ev.target.files[0]; if (f) takeCsv(f); ev.target.value = ""; });
+const dz = document.getElementById("drop");
+["dragenter", "dragover"].forEach((t) => document.addEventListener(t, (ev) => { ev.preventDefault(); dz.classList.add("over"); }));
+["dragleave", "drop"].forEach((t) => document.addEventListener(t, (ev) => { ev.preventDefault(); if (t === "dragleave" && ev.relatedTarget) return; dz.classList.remove("over"); }));
+document.addEventListener("drop", (ev) => { const f = [...(ev.dataTransfer.files || [])].find((x) => /\.csv$/i.test(x.name)); if (f) takeCsv(f); });
+
+// ---- events ----
+document.addEventListener("input", (ev) => {
+  const el = ev.target;
+  if (el.dataset.f) {
+    let v = el.dataset.bool !== undefined ? el.checked : el.type === "number" ? numOrNull(el.value) : el.value;
+    set(est, el.dataset.f, v === "" ? null : v);
+  } else if (el.id === "markupPct") est.markup = el.value === "" ? null : Number(el.value) / 100;
+  else if (el.closest("#lines")) {
+    const fl = flatLines(), i = +el.closest("tr").dataset.i, k = el.dataset.k;
+    fl[i][k] = el.type === "number" ? numOrNull(el.value) : el.value;
+    if (k === "description" && RATES) {
+      const hit = RATES.rate_sheet.find((r) => `${r.item} (${r.per})` === el.value);
+      if (hit) { fl[i].description = hit.item; fl[i].rate = hit.rate; fl[i].category = /Trucking|Container/.test(hit.category) ? "Hauling" : /Labor/.test(hit.category) ? "Labor" : "Equipment"; setLines(fl); renderLines(); return run(); }
+    }
+    setLines(fl); if (k === "section") renderLines();
+  } else if (el.closest("#scopes")) {
+    const s = est.scopes[+el.closest(".scope").dataset.i], k = el.dataset.k;
+    if (k === "lines") s.lines = el.value.split("\n").map((x) => x.trim()).filter(Boolean);
+    else if (k === "price") s.price = numOrNull(el.value);
+    else if (k === "alternate") s.alternate = el.checked;
+    else s[k] = el.value;
+  } else if (el.closest("#qcs")) {
+    const q = est.quantity_checks[+el.closest("tr").dataset.i]; q[el.dataset.k] = el.type === "number" ? numOrNull(el.value) : el.value;
+  }
+  run();
+});
+document.addEventListener("change", (ev) => { if (ev.target.type === "checkbox" || ev.target.tagName === "SELECT") ev.target.dispatchEvent(new Event("input", { bubbles: true })); });
+document.addEventListener("click", (ev) => {
+  const b = ev.target.closest("button"); if (!b) return;
+  if (b.id === "addLine") { const fl = flatLines(); fl.push({ section: (fl[fl.length - 1] || {}).section || "Interior", category: "Labor", description: "", qty: null, rate: 400 }); setLines(fl); renderLines(); }
+  else if (b.id === "addScope") { est.scopes.push({ name: "", lines: [], price: null }); renderScopes(); }
+  else if (b.id === "addQc") { est.quantity_checks.push({ item: "", takeoff_qty: null, plan_qty: null, unit: "SF", source: "" }); renderQcs(); }
+  else if (b.dataset.del !== undefined) {
+    if (b.closest("#lines")) { const fl = flatLines(); fl.splice(+b.closest("tr").dataset.i, 1); setLines(fl); renderLines(); }
+    else if (b.closest("#scopes")) { est.scopes.splice(+b.closest(".scope").dataset.i, 1); renderScopes(); }
+    else if (b.closest("#qcs")) { est.quantity_checks.splice(+b.closest("tr").dataset.i, 1); renderQcs(); }
+  }
+  else if (b.dataset.confirm) { if (!est.confirmed.includes(b.dataset.confirm)) est.confirmed.push(b.dataset.confirm); }
+  else if (b.dataset.unconfirm) { est.confirmed = est.confirmed.filter((c) => c !== b.dataset.unconfirm); }
+  else if (b.id === "btnNew") { if (!confirm("Clear this estimate?")) return; est = blank(); COMPS = null; renderForm(); }
+  else if (b.id === "btnImport") { document.getElementById("file").click(); return; }
+  else if (b.id === "btnExport") {
+    const name = (est.job.name || "estimate").replace(/[^A-Za-z0-9 _-]+/g, "").trim() || "estimate";
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(est, null, 1)], { type: "application/json" }));
+    a.download = name + ".estimate.json"; a.click(); return;
+  }
+  else return;
+  run();
+});
+document.getElementById("file").addEventListener("change", async (ev) => {
+  const f = ev.target.files[0]; if (!f) return;
+  try { est = normalize(JSON.parse(await f.text())); renderForm(); run(); } catch (e) { alert("That file isn't a valid estimate.json"); }
+  ev.target.value = "";
+});
+
+// GHL custom menu link / iframe: show the opportunity passed in the URL, if any
+const q = new URLSearchParams(location.search);
+const opp = q.get("opportunityId") || q.get("opportunity_id");
+if (opp) document.getElementById("opp").textContent = "Opportunity " + opp;
+if (q.get("job") && !est.job.name) est.job.name = q.get("job");
+
+if (RATES) document.getElementById("rateItems").innerHTML = RATES.rate_sheet.map((r) => `<option value="${esc(r.item)} (${esc(r.per)})">${money(r.rate)} per ${esc(r.per)}</option>`).join("");
+renderForm(); run();
+</script>
+</body>
+</html>
