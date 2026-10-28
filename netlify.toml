@@ -3,6 +3,12 @@
   publish = "public"
   functions = "netlify/functions"
 
+[build.environment]
+  # The minified Word library is ~150 KB of short random-looking strings, so a short passcode
+  # can show up in it by chance. Skip only that file; the rest of the repo and the build output
+  # are still scanned for the passcode.
+  SECRETS_SCAN_OMIT_PATHS = "estimator/engine/vendor/docx-vendor.js"
+
 [functions]
   node_bundler = "esbuild"
   included_files = ["estimator/data/**"]
