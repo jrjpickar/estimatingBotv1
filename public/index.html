@@ -57,6 +57,8 @@ details summary{cursor:pointer;color:var(--mute);font-size:12px;text-transform:u
 .drop{border:2px dashed var(--line);border-radius:10px;padding:16px;margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--card)}
 .drop.over{border-color:var(--accent)}.drop b{font-weight:650}.drop .sp{flex:1}
 .comp{display:grid;grid-template-columns:1fr auto;gap:2px 8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}.comp:last-child{border-bottom:0}
+.plan-sheets{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}.plan-sheets span{background:var(--chip);border-radius:10px;padding:1px 8px;font-size:12px}
+.plan-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.progress{font-size:12px;color:var(--mute)}
 .comp .meta{color:var(--mute);font-size:12px;grid-column:1/-1}.comp .amt{font-variant-numeric:tabular-nums;font-weight:600}
 </style>
 </head>
@@ -71,7 +73,7 @@ details summary{cursor:pointer;color:var(--mute);font-size:12px;text-transform:u
 </header>
 <main>
 <div style="min-width:0">
-  <div class="drop" id="drop"><div><b>Drop a STACK Takeoff Quantity CSV</b><div class="hint">Drafts the scope lines in A2Z wording, finds the closest past jobs, and sets the default markup. Add crew-days, loads and equipment below.</div></div><span class="sp"></span><button id="btnCsv">Choose CSV</button><input type="file" id="csvFile" accept=".csv,text/csv" hidden></div>
+  <div class="drop" id="drop"><div style="min-width:0"><b>Drop the STACK Takeoff Quantity CSV and the plan set PDF</b><div class="hint">The CSV drafts scope lines in A2Z wording, finds the closest past jobs and sets the default markup. The plans get checked against the takeoff: missing demo callouts, new work, by-others items, conditions, ceiling plan and areas. Add crew-days, loads and equipment below.</div></div><span class="sp"></span><button id="btnCsv">Choose CSV</button><button id="btnPdf">Choose plans PDF</button><input type="file" id="csvFile" accept=".csv,text/csv" hidden><input type="file" id="pdfFile" accept=".pdf,application/pdf" hidden></div>
   <section class="card"><h2>Job</h2>
     <div class="grid">
       <div><label>Job name</label><input data-f="job.name"></div>
@@ -117,6 +119,7 @@ details summary{cursor:pointer;color:var(--mute);font-size:12px;text-transform:u
 </div>
 
 <aside>
+  <section class="card" id="planCard" hidden><h2>Plan check</h2><div id="planBody"></div></section>
   <section class="card" id="compsCard" hidden><h2>Closest past jobs</h2><div id="comps"></div><p class="hint" id="compRange"></p></section>
   <section class="card"><h2>Totals</h2><div class="totals" id="totals"></div></section>
   <section class="card"><h2>Checks</h2><div id="status"></div><div id="issues"></div><div class="answered" id="answered"></div></section>
@@ -357,6 +360,7 @@ module.exports = { computeEstimate, formatEstimate, STANDARD_RATES };
 //   excavation: { footprint_sf, depth_ft, volume_cy, loads }
 //   quantity_checks: [ { item, takeoff_qty, plan_qty, unit, source } ]
 //   confirmed: [ rule ids already answered ]
+//   plan_flags: [ { key, level, message, sheet } ] from lib/plans.js analyzePlans (each answered by adding its key to confirmed)
 //
 // Every rule comes from references/training-notes.md. Add a rule here + a test when a new lesson comes in.
 
@@ -535,6 +539,12 @@ function checkEstimate(est, opts = {}) {
       add("quantity_gap", q.item, `Takeoff ${t.toLocaleString()} ${q.unit || ""} vs plans ${p.toLocaleString()} ${q.unit || ""}${q.source ? ` (${q.source})` : ""}.`);
   }
   if (!qc.length && (est.takeoff || est.has_takeoff)) add("quantity_unchecked", "quantities", "No takeoff quantities were cross-checked against plan dimensions.");
+
+  // ---- plan QC (lib/plans.js results stored on the estimate) ----
+  for (const f of est.plan_flags || []) {
+    if (confirmed.has(f.key)) continue;
+    issues.push({ id: f.key, level: f.level === "block" ? "ask" : f.level, where: f.sheet ? `plans ${f.sheet}` : "plans", message: f.message, lesson: "From the plan check (code reading the plan text, no AI)." });
+  }
 
   const order = { block: 0, ask: 1, warn: 2 };
   issues.sort((a, b) => order[a.level] - order[b.level]);
@@ -776,6 +786,7 @@ function autoEstimate({ items, facts = {}, inputs = {}, job = {}, defaults = DEF
     auto: { mode: "draft", markup_source: markup != null ? "this job" : "default", problems, from_plans: facts.sources || {}, questions: facts.questions || [] },
   };
   if (facts.exclusions && facts.exclusions.length) est.extra_exclusions = facts.exclusions;
+  if (facts.plan_flags && facts.plan_flags.length) est.plan_flags = facts.plan_flags;
   if (facts.notes && facts.notes.length) est.extra_notes = facts.notes;
   // price per scope at the markup, whole dollars, so the scope totals add up exactly
   const cost = (names) => sections.filter((s) => names.includes(s.name)).reduce((t, s) => t + s.lines.reduce((u, l) => u + Number(l.qty || 0) * Number(l.rate || 0), 0), 0);
@@ -838,12 +849,202 @@ function reviewSheet(priced, chk, comps, facts = {}) {
 
 module.exports = { autoEstimate, draftScopes, draftLines, reviewSheet, DEFAULTS, cleanName };
 
+},
+"./plans": function (module, exports, require) {
+"use strict";
+// Plan QC in code (no AI). Reads the TEXT of a plan set (digital PDFs from the architect, not scans)
+// and checks it against the STACK takeoff by rule.
+//
+//   analyzePlans(pages, takeoffItems) -> { sheets, callouts, facts, flags, unreadable, stats }
+//     pages: [ { n: 1, lines: ["DEMO (E) DOOR", "A101", ...] } ]   one entry per PDF page;
+//            lines are text runs (the browser splits on big gaps; pdftotext -layout output is split on 3+ spaces)
+//     takeoffItems: parseStackCsv(...) output (item, qty, unit, plan, group)
+//   facts uses the same format autoEstimate / the checker read (quantity_checks, job.ceiling_height_ft, ...)
+//   flags: [ { key, level: "ask" | "warn", kind, message, sheet } ]  -> estimate.plan_flags for the checker
+//
+// What it can't do: read scanned sheets (no text), count symbols, or judge what a drawing means.
+// Those are reported as "unreadable" or left as questions for a person.
+
+const { groupFor } = require("./common");
+
+const DEMO_VERB = /\b(DEMO(LISH)?|REMOVE|CUT\s*(&|AND)\s*(DEMO|REMOVE)|SAW\s*CUT|ABANDON|TEAR\s*OUT|R\s*&\s*R)\b/;
+const LEGEND = /\b(LEGEND|INDICATES|DENOTES|TYPICAL\s+SYMBOL|SHEET\s+NOTES?\s*:?\s*$|GENERAL\s+NOTES)\b/;
+const REMAIN = /\b(TO\s+REMAIN|REMAIN(S|ING)?\s+IN\s+PLACE|PROTECT\s+IN\s+PLACE|EXISTING\s+TO\s+REMAIN|\(E\)\s+[^,.;]{0,40}\bREMAIN)\b/;
+const BY_OTHERS = /\b(BY\s+OTHERS|BY\s+OWNER|BY\s+TENANT|BY\s+G\.?C\.?|N\.?\s?I\.?\s?C\.?|NOT\s+IN\s+CONTRACT|O\.?F\.?C\.?I\.?|O\.?F\.?O\.?I\.?|UNDER\s+SEPARATE\s+(PERMIT|CONTRACT))\b/;
+const NEW_WORK = /(\(N\)|\bNEW\b|\bPROPOSED\b)[^,.;]{0,30}\b(SLAB|MAT\s+SLAB|FOOTINGS?|FOUNDATION|GRADE\s+BEAM|PAD)\b|\bMAT\s+SLAB\b/;
+const HAZMAT = /\b(ASBESTOS|ACM|LEAD[-\s]BASED|HAZARDOUS\s+MATERIALS?|AQMD|RULE\s+1403|MOLD)\b/;
+const CONDITION = [
+  [/\b(2ND|SECOND|3RD|THIRD|4TH)\s+(FLOOR|LEVEL|STORY)\b|\bLEVEL\s+[2-9]\b/, "floor", "Work is above the ground floor: plan for carry-down or a chute."],
+  [/\bOCCUPIED\b|\bREMAIN\s+OPEN\b|\bOPEN\s+FOR\s+BUSINESS\b/, "occupied", "Space or building stays occupied during work."],
+  [/\bNIGHT\s+WORK\b|\bAFTER\s+HOURS\b|\bWORK\s+HOURS\b/, "hours", "Work hours are restricted (night or after-hours work)."],
+  [/\bNO\s+ELEVATOR\b|\bFREIGHT\s+ELEVATOR\b|\bSERVICE\s+ELEVATOR\b/, "elevator", "Elevator / freight access is called out."],
+  [/\bDUST\s+(CONTROL|PROTECTION|BARRIER)\b|\bTEMPORARY\s+(PARTITION|BARRIER|WALL)\b|\bZIP\s*WALL\b/, "protection", "Dust protection or temporary barriers are required."],
+];
+const SHEET_CODE = /\b((?:AD|ID|FP|[ACDEGLMPST])[-.]?\d{1,3}(?:\.\d{1,2})?[A-Z]?)\b/g;
+const KIND = [
+  ["rcp", /\bREFLECTED\s+CEILING|\bR\.?C\.?P\.?\b|\bCEILING\s+PLAN\b/],
+  ["demo", /\bDEMO(LITION)?\s+(FLOOR\s+|SITE\s+)?PLAN\b|\bDEMO(LITION)?\s+RCP\b/],
+  ["site", /\bSITE\s+(DEMO(LITION)?\s+)?PLAN\b|\bGRADING\s+PLAN\b|\bTOPOGRAPHIC\b|\bHARDSCAPE\b/],
+  ["cover", /\bCOVER\s+SHEET\b|\bTITLE\s+SHEET\b|\bPROJECT\s+(INFO|INFORMATION|DATA)\b|\bSHEET\s+INDEX\b|\bSCOPE\s+OF\s+WORK\b/],
+];
+const SYN = { mtl: "metal", clg: "ceiling", flr: "floor", flrs: "floor", gyp: "gypsum", gwb: "gypsum", wd: "wood", conc: "concrete",
+  act: "ceiling", acoustical: "ceiling", acoustic: "ceiling", tbar: "ceiling", partition: "wall", partitions: "wall", cmu: "block",
+  cabinetry: "cabinet", casework: "cabinet", millwork: "cabinet", counters: "counter", countertop: "counter", vct: "tile", lvt: "vinyl",
+  carpeting: "carpet", baseboard: "base", lav: "sink", lavatory: "sink", wc: "toilet", lights: "light", lighting: "light", fixtures: "fixture" };
+const STOP = new Set(["demo", "demolish", "demolition", "remove", "removal", "cut", "and", "the", "of", "to", "be", "all", "in", "at", "with",
+  "per", "plan", "plans", "sheet", "see", "existing", "e", "n", "a", "an", "as", "for", "from", "on", "or", "required", "typ", "typical",
+  "area", "approx", "approximately", "location", "locations", "shown", "dashed", "line", "lines", "full", "height", "entire", "properly",
+  "saw", "abandon", "tear", "out", "r", "x", "sq", "ft", "sf", "lf", "ea", "ln"]);
+
+const norm = (s) => String(s || "").toUpperCase().replace(/[’']/g, "'").replace(/[“”]/g, '"').replace(/\s+/g, " ").trim();
+function tokens(s) {
+  return String(s || "").toLowerCase().replace(/\([en]\)/g, " ").replace(/[^a-z0-9 ]+/g, " ").split(" ")
+    .filter(Boolean).map((w) => SYN[w] || w).map((w) => (w.length > 3 && w.endsWith("s") ? w.slice(0, -1) : w))
+    .filter((w) => !STOP.has(w) && !/^\d+$/.test(w));
+}
+
+function sheetOf(lines, n) {
+  // the sheet number usually sits in the title block, near the end of the page text
+  const hits = [];
+  lines.forEach((l, i) => { for (const m of norm(l).matchAll(SHEET_CODE)) hits.push({ code: m[1].replace(/\.$/, ""), i, alone: norm(l) === m[1] }); });
+  if (!hits.length) return `p.${n}`;
+  const alone = hits.filter((h) => h.alone);
+  const pick = (alone.length ? alone : hits).reduce((a, b) => (b.i >= a.i ? b : a));
+  return pick.code;
+}
+function kindOf(text) { for (const [k, re] of KIND) if (re.test(text)) return k; return "other"; }
+
+function parseFeetInches(s) {
+  const m = String(s).match(/(\d{1,2})\s*'\s*-?\s*(\d{1,2})?\s*"?/);
+  return m ? Math.round((Number(m[1]) + (m[2] ? Number(m[2]) / 12 : 0)) * 100) / 100 : null;
+}
+
+function analyzePlans(pages, takeoffItems = []) {
+  const sheets = [], unreadable = [], calloutMap = new Map(), facts = { job: {}, quantity_checks: [], exclusions: [], questions: [], sources: {} };
+  const flags = [], areas = [], conditions = new Map(), hazmat = new Map(), news = new Map(), others = new Map();
+  let gridRemain = null, ceilingHt = null, ceilingMentioned = false, recompaction = null, basement = null;
+  const devices = new Set();
+
+  for (const p of pages) {
+    const lines = (p.lines || []).map(norm).filter(Boolean);
+    const all = lines.join("\n");
+    if (all.replace(/\s/g, "").length < 25) { unreadable.push(p.n); continue; }
+    const code = sheetOf(lines, p.n), kind = kindOf(all);
+    const kre = (KIND.find(([k]) => k === kind) || [])[1];
+    const titleLine = (kre && lines.slice().reverse().find((l) => kre.test(l))) || "";
+    sheets.push({ n: p.n, code, kind, title: titleLine.slice(0, 60) });
+
+    for (const l of lines) {
+      if (BY_OTHERS.test(l)) others.set(l.slice(0, 120), code);
+      if (HAZMAT.test(l)) hazmat.set(l.slice(0, 120), code);
+      for (const [re, key, msg] of CONDITION) if (re.test(l) && !conditions.has(key)) conditions.set(key, { msg, code, text: l.slice(0, 80) });
+      if (NEW_WORK.test(l) && !DEMO_VERB.test(l)) news.set(l.slice(0, 100), code);
+      if (/\bCEILING|\bCLG\b|\bACT\b|\bT-?BAR\b/.test(l)) ceilingMentioned = true;
+      if (/\bGRID\b/.test(l)) { if (REMAIN.test(l) || /GRID\s+(TO\s+)?REMAIN/.test(l)) gridRemain = gridRemain || { v: "remain", code }; else if (DEMO_VERB.test(l)) gridRemain = { v: "remove", code }; }
+      const ch = l.match(/\b(?:CLG|CEILING)\s*(?:HT\.?|HEIGHT)?\s*[:=@]?\s*(\d{1,2}\s*'\s*-?\s*\d{0,2}\s*"?)/) || l.match(/(\d{1,2}\s*'\s*-?\s*\d{0,2}\s*"?)\s*A\.?F\.?F\.?[^\n]{0,15}\b(?:CLG|CEILING)\b/);
+      if (ch && !ceilingHt) { const v = parseFeetInches(ch[1]); if (v && v >= 7 && v <= 40) ceilingHt = { v, code }; }
+      for (const d of ["LIGHT", "DIFFUSER", "GRILLE", "RETURN", "SPEAKER", "SPRINKLER", "SMOKE DETECTOR", "CAMERA", "SENSOR", "EXIT SIGN"])
+        if (new RegExp("\\b" + d + "S?\\b").test(l) && DEMO_VERB.test(l)) devices.add(d.toLowerCase());
+      if (/\bRE-?COMPACT|\bCOMPACTED\s+(FILL|SOIL)|\b\d{1,2}\s*"?\s*(INCH\s+)?LIFTS\b|\b9[05]\s*%\s*(RELATIVE\s+)?COMPACTION\b/.test(l)) recompaction = recompaction || code;
+      const bd = l.match(/\bBASEMENT\b/) && l.match(/(\d{1,2}(?:\.\d)?)\s*(?:'|FT|FEET)\s*(?:DEEP|BELOW|BGS)?/);
+      if (bd && !basement) basement = { depth: Number(bd[1]), code };
+      for (const m of l.matchAll(/(\d{1,3}(?:,\d{3})+|\d{2,7})(?:\.\d+)?\s*(?:S\.?F\.?|SQ\.?\s*FT\.?|SQUARE\s+FEET)\b/g)) {
+        const sf = Number(m[1].replace(/,/g, ""));
+        const label = /REMODEL|TENANT\s+IMPROVEMENT|\bT\.?I\.?\b|AREA\s+OF\s+WORK|WORK\s+AREA|SCOPE|DEMO(LITION)?\s+AREA/.test(l) ? "remodel"
+          : /\bLOT\b|SITE\s+AREA|PARCEL/.test(l) ? "lot" : /SUITE|TENANT\s+SPACE|LEASE/.test(l) ? "suite" : /BUILDING|GROSS|FOOTPRINT|FLOOR\s+AREA/.test(l) ? "building" : null;
+        if (label && sf >= 50) areas.push({ label, sf, code, text: l.slice(0, 80) });
+      }
+      // demo callouts
+      for (const sn of l.split(/\.\s+(?=[A-Z(])/).map((x) => x.trim()).filter(Boolean)) {
+        if (!DEMO_VERB.test(sn) || LEGEND.test(sn) || REMAIN.test(sn) || sn.length > 140 || /:\s*$/.test(sn) || KIND.some(([, re]) => re.test(sn)) || BY_OTHERS.test(sn)) continue;
+        const key = tokens(sn).sort().join(" ");
+        if (!key) continue;
+        const c = calloutMap.get(key) || { text: sn.replace(/\.$/, ""), sheets: new Set(), count: 0 };
+        c.count++; c.sheets.add(code); calloutMap.set(key, c);
+      }
+    }
+  }
+
+  // match callouts to the takeoff
+  const tk = takeoffItems.map((t) => ({ ...t, tok: new Set(tokens(t.item + " " + (t.description || ""))), group: t.group || groupFor(t.item) }));
+  const callouts = [...calloutMap.values()].map((c) => {
+    const tok = tokens(c.text);
+    const group = /\b(LIGHT|DIFFUSER|GRILLE|SPEAKER|SENSOR|CAMERA|EXIT\s+SIGN|SPRINKLER|DETECTOR|THERMOSTAT|OUTLET|CONDUIT)/.test(c.text) ? "mep_electrical_hvac" : groupFor(c.text.toLowerCase());
+    const hit = tk.find((t) => tok.filter((w) => t.tok.has(w)).length >= 2)
+      || tk.find((t) => group !== "other" && t.group === group)
+      || tk.find((t) => tok.some((w) => w.length > 3 && t.tok.has(w)));
+    return { text: c.text, sheets: [...c.sheets], count: c.count, group, matched: hit ? hit.item : null };
+  });
+  const flag = (kind, level, message, sheet, extra = {}) => {
+    const key = "plan_" + kind + ":" + String(message).toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 50);
+    if (!flags.some((f) => f.key === key)) flags.push({ key, level, kind, message, sheet, ...extra });
+  };
+
+  if (pages.length && !sheets.length) {
+    flag("unreadable", "ask", "The plan set has no readable text (scanned). Plan QC needs a person or the AI step.", "");
+  } else if (unreadable.length) {
+    flag("unreadable", "ask", `${unreadable.length} page${unreadable.length === 1 ? "" : "s"} had no readable text (scanned or image only): page ${unreadable.slice(0, 8).join(", ")}${unreadable.length > 8 ? ", ..." : ""}. Check those by eye.`, "");
+  }
+  for (const c of callouts) if (!c.matched && takeoffItems.length)
+    flag("missing", "ask", `On the plans but not in the takeoff: "${c.text}" (${c.sheets.join(", ")}). Add it to scope or confirm it's covered.`, c.sheets[0], { callout: c.text });
+  if (callouts.length >= 3) {
+    const usedItems = new Set(callouts.map((c) => c.matched).filter(Boolean));
+    for (const t of tk) if (!usedItems.has(t.item) && !["haul_containers", "labor_equipment", "other"].includes(t.group) && !callouts.some((c) => c.group === t.group))
+      flag("takeoff_only", "warn", `In the takeoff but no demo callout found on the plans: "${t.item}". Confirm it's in scope.`, "");
+  }
+  for (const [text, code] of news) flag("new_work", "warn", `New work on the plans: "${text}" (${code}). That's not demo; keep it out of scope.`, code);
+  for (const [text, code] of others) { facts.exclusions.push((text.charAt(0) + text.slice(1).toLowerCase()).replace(/\((e|n)\)/g, (m) => m.toUpperCase()).replace(/\.$/, "")); flag("by_others", "ask", `By others / not in contract: "${text}" (${code}). Add it to the exclusions?`, code); }
+  for (const [text, code] of hazmat) flag("hazmat", "ask", `Hazardous materials note: "${text}" (${code}). Confirm testing/abatement is excluded or priced.`, code);
+  for (const [key, c] of conditions) {
+    flag("condition", "ask", `${c.msg} "${c.text}" (${c.code}).`, c.code);
+    if (key === "floor") { const lv = c.text.match(/\b(2|3|4)(ND|RD|TH)?\b|SECOND|THIRD/); facts.job.floor_level = lv ? (/SECOND|2/.test(lv[0]) ? 2 : /THIRD|3/.test(lv[0]) ? 3 : 4) : 2; facts.sources["job.floor_level"] = c.code; }
+  }
+
+  // ceilings
+  const tkCeiling = tk.filter((t) => t.group === "ceilings");
+  const hasRcp = sheets.some((s) => s.kind === "rcp");
+  if (gridRemain) { facts.ceiling = { grid: gridRemain.v }; facts.sources["ceiling.grid"] = gridRemain.code; }
+  if (devices.size) { facts.ceiling = facts.ceiling || {}; facts.ceiling.device_types = [...devices]; flag("devices", "ask", `Ceiling devices to remove on the plans (${[...devices].join(", ")}). Count them; the code can't count symbols.`, gridRemain ? gridRemain.code : ""); }
+  if (ceilingHt) { facts.job.ceiling_height_ft = ceilingHt.v; facts.sources["job.ceiling_height_ft"] = ceilingHt.code; }
+  if (tkCeiling.length && !hasRcp) flag("no_rcp", "ask", "The takeoff has ceiling work but no reflected ceiling plan was found in the set. Check the ceiling scope.", "");
+  if (!tkCeiling.length && hasRcp && callouts.some((c) => c.group === "ceilings")) flag("ceiling_missing", "ask", "The ceiling plan has demo callouts but the takeoff has no ceiling lines.", sheets.find((s) => s.kind === "rcp").code);
+  if ((tkCeiling.length || ceilingMentioned) && !ceilingHt && hasRcp) flag("ceiling_height", "ask", "No ceiling height found on the plans. Needed to size the lift.", "");
+
+  // areas -> quantity checks
+  const remodel = areas.filter((a) => a.label === "remodel" || a.label === "suite").sort((a, b) => b.sf - a.sf)[0];
+  if (remodel) {
+    facts.sources.area = `${remodel.code}: ${remodel.text}`;
+    for (const g of ["flooring", "ceilings"]) {
+      const sf = tk.filter((t) => t.group === g && t.unit === "SF").reduce((s, t) => s + Number(t.qty), 0);
+      if (sf > 0) facts.quantity_checks.push({ item: g === "flooring" ? "Flooring" : "Ceiling", takeoff_qty: Math.round(sf * 100) / 100, plan_qty: remodel.sf, unit: "SF", source: `${remodel.code} ${remodel.label} area` });
+    }
+  }
+  const lot = areas.find((a) => a.label === "lot");
+  if (lot) { facts.lot_sf = lot.sf; facts.sources.lot = `${lot.code}: ${lot.text}`; }
+  if (recompaction) { facts.recompaction_required = true; facts.sources.recompaction = recompaction; }
+  if (basement) { facts.excavation = { depth_ft: basement.depth }; facts.sources["excavation.depth_ft"] = basement.code; }
+
+  facts.questions = flags.filter((f) => f.level === "ask").map((f) => f.message);
+  return {
+    sheets, callouts, facts, flags, unreadable,
+    stats: { pages: pages.length, readable: sheets.length, callouts: callouts.length, matched: callouts.filter((c) => c.matched).length },
+  };
+}
+
+// pdftotext -layout output (pages split by form feed) -> pages for analyzePlans
+function pagesFromPdftotext(text) {
+  return String(text).split("\f").map((pg, i) => ({ n: i + 1, lines: pg.split("\n").flatMap((l) => l.split(/\s{3,}/)).map((s) => s.trim()).filter(Boolean) }))
+    .filter((p, i, a) => !(i === a.length - 1 && !p.lines.length));
+}
+
+module.exports = { analyzePlans, pagesFromPdftotext, tokens };
+
 }
 };
 var cache = {};
 function req(n) { if (cache[n]) return cache[n].exports; var m = cache[n] = { exports: {} }; defs[n](m, m.exports, req); return m.exports; }
-var price = req("./price"), checks = req("./checks"), common = req("./common"), comps = req("./comps"), auto = req("./auto");
-window.A2ZEstimator = { computeEstimate: price.computeEstimate, checkEstimate: checks.checkEstimate, RULES: checks.RULES, parseStackCsv: common.parseStackCsv, prepareLibrary: common.prepareLibrary, findComps: comps.findComps, autoEstimate: auto.autoEstimate };
+var price = req("./price"), checks = req("./checks"), common = req("./common"), comps = req("./comps"), auto = req("./auto"), plans = req("./plans");
+window.A2ZEstimator = { computeEstimate: price.computeEstimate, checkEstimate: checks.checkEstimate, RULES: checks.RULES, parseStackCsv: common.parseStackCsv, prepareLibrary: common.prepareLibrary, findComps: comps.findComps, autoEstimate: auto.autoEstimate, analyzePlans: plans.analyzePlans };
 })();
 </script>
 <script>
@@ -934,6 +1135,7 @@ function run() {
     <div><span>Margin</span><span>${Math.round(p.margin * 100)}%</span></div>
     <div class="big"><span>Final bid</span><span>${money(p.final_price)}</span></div>` : `<div class="hint">Add cost lines and a markup or final price.</div>`;
   renderComps(p);
+  renderPlans();
   const n = (l) => res.issues.filter((i) => i.level === l).length;
   const st = document.getElementById("status");
   if (!res.issues.length) { st.className = "status ok"; st.textContent = "All checks pass. Ready to build the proposal."; }
@@ -970,6 +1172,8 @@ function loadTakeoff(text, fileName) {
   const draft = E.autoEstimate({ items, rates: RATES, defaults: DEFAULTS, job: { name: String(fileName || "").replace(/\.csv$/i, "").replace(/[_-]+/g, " ").trim() } });
   est = normalize(Object.assign(draft, { sections: [], _comps: COMPS }));
   delete est.auto;
+  est._takeoff = items.map((i) => ({ item: i.item, qty: i.qty, unit: i.unit, plan: i.plan, group: i.group }));
+  if (PLAN_PAGES) applyPlans();
   document.getElementById("exPick") && (document.getElementById("exPick").value = "");
   renderForm(); run();
 }
@@ -982,7 +1186,109 @@ document.getElementById("csvFile").addEventListener("change", (ev) => { const f 
 const dz = document.getElementById("drop");
 ["dragenter", "dragover"].forEach((t) => document.addEventListener(t, (ev) => { ev.preventDefault(); dz.classList.add("over"); }));
 ["dragleave", "drop"].forEach((t) => document.addEventListener(t, (ev) => { ev.preventDefault(); if (t === "dragleave" && ev.relatedTarget) return; dz.classList.remove("over"); }));
-document.addEventListener("drop", (ev) => { const f = [...(ev.dataTransfer.files || [])].find((x) => /\.csv$/i.test(x.name)); if (f) takeCsv(f); });
+document.addEventListener("drop", async (ev) => {
+  const files = [...(ev.dataTransfer.files || [])];
+  const csv = files.find((x) => /\.csv$/i.test(x.name)), pdf = files.find((x) => /\.pdf$/i.test(x.name));
+  if (csv) await takeCsv(csv);
+  if (pdf) takePdf(pdf);
+});
+document.getElementById("btnPdf").addEventListener("click", () => document.getElementById("pdfFile").click());
+document.getElementById("pdfFile").addEventListener("change", (ev) => { const f = ev.target.files[0]; if (f) takePdf(f); ev.target.value = ""; });
+
+// ---- plan check: read the PDF text in this browser (pdf.js), then A2Z's rules in lib/plans.js ----
+const PDFJS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+let PLAN_PAGES = null, PLAN_BUSY = "";
+function loadScript(src) { return new Promise((ok, bad) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = () => bad(new Error("Couldn't load the PDF reader. Check the internet connection and try again.")); document.head.appendChild(s); }); }
+async function loadPdfJs() {
+  if (window.pdfjsLib) return;
+  await loadScript(PDFJS + "pdf.worker.min.js"); // runs the reader on the page itself, no separate worker needed
+  await loadScript(PDFJS + "pdf.min.js");
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS + "pdf.worker.min.js";
+}
+async function readPdf(buf, onPage) {
+  await loadPdfJs();
+  const pdf = await window.pdfjsLib.getDocument({ data: buf }).promise;
+  const N = Math.min(pdf.numPages, 300), pages = [];
+  for (let n = 1; n <= N; n++) {
+    const page = await pdf.getPage(n), tc = await page.getTextContent(), rows = new Map();
+    for (const it of tc.items) {
+      if (!it.str || !it.str.trim()) continue;
+      const h = Math.abs(it.transform[3]) || it.height || 8, y = Math.round(it.transform[5] / Math.max(2, h * 0.4));
+      if (!rows.has(y)) rows.set(y, []);
+      rows.get(y).push({ x: it.transform[4], w: it.width || 0, s: it.str, h });
+    }
+    const lines = [];
+    for (const y of [...rows.keys()].sort((a, b) => b - a)) {
+      const r = rows.get(y).sort((a, b) => a.x - b.x);
+      let cur = r[0].s, end = r[0].x + r[0].w;
+      for (const t of r.slice(1)) {
+        const gap = t.x - end;
+        if (gap > t.h * 2.5) { lines.push(cur); cur = t.s; } else cur += (gap > t.h * 0.15 && !/\s$/.test(cur) ? " " : "") + t.s;
+        end = t.x + t.w;
+      }
+      lines.push(cur);
+    }
+    pages.push({ n, lines });
+    page.cleanup();
+    onPage(n, N);
+  }
+  return { pages, total: pdf.numPages };
+}
+async function takePdf(f, buf) {
+  PLAN_BUSY = `Reading ${f.name || "plans"}...`; renderPlans();
+  try {
+    const res = await readPdf(buf || await f.arrayBuffer(), (n, N) => { PLAN_BUSY = `Reading page ${n} of ${N}...`; renderPlans(); });
+    PLAN_PAGES = res.pages; est._planFile = f.name || "plans.pdf"; est._planTotal = res.total;
+    PLAN_BUSY = ""; applyPlans();
+  } catch (e) { PLAN_BUSY = ""; est.plan_qc = { error: e.message || String(e) }; renderPlans(); }
+}
+function applyPlans() {
+  const r = E.analyzePlans(PLAN_PAGES, est._takeoff || []);
+  const f = r.facts;
+  est.plan_flags = r.flags;
+  est.plan_qc = { file: est._planFile, total: est._planTotal, stats: r.stats, sheets: r.sheets.map((s) => ({ code: s.code, kind: s.kind })),
+    missing: r.flags.filter((x) => x.kind === "missing").map((x) => ({ key: x.key, callout: x.callout, sheet: x.sheet })), exclusions: f.exclusions, sources: f.sources };
+  est.quantity_checks = (est.quantity_checks || []).filter((q) => !q.from_plans).concat((f.quantity_checks || []).map((q) => ({ ...q, from_plans: true })));
+  est.job = est.job || {};
+  if (f.job.ceiling_height_ft && !est.job.ceiling_height_ft) est.job.ceiling_height_ft = f.job.ceiling_height_ft;
+  if (f.job.floor_level && !est.job.floor_level) est.job.floor_level = f.job.floor_level;
+  if (f.excavation && f.excavation.depth_ft && !(est.excavation && est.excavation.depth_ft)) est.excavation = Object.assign(est.excavation || {}, f.excavation);
+  if (f.recompaction_required) est.recompaction_required = true;
+  if (est.scopes && est.scopes.length && f.ceiling && f.ceiling.grid === "remain") {
+    const s0 = est.scopes[0]; s0.lines = (s0.lines || []).map((l) => (/ceiling|\bact\b/i.test(l) && !/grid/i.test(l) ? l + ", leave existing ceiling grid in place" : l));
+  }
+  renderForm(); run();
+}
+function renderPlans() {
+  const card = document.getElementById("planCard"), body = document.getElementById("planBody"), q = est.plan_qc;
+  if (!PLAN_BUSY && !q) { card.hidden = true; return; }
+  card.hidden = false;
+  if (PLAN_BUSY) { body.innerHTML = `<div class="progress">${esc(PLAN_BUSY)}</div>`; return; }
+  if (q.error) { body.innerHTML = `<div class="status bad">${esc(q.error)}</div>`; return; }
+  const kindName = { demo: "demo", rcp: "ceiling plan", site: "site", cover: "cover", other: "" };
+  const open = (est.plan_flags || []).filter((x) => !(est.confirmed || []).includes(x.key));
+  body.innerHTML = `<div class="hint">${esc(q.file || "Plans")}: read ${q.stats.readable} of ${q.total || q.stats.pages} pages. ${q.stats.callouts} demo callouts, ${q.stats.matched} matched to the takeoff${(est._takeoff || []).length ? "" : " (drop the CSV to match them)"}.</div>
+    <div class="plan-sheets">${q.sheets.map((s) => `<span>${esc(s.code)}${kindName[s.kind] ? " · " + kindName[s.kind] : ""}</span>`).join("")}</div>
+    <div class="hint">${open.length} plan item${open.length === 1 ? "" : "s"} in Checks below. Code reads the plan text only: scanned sheets, symbol counts and what a drawing means still need a person.</div>
+    <div class="plan-actions">${q.missing.some((m) => !(est.confirmed || []).includes(m.key)) && est.scopes && est.scopes.length ? '<button id="planAddScope">Add missing callouts to scope</button>' : ""}${(q.exclusions || []).length && !(est.extra_exclusions || []).length ? '<button id="planAddExcl">Add by-others items to exclusions</button>' : ""}</div>`;
+}
+document.addEventListener("click", (ev) => {
+  const b = ev.target.closest("button"); if (!b) return;
+  if (b.id === "planAddScope") {
+    const s0 = est.scopes[0]; s0.lines = s0.lines || [];
+    for (const m of est.plan_qc.missing) {
+      if ((est.confirmed || []).includes(m.key)) continue;
+      const txt = m.callout.replace(/^(CUT\s*(&|AND)\s*)?(DEMO(LISH)?|REMOVE)\s+/i, "").toLowerCase().replace(/\((e|n)\)/g, (x) => x.toUpperCase()).replace(/\b(act|vct|lvt|cmu|hvac|rtu|gwb|mep)\b/g, (x) => x.toUpperCase());
+      s0.lines.push(`Properly remove ${txt}${m.sheet ? ` (per plans ${m.sheet})` : ""}`);
+      est.confirmed.push(m.key);
+    }
+    renderForm(); run();
+  } else if (b.id === "planAddExcl") {
+    est.extra_exclusions = (est.plan_qc.exclusions || []).slice();
+    for (const x of est.plan_flags || []) if (x.kind === "by_others" && !est.confirmed.includes(x.key)) est.confirmed.push(x.key);
+    run();
+  }
+});
 
 // ---- events ----
 document.addEventListener("input", (ev) => {
@@ -1023,7 +1329,7 @@ document.addEventListener("click", (ev) => {
   }
   else if (b.dataset.confirm) { if (!est.confirmed.includes(b.dataset.confirm)) est.confirmed.push(b.dataset.confirm); }
   else if (b.dataset.unconfirm) { est.confirmed = est.confirmed.filter((c) => c !== b.dataset.unconfirm); }
-  else if (b.id === "btnNew") { if (!confirm("Clear this estimate?")) return; est = blank(); COMPS = null; renderForm(); }
+  else if (b.id === "btnNew") { if (!confirm("Clear this estimate?")) return; est = blank(); COMPS = null; PLAN_PAGES = null; renderForm(); }
   else if (b.id === "btnImport") { document.getElementById("file").click(); return; }
   else if (b.id === "btnExport") {
     const name = (est.job.name || "estimate").replace(/[^A-Za-z0-9 _-]+/g, "").trim() || "estimate";

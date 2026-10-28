@@ -21,6 +21,14 @@ const post = (body) => ({ httpMethod: "POST", body: JSON.stringify(body) });
   assert.strictEqual(a.priced.final_price, Math.round((3200 + 2550) * 2.3));
   assert.ok(a.comps.length > 0 && a.review.includes("DRAFT"));
 
+  // plan text (as the page sends it) runs the code plan check
+  const pages = require("../estimator/engine").pagesFromPdftotext(require("fs").readFileSync(require("path").join(__dirname, "..", "estimator", "engine", "test", "fixtures", "sample-plans.txt"), "utf8"));
+  r = await auto(post({ takeoffCsv: CSV, planPages: pages, job: { name: "Smoke Test" }, inputs: { lines: [{ section: "Interior", category: "Labor", description: "4-man crew x 2 days", qty: 2 }] } }));
+  assert.strictEqual(r.statusCode, 200, r.body);
+  const pl = JSON.parse(r.body);
+  assert.strictEqual(pl.planCheck.stats.readable, 3);
+  assert.ok(pl.issues.some((i) => i.id.startsWith("plan_missing")) && pl.estimate.job.ceiling_height_ft === 9);
+
   r = await check(post(a.estimate));
   assert.strictEqual(r.statusCode, 200);
   assert.ok(JSON.parse(r.body).issues.some((i) => i.id === "draft_inputs"));
@@ -32,5 +40,5 @@ const post = (body) => ({ httpMethod: "POST", body: JSON.stringify(body) });
 
   r = await check({ httpMethod: "GET" });
   assert.strictEqual(r.statusCode, 405);
-  console.log("smoke: estimate-auto, estimate-check, estimate-docs all OK");
+  console.log("smoke: estimate-auto (with plan check), estimate-check, estimate-docs all OK");
 })().catch((e) => { console.error(e); process.exit(1); });

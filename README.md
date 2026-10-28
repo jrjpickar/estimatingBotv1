@@ -8,9 +8,9 @@ A2Z's estimate checker page and the estimating engine behind it, ready for GitHu
 
 | Path | What it is |
 |---|---|
-| `public/index.html` (same as `checker.html`) | The Estimating Bot page. Drop a STACK CSV for scope lines and comps, enter cost lines, see totals, markup, margin and every FIX / QUESTION / CHECK. Dark or colorful GHL theme. Opens and saves `estimate.json`. |
+| `public/index.html` (same as `checker.html`) | The Estimating Bot page. Drop a STACK CSV for scope lines and comps, drop the plan set PDF for the plan check, enter cost lines, see totals, markup, margin and every FIX / QUESTION / CHECK. Dark or colorful GHL theme. Opens and saves `estimate.json`. |
 | `netlify/functions/estimate-check.js` | `POST` an estimate, get `{ ok, priced, issues }` back. |
-| `netlify/functions/estimate-auto.js` | `POST { takeoffCsv, inputs?, facts?, job?, markup? }`, get a draft estimate, checks, comps and a review sheet. |
+| `netlify/functions/estimate-auto.js` | `POST { takeoffCsv, planPages?, inputs?, facts?, job?, markup? }`, get a draft estimate, checks, comps, the plan check and a review sheet. |
 | `netlify/functions/estimate-docs.js` | `POST { estimate, takeoffCsv?, force? }`, get the proposal `.docx` and job costing `.xlsx` (base64) filled from A2Z's real templates. Refuses while FIX items remain unless `force: true` (files are then named DRAFT). |
 | `netlify/edge-functions/passcode.js` | Passcode gate in front of the page and all three functions. The passcode comes from the `ESTIMATING_BOT_PASSCODE` environment variable. |
 | `netlify/lib/engine.js` | Shared loader the three functions use (finds `estimator/data`). |
@@ -18,6 +18,19 @@ A2Z's estimate checker page and the estimating engine behind it, ready for GitHu
 | `estimator/data/` | Job library, rates, default markup (130% on cost), house style, and the two templates. |
 | `estimator/training-notes.md` | The training lessons the rules come from. |
 | `src/checker.template.html`, `tools/build.js` | Page source. `npm run build` inlines the engine, rates, library and defaults into `public/`. |
+
+## Plan check (code, no AI)
+
+Drop the plan set PDF on the page (with or without the CSV). The page reads the text of every sheet in the browser (pdf.js, loaded from cdnjs only when a PDF is dropped; the plans never leave the computer) and `estimator/engine/lib/plans.js` checks it against the takeoff:
+
+- Finds the sheets and their type (cover, demo plan, ceiling plan, site) by sheet number and title.
+- Pulls every demo callout ("DEMO (E) ...", "REMOVE ...", "CUT & DEMO ...") and matches it to the takeoff lines. Callouts with no takeoff line become QUESTIONs; one click adds them to scope.
+- Flags new work (new or mat slab, footings), by-others / NIC items (one click adds them to the exclusions), hazardous materials notes, upper floor, occupied building, restricted hours and dust protection.
+- Ceiling plan: grid stays or goes, devices being removed, ceiling height; warns when the takeoff has ceiling work but the set has no ceiling plan, or the other way around.
+- Reads remodel / suite / lot areas and checks the takeoff square footage against them.
+- Scanned sheets have no text: they are listed as unreadable for a person to check. Symbol counts and what a drawing means also stay with a person (or the AI step in Cowork).
+
+Every plan item shows in the same Checks list and clears with "Mark answered". The sandbox has a "Try a sample takeoff + plan set" button using a made-up 3-sheet set (`tools/sample-plans.pdf`).
 
 ## Put it on GitHub
 
@@ -63,7 +76,7 @@ Every push to `main` redeploys.
 ```
 npm test
 ```
-Runs the 21 engine tests, calls all three functions directly, and tests the passcode gate (no Netlify needed).
+Runs the 27 engine tests (including the plan check on the sample set), calls all three functions directly, and tests the passcode gate (no Netlify needed).
 
 Live check after deploy:
 ```
@@ -81,6 +94,8 @@ curl -X POST https://<site>.netlify.app/.netlify/functions/estimate-check \
 - Keep the engine in step with the Cowork plugin: copy `skills/estimate-job/engine` and `skills/estimate-job/data` from the plugin over `estimator/` when the plugin changes.
 
 ## Not in this site yet
+
+- Reading scanned plan sets and counting symbols (AI plan reading, needs an Anthropic API key).
 
 - Saving estimates per opportunity so the team shares one copy (planned: Netlify Blobs, like the Desk's due dates).
 - Reading the plan set and drafting crew-days and loads. Those are the AI steps and run in Cowork with the plugin; `estimate-auto` accepts their results as `facts` and `inputs`.

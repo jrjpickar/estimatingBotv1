@@ -27,17 +27,28 @@ rep('''  <button id="btnTheme" title="Switch theme">Colorful theme</button>
   <button id="btnNew">New blank</button>
   <button id="btnImport">Open estimate.json</button>
   <button id="btnExport" class="primary">Copy estimate JSON</button>''')
-rep('<main>', '''<div class="sandbox"><b>Sandbox.</b> Drop a STACK CSV, or try the checker on the training examples. Edits stay in this browser only. Example figures come from training sessions, not confirmed bids.</div>
+rep('<main>', '''<div class="sandbox"><b>Sandbox.</b> Drop a STACK CSV and plan set PDF, or try the training examples. Edits stay in this browser only. Example figures come from training sessions, not confirmed bids. <button id=\"btnSamplePlans\">Try a sample takeoff + plan set</button></div>
 <main>''')
 rep('''<div id="issues"></div><div class="answered" id="answered"></div></section>''',
     '''<div id="issues"></div><div class="answered" id="answered"></div></section>
   <section class="card" id="jsonCard" hidden><h2>Estimate JSON<span class="sp"></span><button class="link" id="closeJson">Close</button></h2><p class="hint" id="jsonMsg"></p><textarea id="jsonOut" readonly></textarea></section>''')
 ex = json.load(open(sys.argv[3]))
+import base64, os
+SAMPLE_PDF = base64.b64encode(open(os.path.join(os.path.dirname(sys.argv[3]), 'sample-plans.pdf'),'rb').read()).decode()
+SAMPLE_CSV = open(os.path.join(os.path.dirname(sys.argv[3]), 'sample-takeoff.csv')).read()
 rep('const RATES = ', 'const EXAMPLES = ' + json.dumps(ex) + ';\nconst RATES = ')
-rep('''  else if (b.id === "btnNew") { if (!confirm("Clear this estimate?")) return; est = blank(); COMPS = null; renderForm(); }''',
+rep('renderForm(); run();\n</script>', '''document.getElementById("btnSamplePlans").addEventListener("click", () => {
+  const bin = atob(SAMPLE_PDF), buf = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+  loadTakeoff(SAMPLE_CSV, "Sample tenant improvement (test plans).csv");
+  takePdf({ name: "sample-plans.pdf (test set, not a real project)" }, buf.buffer);
+});
+renderForm(); run();
+</script>''')
+rep('const RATES = ', 'const SAMPLE_PDF = ' + json.dumps(SAMPLE_PDF) + ';\nconst SAMPLE_CSV = ' + json.dumps(SAMPLE_CSV) + ';\nconst RATES = ')
+rep('''  else if (b.id === "btnNew") { if (!confirm("Clear this estimate?")) return; est = blank(); COMPS = null; PLAN_PAGES = null; renderForm(); }''',
 '''  else if (b.id === "btnNew") {
     if (b.dataset.arm !== "1") { b.dataset.arm = "1"; b.textContent = "Click again to clear"; setTimeout(() => { b.dataset.arm = ""; b.textContent = "New blank"; }, 3000); return; }
-    b.dataset.arm = ""; b.textContent = "New blank"; est = blank(); COMPS = null; document.getElementById("exPick").value = ""; renderForm();
+    b.dataset.arm = ""; b.textContent = "New blank"; est = blank(); COMPS = null; PLAN_PAGES = null; document.getElementById("exPick").value = ""; renderForm();
   }
   else if (b.id === "closeJson") { document.getElementById("jsonCard").hidden = true; return; }''')
 rep('''  else if (b.id === "btnExport") {
@@ -63,7 +74,7 @@ rep('''function load() {
 }''')
 rep('renderForm(); run();\n</script>', '''const pick = document.getElementById("exPick");
 pick.innerHTML += EXAMPLES.map((x, i) => `<option value="${i}">${esc(x.label)}</option>`).join("");
-pick.addEventListener("change", () => { if (pick.value === "") return; est = normalize(JSON.parse(JSON.stringify(EXAMPLES[+pick.value].estimate))); COMPS = null; renderForm(); run(); });
+pick.addEventListener("change", () => { if (pick.value === "") return; est = normalize(JSON.parse(JSON.stringify(EXAMPLES[+pick.value].estimate))); COMPS = null; PLAN_PAGES = null; renderForm(); run(); });
 renderForm(); run();
 </script>''')
 s = s.replace('const STORE = "a2z-checker-draft";', 'const STORE = "a2z-checker-sandbox";')

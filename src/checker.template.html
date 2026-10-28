@@ -57,6 +57,8 @@ details summary{cursor:pointer;color:var(--mute);font-size:12px;text-transform:u
 .drop{border:2px dashed var(--line);border-radius:10px;padding:16px;margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--card)}
 .drop.over{border-color:var(--accent)}.drop b{font-weight:650}.drop .sp{flex:1}
 .comp{display:grid;grid-template-columns:1fr auto;gap:2px 8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}.comp:last-child{border-bottom:0}
+.plan-sheets{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}.plan-sheets span{background:var(--chip);border-radius:10px;padding:1px 8px;font-size:12px}
+.plan-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.progress{font-size:12px;color:var(--mute)}
 .comp .meta{color:var(--mute);font-size:12px;grid-column:1/-1}.comp .amt{font-variant-numeric:tabular-nums;font-weight:600}
 </style>
 </head>
@@ -71,7 +73,7 @@ details summary{cursor:pointer;color:var(--mute);font-size:12px;text-transform:u
 </header>
 <main>
 <div style="min-width:0">
-  <div class="drop" id="drop"><div><b>Drop a STACK Takeoff Quantity CSV</b><div class="hint">Drafts the scope lines in A2Z wording, finds the closest past jobs, and sets the default markup. Add crew-days, loads and equipment below.</div></div><span class="sp"></span><button id="btnCsv">Choose CSV</button><input type="file" id="csvFile" accept=".csv,text/csv" hidden></div>
+  <div class="drop" id="drop"><div style="min-width:0"><b>Drop the STACK Takeoff Quantity CSV and the plan set PDF</b><div class="hint">The CSV drafts scope lines in A2Z wording, finds the closest past jobs and sets the default markup. The plans get checked against the takeoff: missing demo callouts, new work, by-others items, conditions, ceiling plan and areas. Add crew-days, loads and equipment below.</div></div><span class="sp"></span><button id="btnCsv">Choose CSV</button><button id="btnPdf">Choose plans PDF</button><input type="file" id="csvFile" accept=".csv,text/csv" hidden><input type="file" id="pdfFile" accept=".pdf,application/pdf" hidden></div>
   <section class="card"><h2>Job</h2>
     <div class="grid">
       <div><label>Job name</label><input data-f="job.name"></div>
@@ -117,6 +119,7 @@ details summary{cursor:pointer;color:var(--mute);font-size:12px;text-transform:u
 </div>
 
 <aside>
+  <section class="card" id="planCard" hidden><h2>Plan check</h2><div id="planBody"></div></section>
   <section class="card" id="compsCard" hidden><h2>Closest past jobs</h2><div id="comps"></div><p class="hint" id="compRange"></p></section>
   <section class="card"><h2>Totals</h2><div class="totals" id="totals"></div></section>
   <section class="card"><h2>Checks</h2><div id="status"></div><div id="issues"></div><div class="answered" id="answered"></div></section>
@@ -214,6 +217,7 @@ function run() {
     <div><span>Margin</span><span>${Math.round(p.margin * 100)}%</span></div>
     <div class="big"><span>Final bid</span><span>${money(p.final_price)}</span></div>` : `<div class="hint">Add cost lines and a markup or final price.</div>`;
   renderComps(p);
+  renderPlans();
   const n = (l) => res.issues.filter((i) => i.level === l).length;
   const st = document.getElementById("status");
   if (!res.issues.length) { st.className = "status ok"; st.textContent = "All checks pass. Ready to build the proposal."; }
@@ -250,6 +254,8 @@ function loadTakeoff(text, fileName) {
   const draft = E.autoEstimate({ items, rates: RATES, defaults: DEFAULTS, job: { name: String(fileName || "").replace(/\.csv$/i, "").replace(/[_-]+/g, " ").trim() } });
   est = normalize(Object.assign(draft, { sections: [], _comps: COMPS }));
   delete est.auto;
+  est._takeoff = items.map((i) => ({ item: i.item, qty: i.qty, unit: i.unit, plan: i.plan, group: i.group }));
+  if (PLAN_PAGES) applyPlans();
   document.getElementById("exPick") && (document.getElementById("exPick").value = "");
   renderForm(); run();
 }
@@ -262,7 +268,109 @@ document.getElementById("csvFile").addEventListener("change", (ev) => { const f 
 const dz = document.getElementById("drop");
 ["dragenter", "dragover"].forEach((t) => document.addEventListener(t, (ev) => { ev.preventDefault(); dz.classList.add("over"); }));
 ["dragleave", "drop"].forEach((t) => document.addEventListener(t, (ev) => { ev.preventDefault(); if (t === "dragleave" && ev.relatedTarget) return; dz.classList.remove("over"); }));
-document.addEventListener("drop", (ev) => { const f = [...(ev.dataTransfer.files || [])].find((x) => /\.csv$/i.test(x.name)); if (f) takeCsv(f); });
+document.addEventListener("drop", async (ev) => {
+  const files = [...(ev.dataTransfer.files || [])];
+  const csv = files.find((x) => /\.csv$/i.test(x.name)), pdf = files.find((x) => /\.pdf$/i.test(x.name));
+  if (csv) await takeCsv(csv);
+  if (pdf) takePdf(pdf);
+});
+document.getElementById("btnPdf").addEventListener("click", () => document.getElementById("pdfFile").click());
+document.getElementById("pdfFile").addEventListener("change", (ev) => { const f = ev.target.files[0]; if (f) takePdf(f); ev.target.value = ""; });
+
+// ---- plan check: read the PDF text in this browser (pdf.js), then A2Z's rules in lib/plans.js ----
+const PDFJS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+let PLAN_PAGES = null, PLAN_BUSY = "";
+function loadScript(src) { return new Promise((ok, bad) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = () => bad(new Error("Couldn't load the PDF reader. Check the internet connection and try again.")); document.head.appendChild(s); }); }
+async function loadPdfJs() {
+  if (window.pdfjsLib) return;
+  await loadScript(PDFJS + "pdf.worker.min.js"); // runs the reader on the page itself, no separate worker needed
+  await loadScript(PDFJS + "pdf.min.js");
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS + "pdf.worker.min.js";
+}
+async function readPdf(buf, onPage) {
+  await loadPdfJs();
+  const pdf = await window.pdfjsLib.getDocument({ data: buf }).promise;
+  const N = Math.min(pdf.numPages, 300), pages = [];
+  for (let n = 1; n <= N; n++) {
+    const page = await pdf.getPage(n), tc = await page.getTextContent(), rows = new Map();
+    for (const it of tc.items) {
+      if (!it.str || !it.str.trim()) continue;
+      const h = Math.abs(it.transform[3]) || it.height || 8, y = Math.round(it.transform[5] / Math.max(2, h * 0.4));
+      if (!rows.has(y)) rows.set(y, []);
+      rows.get(y).push({ x: it.transform[4], w: it.width || 0, s: it.str, h });
+    }
+    const lines = [];
+    for (const y of [...rows.keys()].sort((a, b) => b - a)) {
+      const r = rows.get(y).sort((a, b) => a.x - b.x);
+      let cur = r[0].s, end = r[0].x + r[0].w;
+      for (const t of r.slice(1)) {
+        const gap = t.x - end;
+        if (gap > t.h * 2.5) { lines.push(cur); cur = t.s; } else cur += (gap > t.h * 0.15 && !/\s$/.test(cur) ? " " : "") + t.s;
+        end = t.x + t.w;
+      }
+      lines.push(cur);
+    }
+    pages.push({ n, lines });
+    page.cleanup();
+    onPage(n, N);
+  }
+  return { pages, total: pdf.numPages };
+}
+async function takePdf(f, buf) {
+  PLAN_BUSY = `Reading ${f.name || "plans"}...`; renderPlans();
+  try {
+    const res = await readPdf(buf || await f.arrayBuffer(), (n, N) => { PLAN_BUSY = `Reading page ${n} of ${N}...`; renderPlans(); });
+    PLAN_PAGES = res.pages; est._planFile = f.name || "plans.pdf"; est._planTotal = res.total;
+    PLAN_BUSY = ""; applyPlans();
+  } catch (e) { PLAN_BUSY = ""; est.plan_qc = { error: e.message || String(e) }; renderPlans(); }
+}
+function applyPlans() {
+  const r = E.analyzePlans(PLAN_PAGES, est._takeoff || []);
+  const f = r.facts;
+  est.plan_flags = r.flags;
+  est.plan_qc = { file: est._planFile, total: est._planTotal, stats: r.stats, sheets: r.sheets.map((s) => ({ code: s.code, kind: s.kind })),
+    missing: r.flags.filter((x) => x.kind === "missing").map((x) => ({ key: x.key, callout: x.callout, sheet: x.sheet })), exclusions: f.exclusions, sources: f.sources };
+  est.quantity_checks = (est.quantity_checks || []).filter((q) => !q.from_plans).concat((f.quantity_checks || []).map((q) => ({ ...q, from_plans: true })));
+  est.job = est.job || {};
+  if (f.job.ceiling_height_ft && !est.job.ceiling_height_ft) est.job.ceiling_height_ft = f.job.ceiling_height_ft;
+  if (f.job.floor_level && !est.job.floor_level) est.job.floor_level = f.job.floor_level;
+  if (f.excavation && f.excavation.depth_ft && !(est.excavation && est.excavation.depth_ft)) est.excavation = Object.assign(est.excavation || {}, f.excavation);
+  if (f.recompaction_required) est.recompaction_required = true;
+  if (est.scopes && est.scopes.length && f.ceiling && f.ceiling.grid === "remain") {
+    const s0 = est.scopes[0]; s0.lines = (s0.lines || []).map((l) => (/ceiling|\bact\b/i.test(l) && !/grid/i.test(l) ? l + ", leave existing ceiling grid in place" : l));
+  }
+  renderForm(); run();
+}
+function renderPlans() {
+  const card = document.getElementById("planCard"), body = document.getElementById("planBody"), q = est.plan_qc;
+  if (!PLAN_BUSY && !q) { card.hidden = true; return; }
+  card.hidden = false;
+  if (PLAN_BUSY) { body.innerHTML = `<div class="progress">${esc(PLAN_BUSY)}</div>`; return; }
+  if (q.error) { body.innerHTML = `<div class="status bad">${esc(q.error)}</div>`; return; }
+  const kindName = { demo: "demo", rcp: "ceiling plan", site: "site", cover: "cover", other: "" };
+  const open = (est.plan_flags || []).filter((x) => !(est.confirmed || []).includes(x.key));
+  body.innerHTML = `<div class="hint">${esc(q.file || "Plans")}: read ${q.stats.readable} of ${q.total || q.stats.pages} pages. ${q.stats.callouts} demo callouts, ${q.stats.matched} matched to the takeoff${(est._takeoff || []).length ? "" : " (drop the CSV to match them)"}.</div>
+    <div class="plan-sheets">${q.sheets.map((s) => `<span>${esc(s.code)}${kindName[s.kind] ? " · " + kindName[s.kind] : ""}</span>`).join("")}</div>
+    <div class="hint">${open.length} plan item${open.length === 1 ? "" : "s"} in Checks below. Code reads the plan text only: scanned sheets, symbol counts and what a drawing means still need a person.</div>
+    <div class="plan-actions">${q.missing.some((m) => !(est.confirmed || []).includes(m.key)) && est.scopes && est.scopes.length ? '<button id="planAddScope">Add missing callouts to scope</button>' : ""}${(q.exclusions || []).length && !(est.extra_exclusions || []).length ? '<button id="planAddExcl">Add by-others items to exclusions</button>' : ""}</div>`;
+}
+document.addEventListener("click", (ev) => {
+  const b = ev.target.closest("button"); if (!b) return;
+  if (b.id === "planAddScope") {
+    const s0 = est.scopes[0]; s0.lines = s0.lines || [];
+    for (const m of est.plan_qc.missing) {
+      if ((est.confirmed || []).includes(m.key)) continue;
+      const txt = m.callout.replace(/^(CUT\s*(&|AND)\s*)?(DEMO(LISH)?|REMOVE)\s+/i, "").toLowerCase().replace(/\((e|n)\)/g, (x) => x.toUpperCase()).replace(/\b(act|vct|lvt|cmu|hvac|rtu|gwb|mep)\b/g, (x) => x.toUpperCase());
+      s0.lines.push(`Properly remove ${txt}${m.sheet ? ` (per plans ${m.sheet})` : ""}`);
+      est.confirmed.push(m.key);
+    }
+    renderForm(); run();
+  } else if (b.id === "planAddExcl") {
+    est.extra_exclusions = (est.plan_qc.exclusions || []).slice();
+    for (const x of est.plan_flags || []) if (x.kind === "by_others" && !est.confirmed.includes(x.key)) est.confirmed.push(x.key);
+    run();
+  }
+});
 
 // ---- events ----
 document.addEventListener("input", (ev) => {
@@ -303,7 +411,7 @@ document.addEventListener("click", (ev) => {
   }
   else if (b.dataset.confirm) { if (!est.confirmed.includes(b.dataset.confirm)) est.confirmed.push(b.dataset.confirm); }
   else if (b.dataset.unconfirm) { est.confirmed = est.confirmed.filter((c) => c !== b.dataset.unconfirm); }
-  else if (b.id === "btnNew") { if (!confirm("Clear this estimate?")) return; est = blank(); COMPS = null; renderForm(); }
+  else if (b.id === "btnNew") { if (!confirm("Clear this estimate?")) return; est = blank(); COMPS = null; PLAN_PAGES = null; renderForm(); }
   else if (b.id === "btnImport") { document.getElementById("file").click(); return; }
   else if (b.id === "btnExport") {
     const name = (est.job.name || "estimate").replace(/[^A-Za-z0-9 _-]+/g, "").trim() || "estimate";

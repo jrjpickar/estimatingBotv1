@@ -132,6 +132,7 @@ function autoEstimate({ items, facts = {}, inputs = {}, job = {}, defaults = DEF
     auto: { mode: "draft", markup_source: markup != null ? "this job" : "default", problems, from_plans: facts.sources || {}, questions: facts.questions || [] },
   };
   if (facts.exclusions && facts.exclusions.length) est.extra_exclusions = facts.exclusions;
+  if (facts.plan_flags && facts.plan_flags.length) est.plan_flags = facts.plan_flags;
   if (facts.notes && facts.notes.length) est.extra_notes = facts.notes;
   // price per scope at the markup, whole dollars, so the scope totals add up exactly
   const cost = (names) => sections.filter((s) => names.includes(s.name)).reduce((t, s) => t + s.lines.reduce((u, l) => u + Number(l.qty || 0) * Number(l.rate || 0), 0), 0);

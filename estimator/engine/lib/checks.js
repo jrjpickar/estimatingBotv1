@@ -18,6 +18,7 @@
 //   excavation: { footprint_sf, depth_ft, volume_cy, loads }
 //   quantity_checks: [ { item, takeoff_qty, plan_qty, unit, source } ]
 //   confirmed: [ rule ids already answered ]
+//   plan_flags: [ { key, level, message, sheet } ] from lib/plans.js analyzePlans (each answered by adding its key to confirmed)
 //
 // Every rule comes from references/training-notes.md. Add a rule here + a test when a new lesson comes in.
 
@@ -196,6 +197,12 @@ function checkEstimate(est, opts = {}) {
       add("quantity_gap", q.item, `Takeoff ${t.toLocaleString()} ${q.unit || ""} vs plans ${p.toLocaleString()} ${q.unit || ""}${q.source ? ` (${q.source})` : ""}.`);
   }
   if (!qc.length && (est.takeoff || est.has_takeoff)) add("quantity_unchecked", "quantities", "No takeoff quantities were cross-checked against plan dimensions.");
+
+  // ---- plan QC (lib/plans.js results stored on the estimate) ----
+  for (const f of est.plan_flags || []) {
+    if (confirmed.has(f.key)) continue;
+    issues.push({ id: f.key, level: f.level === "block" ? "ask" : f.level, where: f.sheet ? `plans ${f.sheet}` : "plans", message: f.message, lesson: "From the plan check (code reading the plan text, no AI)." });
+  }
 
   const order = { block: 0, ask: 1, warn: 2 };
   issues.sort((a, b) => order[a.level] - order[b.level]);

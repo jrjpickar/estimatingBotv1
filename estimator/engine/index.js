@@ -12,6 +12,7 @@ const { proposalData, fillProposal } = require("./lib/proposal");
 const { fillJobCosting } = require("./lib/jobCosting");
 const { checkEstimate, formatIssues, RULES } = require("./lib/checks");
 const { autoEstimate, reviewSheet } = require("./lib/auto");
+const { analyzePlans, pagesFromPdftotext } = require("./lib/plans");
 
 const DATA = path.join(__dirname, "..", "data");
 
@@ -36,5 +37,5 @@ function buildDocuments(priced, comps, assets) {
 module.exports = {
   loadAssets, buildDocuments, STANDARD_RATES,
   parseStackCsv: common.parseStackCsv, findComps, formatComps,
-  computeEstimate, formatEstimate, checkEstimate, formatIssues, RULES, autoEstimate, reviewSheet, proposalData, fillProposal, fillJobCosting,
+  computeEstimate, formatEstimate, checkEstimate, formatIssues, RULES, autoEstimate, reviewSheet, analyzePlans, pagesFromPdftotext, proposalData, fillProposal, fillJobCosting,
 };

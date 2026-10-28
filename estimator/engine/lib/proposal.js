@@ -37,7 +37,11 @@ function proposalData(p, style) {
     scope_sections: sections,
     remain_groups: (p.remain || []).map((g) => ({ area: g.area, items_text: (g.items || []).join("\n") })),
     notes: (p.notes || style.notes).map((text) => ({ text })),
-    exclusions_text: p.exclusions || style.exclusions,
+    exclusions_text: (() => {
+      const base = p.exclusions || style.exclusions;
+      const extra = (p.extra_exclusions || []).filter((x) => !base.toLowerCase().includes(String(x).toLowerCase()));
+      return extra.length ? `${base.replace(/\s+$/, "")} ${extra.join(", ")}.` : base;
+    })(),
     subtotal_label: p.subtotal_label || "",
     subtotal_display: p.subtotal != null ? money2(p.subtotal) : "",
     grand_total_label: "TOTAL:",
