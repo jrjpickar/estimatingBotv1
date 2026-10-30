@@ -9,11 +9,11 @@ if (!skillDir || !outDir) { console.error("Usage: node tools/build.js <estimate-
 const lib = (f) => fs.readFileSync(path.join(skillDir, "engine", "lib", f), "utf8");
 const mod = (name, src) => `"${name}": function (module, exports, require) {\n${src}\n}`;
 const engine = `(function () {
-var defs = {\n${mod("./common", lib("common.js"))},\n${mod("./price", lib("price.js"))},\n${mod("./checks", lib("checks.js"))},\n${mod("./comps", lib("comps.js"))},\n${mod("./auto", lib("auto.js"))},\n${mod("./plans", lib("plans.js"))},\n${mod("./autopilot", lib("autopilot.js"))},\n${mod("./costsheet", lib("costsheet.js"))},\n${mod("./proposalData", lib("proposalData.js"))}\n};
+var defs = {\n${mod("./common", lib("common.js"))},\n${mod("./price", lib("price.js"))},\n${mod("./checks", lib("checks.js"))},\n${mod("./comps", lib("comps.js"))},\n${mod("./auto", lib("auto.js"))},\n${mod("./plans", lib("plans.js"))},\n${mod("./autopilot", lib("autopilot.js"))},\n${mod("./costsheet", lib("costsheet.js"))},\n${mod("./proposalData", lib("proposalData.js"))},\n${mod("./learn", lib("learn.js"))}\n};
 var cache = {};
 function req(n) { if (cache[n]) return cache[n].exports; var m = cache[n] = { exports: {} }; defs[n](m, m.exports, req); return m.exports; }
-var price = req("./price"), checks = req("./checks"), common = req("./common"), comps = req("./comps"), auto = req("./auto"), plans = req("./plans"), autopilot = req("./autopilot"), costsheet = req("./costsheet"), pd = req("./proposalData");
-window.A2ZEstimator = { computeEstimate: price.computeEstimate, checkEstimate: checks.checkEstimate, RULES: checks.RULES, parseStackCsv: common.parseStackCsv, prepareLibrary: common.prepareLibrary, findComps: comps.findComps, autoEstimate: auto.autoEstimate, analyzePlans: plans.analyzePlans, autopilot: autopilot.autopilot, slotMap: costsheet.slotMap, LAYOUT: costsheet.LAYOUT, proposalData: pd.proposalData };
+var price = req("./price"), checks = req("./checks"), common = req("./common"), comps = req("./comps"), auto = req("./auto"), plans = req("./plans"), autopilot = req("./autopilot"), costsheet = req("./costsheet"), pd = req("./proposalData"), learn = req("./learn");
+window.A2ZEstimator = { computeEstimate: price.computeEstimate, checkEstimate: checks.checkEstimate, RULES: checks.RULES, parseStackCsv: common.parseStackCsv, prepareLibrary: common.prepareLibrary, findComps: comps.findComps, autoEstimate: auto.autoEstimate, analyzePlans: plans.analyzePlans, autopilot: autopilot.autopilot, slotMap: costsheet.slotMap, LAYOUT: costsheet.LAYOUT, proposalData: pd.proposalData, proposalFields: pd.proposalFields, applyLearned: learn.applyLearned, proposalFromLines: learn.proposalFromLines, learnModel: learn.learnModel };
 })();`;
 const rates = fs.readFileSync(path.join(skillDir, "data", "rates.json"), "utf8");
 const library = fs.readFileSync(path.join(skillDir, "data", "job_library.json"), "utf8");

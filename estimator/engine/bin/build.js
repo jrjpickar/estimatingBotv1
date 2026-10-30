@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Fill A2Z's two templates from a priced estimate.
 // Usage: node bin/build.js priced.json [--comps comps.json] [--outdir OUT]
-//   -> "<Job> - Proposal.docx" (Make master template v17) + "<Job> - Job Costing.xlsx" (Worksheet V3)
+//   -> "<Job> - Proposal.docx" (A2Z proposal template) + "<Job> - Job Costing.xlsx" (Worksheet V3)
 "use strict";
 const fs = require("fs");
 const path = require("path");

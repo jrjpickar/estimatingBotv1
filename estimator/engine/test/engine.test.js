@@ -58,14 +58,20 @@ test("no markup and no final price is refused", () => {
   assert.throws(() => E.computeEstimate({ ...EST, markup: undefined, final_price: undefined }), /markup or a final_price/);
 });
 
-test("proposal is the Make template, filled", () => {
+test("proposal fills A2Z's template with the Desk's field set", () => {
   const p = E.computeEstimate(EST);
-  const buf = E.fillProposal(assets.proposalTemplate, E.proposalData(p, assets.style));
+  const r = E.proposalFields(p, assets.style);
+  assert.equal(r.fields.estimate_number, "092426JP");
+  assert.equal(r.fields.customer_company, "CRM CONSTRUCTION");
+  assert.equal(r.fields.total_price, "21454");
+  assert.equal(r.fields.scope_total1, "21454");
+  assert.match(r.fields.scope_bullets1, /^• /);
+  const buf = E.fillProposal(assets.proposalTemplate, r.doc);
   const body = docText(buf, "word/document.xml"), head = docText(buf, "word/header1.xml");
-  assert.match(head, /ESTIMATE: 092426JP/);
+  assert.match(head, /ESTIMATE #: 092426JP/);
   assert.match(head, /CRM CONSTRUCTION/);
-  assert.match(body, /DEMOLITION TOTAL:\s+\$21,454\.00/);
-  assert.match(body, /TOTAL:\s+\$21,454\.00/);
+  assert.match(body, /\$21,454\.00/);
+  assert.match(body, /Total: \$21,454\.00/);
   assert.doesNotMatch(body + head, /\{\{/);
   // every part without tags is byte-identical to the template
   const t = new PizZip(assets.proposalTemplate), o = new PizZip(buf);
@@ -75,14 +81,15 @@ test("proposal is the Make template, filled", () => {
   }
 });
 
-test("alternates print but stay out of TOTAL", () => {
+test("template holds 3 scopes; alternates and a 4th scope are flagged", () => {
   const est = { ...EST, final_price: 21454, scopes: [
-    { name: "Demolition", lines: ["a"], price: 21454 },
-    { name: "ALTERNATE #1 - SAWCUT & DEMOLISH", lines: ["b"], price: 4995, alternate: true }] };
-  const p = E.computeEstimate(est);
-  const body = docText(E.fillProposal(assets.proposalTemplate, E.proposalData(p, assets.style)), "word/document.xml");
-  assert.match(body, /ALTERNATE #1 TOTAL:\s+\$4,995\.00/);
-  assert.match(body, /\nTOTAL:\s+\$21,454\.00/);
+    { name: "Demolition", lines: ["a"], price: 10000 }, { name: "Grading", lines: ["b"], price: 5000 },
+    { name: "Hardscape", lines: ["c"], price: 6454 }, { name: "Extra", lines: ["d"], price: 0 },
+    { name: "ALTERNATE #1 - SAWCUT", lines: ["e"], price: 4995, alternate: true }] };
+  const r = E.proposalFields(E.computeEstimate(est), assets.style);
+  assert.equal(r.fields.scope_name3, "HARDSCAPE");
+  assert.equal(r.fields.total_price, "21454");
+  assert.equal(r.warnings.length, 2);
 });
 
 test("job costing fills Worksheet V3 input cells only", () => {

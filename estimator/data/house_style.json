@@ -1,65 +1,83 @@
 {
-  "_source": "Standard text used verbatim in ~120 A2Z proposals (Dropbox /Proposals, Jul-Oct 2026) and the sent 600 PCH proposal 092426JP.",
-  "company": {
-    "name": "A2Z CONSTRUCTION SERVICES, INC.",
-    "taglines": [
-      "construction",
-      "demolition",
-      "labor services"
-    ],
-    "address": [
-      "14271 JEFFREY RD #502",
-      "IRVINE, CA 92620"
-    ],
-    "tel": "949-788-9227",
-    "fax": "714-242-1339",
-    "license": "LICENSE #875284",
-    "footer": "A2Z Construction Services"
+ "_source": "Standard text used verbatim in ~120 A2Z proposals (Dropbox /Proposals, Jul-Oct 2026) and the sent 600 PCH proposal 092426JP.",
+ "company": {
+  "name": "A2Z CONSTRUCTION SERVICES, INC.",
+  "taglines": [
+   "construction",
+   "demolition",
+   "labor services"
+  ],
+  "address": [
+   "14271 JEFFREY RD #502",
+   "IRVINE, CA 92620"
+  ],
+  "tel": "949-788-9227",
+  "fax": "714-242-1339",
+  "license": "LICENSE #875284",
+  "footer": "A2Z Construction Services"
+ },
+ "estimators": {
+  "Jesse Pickar": {
+   "phone": "(949) 522-7441",
+   "email": "jesse@a2zcs.net",
+   "initials": "JP"
   },
-  "estimators": {
-    "Jesse Pickar": {
-      "phone": "(949) 522-7441",
-      "email": "jesse@a2zcs.net",
-      "initials": "JP"
-    },
-    "Art Vasquez Jr": {
-      "phone": "(949) 776-3898",
-      "email": "artjr@a2zcs.net",
-      "initials": "AV",
-      "_note": "most recent phone on Oct 2026 proposals; older ones show (949) 838-4346"
-    },
-    "Zeth Vasquez": {
-      "phone": "(949) 628-2445",
-      "email": "zeth@a2zcs.net",
-      "initials": "ZV"
-    },
-    "Andie LaRue": {
-      "phone": "",
-      "email": "andie@a2zcs.net",
-      "initials": "AL",
-      "_note": "phone not found on past proposals - ask"
-    }
+  "Art Vasquez Jr": {
+   "phone": "(949) 776-3898",
+   "email": "artjr@a2zcs.net",
+   "initials": "AV",
+   "_note": "most recent phone on Oct 2026 proposals; older ones show (949) 838-4346"
   },
+  "Zeth Vasquez": {
+   "phone": "(949) 628-2445",
+   "email": "zeth@a2zcs.net",
+   "initials": "ZV"
+  },
+  "Andie LaRue": {
+   "phone": "",
+   "email": "andie@a2zcs.net",
+   "initials": "AL",
+   "_note": "phone not found on past proposals - ask"
+  }
+ },
+ "intro": "A2Z Construction Services will provide the necessary labor, equipment, materials, and trucking to do the following:",
+ "scope_line_style": "Each scope line starts with 'Properly' (or 'Carefully') + verb + item, and cites the plan sheet in parentheses when there is one, e.g. 'Properly demolish partition walls (per plans A101)'. Headings are written as the estimator wants them ('Demolition', 'STUCCO REMOVAL'). Every scope gets '<HEADING> TOTAL: $x' (uppercased by the template step) and the proposal ends with a grand 'TOTAL: $x'. Alternates are listed as 'ALTERNATE #1 - ...' with their own price and are NOT in the base total.",
+ "notes": [
+  "Any remaining appliances shall be removed by professional movers before demolition begins. If A2Z is requested to move appliances, A2Z shall not be responsible for incidental damage during removal or on-site storage.",
+  "All salvageable or recyclable materials shall become the property of A2Z once removed unless otherwise noted prior to the scheduled start.",
+  "All remaining walls will be cleaned of nails and debris.",
+  "A2Z will clean floors of excess thinset, glue, and nails.",
+  "A2Z is responsible for properly disposing of all trash included in the stated scope of work.",
+  "A2Z will maintain a clean and orderly job site and will not allow debris to remain outside for more than 24 hours.",
+  "The proposal is based on one mobilization. If an additional mobilization is necessary, a $2,500 fee will be charged.",
+  "Proposal pricing excludes any item or scope not specifically listed in this proposal, whether or not incidental to a listed item.",
+  "Price is based on the full scope of the proposal.",
+  "Any change, alteration, or deviation involving additional material or labor costs will be performed only after submission and acceptance of a written change order."
+ ],
+ "exclusions": "Permits & Fees, Asbestos Testing/Abatement, AQMD Rule 1403 Notification, Construction Fencing, Scaffolding, Erosion Control, Shoring, Importing or Exporting of Any Soils. Any scope not listed within this proposal.",
+ "terms": [
+  "Proposal and price are valid for 30 days.",
+  "10% deposit due prior to commencement of work. Progress payments will be invoiced through project completion. Each invoice is due upon completion of the associated phase, with payment required within 7 days of invoice receipt.",
+  "Proposal and price are valid for 30 days. Any changes from the plans listed above will result in a change order. Payments must be made per payment schedule or all work will cease until all payments are brought current. Payments are to be made within 7 calendar days of invoice submittal. All payments past due are subject to a 1 1/2% per month interest charge that will accrue from the billing date until paid. If it becomes necessary to employ counsel to enforce collection of the balance due, the customer agrees to pay all reasonable collection and attorney fees."
+ ],
+ "estimate_number_format": "MMDDYY + estimator initials, e.g. 092426JP. Not unique: two jobs on the same day by the same estimator share a number.",
+ "_note": "Defaults for the proposal template's text fields (opening_paragraph, notes, exclusions_text, validity_text, payment_terms, legal_footer) and estimator contact fields.",
+ "template": {
+  "_note": "Fixed text in A2Z_Proposal_Template.docx (shown read-only on the Proposal tab). Change the template, then run the extract again.",
   "intro": "A2Z Construction Services will provide the necessary labor, equipment, materials, and trucking to do the following:",
-  "scope_line_style": "Each scope line starts with 'Properly' (or 'Carefully') + verb + item, and cites the plan sheet in parentheses when there is one, e.g. 'Properly demolish partition walls (per plans A101)'. Headings are written as the estimator wants them ('Demolition', 'STUCCO REMOVAL'). Every scope gets '<HEADING> TOTAL: $x' (uppercased by the template step) and the proposal ends with a grand 'TOTAL: $x'. Alternates are listed as 'ALTERNATE #1 - ...' with their own price and are NOT in the base total.",
   "notes": [
-    "Any remaining appliances shall be removed by professional movers before demolition begins. If A2Z is requested to move appliances, A2Z shall not be responsible for incidental damage during removal or on-site storage.",
-    "All salvageable or recyclable materials shall become the property of A2Z once removed unless otherwise noted prior to the scheduled start.",
-    "All remaining walls will be cleaned of nails and debris.",
-    "A2Z will clean floors of excess thinset, glue, and nails.",
-    "A2Z is responsible for properly disposing of all trash included in the stated scope of work.",
-    "A2Z will maintain a clean and orderly job site and will not allow debris to remain outside for more than 24 hours.",
-    "The proposal is based on one mobilization. If an additional mobilization is necessary, a $2,500 fee will be charged.",
-    "Proposal pricing excludes any item or scope not specifically listed in this proposal, whether or not incidental to a listed item.",
-    "Price is based on the full scope of the proposal.",
-    "Any change, alteration, or deviation involving additional material or labor costs will be performed only after submission and acceptance of a written change order."
+   "Proposal price is based on our ability to self-haul construction and demolition debris. Rates are subject to change if self-hauling is not permitted or if a specific hauler or company must be used.",
+   "A2Z is responsible for properly disposing of all trash included in our scope of work per our contract.",
+   "A2Z will maintain a clean and orderly job site and will not allow debris to be piled or left outside for more than 24 hours to prevent unsightly situations.",
+   "Proposal is based on one mobilization. If an additional mobilization is necessary, a $2,500 fee will be charged.",
+   "Proposal pricing excludes any items/scope not listed within this proposal, whether or not it is incidental to the item.",
+   "This proposal is based on visible and known site conditions at the time of bidding. Subsurface or concealed conditions, including unsuitable soils, groundwater, debris, or undocumented utilities, are excluded and may result in additional costs.",
+   "Any change, alterations or deviation involving extra cost of materials or labor will be executed only on submission and acceptance of a written contract Change Order.",
+   "10% deposit due before start. Remaining due upon completion and payment is to be received within 7 days of receipt of each invoice.",
+   "Subject to interior inspection"
   ],
-  "exclusions": "Permits & Fees, Asbestos Testing/Abatement, AQMD Rule 1403 Notification, Construction Fencing, Scaffolding, Erosion Control, Shoring, Importing or Exporting of Any Soils. Any scope not listed within this proposal.",
-  "terms": [
-    "Proposal and price are valid for 30 days.",
-    "10% deposit due prior to commencement of work. Progress payments will be invoiced through project completion. Each invoice is due upon completion of the associated phase, with payment required within 7 days of invoice receipt.",
-    "Proposal and price are valid for 30 days. Any changes from the plans listed above will result in a change order. Payments must be made per payment schedule or all work will cease until all payments are brought current. Payments are to be made within 7 calendar days of invoice submittal. All payments past due are subject to a 1 1/2% per month interest charge that will accrue from the billing date until paid. If it becomes necessary to employ counsel to enforce collection of the balance due, the customer agrees to pay all reasonable collection and attorney fees."
-  ],
-  "estimate_number_format": "MMDDYY + estimator initials, e.g. 092426JP. Not unique: two jobs on the same day by the same estimator share a number.",
-  "_note": "Defaults for the proposal template's text fields (opening_paragraph, notes, exclusions_text, validity_text, payment_terms, legal_footer) and estimator contact fields."
+  "exclusions_base": "Permits & Fees, Asbestos Testing/Abatement, AQMD Rule 1403 Notification, Construction Fencing, Scaffolding, Erosion Control, Shoring, Importing or Exporting of Any Soils. Any scope not listed within this proposal.",
+  "terms": "Proposal & price is valid for 30 days.  Proposal does not include surveying, staking, dirt removal from site, erosion control or anything not specifically contained here within.  Any changes from the plans listed above will result in a change order.  Payments must be made per payment schedule, or all work will cease until all payments are brought current.  Payments are to be made within 5 calendar days of invoice submittal, all payments past due are subject to a 1 ½% per month interest charge that will accrue from the date of the billing until paid.  If it becomes necessary to employ counsel to enforce the collection of the balance due, customer agrees to pay all reasonable collection and attorney’s fees.",
+  "max_scopes": 3
+ }
 }

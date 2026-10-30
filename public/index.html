@@ -89,12 +89,19 @@ details summary{cursor:pointer;color:var(--mute);font-size:12px;text-transform:u
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;flex:none}.dot.ok{background:var(--ok)}.dot.warn{background:var(--ask)}.dot.bad{background:var(--block)}
 .health-overall{display:flex;align-items:center;gap:6px;font-weight:700;padding:10px 12px;border-radius:8px;margin-bottom:12px;background:var(--card);border:1px solid var(--line)}
 .comp .meta{color:var(--mute);font-size:12px;grid-column:1/-1}.comp .amt{font-variant-numeric:tabular-nums;font-weight:600}
+.pill.stage{background:var(--chip);color:var(--ink)}.pill.sent{background:var(--okbg);color:var(--ok)}
+.jobfilters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.jobfilters button.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-strong)}
+.drop.big{min-height:130px;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.tl{list-style:none;margin:8px 0 0;padding:0;max-height:260px;overflow:auto}.tl li{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);font-size:13px}.tl li .st{margin-left:auto;white-space:nowrap}.tl li.bad .st{color:var(--block)}.tl li.ok .st{color:var(--ok)}
+.learn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+.fixed{color:var(--mute);font-size:12.5px;line-height:1.45}.fixed li{margin:2px 0}.paper .fixed{color:#555}
+.sendbox{border:1px solid var(--line);border-radius:8px;padding:10px;margin-top:10px}.sendbox.ready{border-color:var(--accent)}
 </style>
 </head>
 <body>
 <header>
   <h1>A2Z Estimating Bot</h1><span class="opp" id="opp"></span>
-  <nav class="topnav" id="topnav" hidden><button data-nav="estimate" class="on">Estimate</button><button data-nav="saved">Saved estimates</button><button data-nav="admin" id="navAdmin" hidden>Admin</button></nav>
+  <nav class="topnav" id="topnav" hidden><button data-nav="jobs" id="navJobs">Jobs</button><button data-nav="estimate" class="on">Estimate</button><button data-nav="saved">Saved estimates</button><button data-nav="training" id="navTraining">Training</button><button data-nav="admin" id="navAdmin" hidden>Admin</button></nav>
   <span class="sp"></span>
   <span class="whoami" id="whoami" hidden><span id="whoName"></span><span class="role-chip" id="whoRole"></span><button class="link" id="btnSignOut">Sign out</button></span>
   <button id="btnTheme" title="Switch theme">Colorful theme</button>
@@ -166,7 +173,9 @@ details summary{cursor:pointer;color:var(--mute);font-size:12px;text-transform:u
   <section class="card"><h2>Checks</h2><div id="status"></div><div id="issues"></div><div class="answered" id="answered"></div></section>
 </aside>
 </main>
+<section class="view" id="viewJobs" hidden></section>
 <section class="view" id="viewSaved" hidden></section>
+<section class="view" id="viewTraining" hidden></section>
 <section class="view" id="viewAdmin" hidden></section>
 <div class="lock" id="lock" hidden><div class="lock-card" role="dialog" aria-modal="true" aria-labelledby="lockTitle">
   <h2 id="lockTitle">Signing in...</h2><p id="lockText" class="hint">One moment.</p>
@@ -426,6 +435,8 @@ const RULES = {
   markup_format: { level: "block", lesson: "Markup is a decimal on cost (1.4 = 140%)." },
   scope_sum: { level: "block", lesson: "Scope line items must add up exactly to the total bid." },
   scope_prices: { level: "block", lesson: "With several base scopes, every scope needs its own price." },
+  template_scopes: { level: "block", lesson: "A2Z's proposal template holds 3 scopes." },
+  template_alternates: { level: "warn", lesson: "A2Z's proposal template has no alternate section." },
   below_cost: { level: "block", lesson: "Final price is below cost." },
   bid_vs_markup: { level: "ask", lesson: "Keep cost, price at markup and final bid separate; say why the bid differs." },
   low_markup: { level: "ask", lesson: "A2Z usually marks up 100%+; a lower markup needs a reason." },
@@ -490,6 +501,8 @@ function checkEstimate(est, opts = {}) {
 
   const base = scopes.filter((s) => !s.alternate);
   if (base.length > 1 && base.some((s) => s.price == null || s.price === "")) add("scope_prices", "scopes", "Several base scopes, but not all have a price.");
+  if (base.length > 3) add("template_scopes", "scopes", `${base.length} scopes, but the proposal template holds 3. Combine ${base.slice(3).map((s) => s.name).join(", ")} into another scope.`);
+  if (scopes.some((s) => s.alternate)) add("template_alternates", "scopes", `The proposal template has no alternate section, so ${scopes.filter((s) => s.alternate).map((s) => s.name).join(", ")} won't print. Make it a scope or a note, or remove it.`);
 
   let priced = null;
   if (!lineProblem && (hasMarkup || est.final_price)) {
@@ -1122,6 +1135,7 @@ module.exports = { analyzePlans, pagesFromPdftotext, tokens };
 // Comps are an automatic sanity check: a bid far from the closest past jobs is flagged.
 
 const { autoEstimate, draftScopes } = require("./auto");
+const { applyLearned, learnedJobs } = require("./learn");
 const { analyzePlans } = require("./plans");
 const { findComps } = require("./comps");
 
@@ -1201,8 +1215,11 @@ function draftInputs(items, facts = {}, prod, extraCallouts = []) {
   return { lines };
 }
 
-function autopilot({ items, pages = null, library = null, rates, defaults, production, job = {}, markup = null }) {
-  const comps = library && items.length ? findComps(items, library, { top: 5 }) : null;
+function autopilot({ items, pages = null, library = null, rates, defaults, production, job = {}, markup = null, learned = null }) {
+  // jobs learned from training uploads count as comps too
+  const extra = learned ? learnedJobs(learned) : [];
+  const lib = extra.length ? { ...(library || {}), jobs: [...((library && library.jobs) || []), ...extra] } : library;
+  const comps = lib && items.length ? findComps(items, lib, { top: 5 }) : null;
   const planCheck = pages && pages.length ? analyzePlans(pages, items) : null;
   const facts = planCheck ? { ...planCheck.facts, plan_flags: planCheck.flags } : {};
   if (planCheck && planCheck.flags.some((f) => f.kind === "condition" && /occupied/i.test(f.message))) facts.occupied = true;
@@ -1224,8 +1241,14 @@ function autopilot({ items, pages = null, library = null, rates, defaults, produ
   }
   if (facts.exclusions && facts.exclusions.length) est.extra_exclusions = facts.exclusions.slice();
 
-  // comps sanity check
+  // A2Z's own wording and line items, learned from past proposals and cost sheets (Training)
   const auto_flags = [];
+  if (learned) {
+    const { changed, flags } = applyLearned(est, learned);
+    est.learned = { changed, proposals: (learned.counts || {}).proposals || 0, costsheets: (learned.counts || {}).costsheets || 0 };
+    for (const f of flags) auto_flags.push({ ...f, sheet: "" });
+  }
+  // comps sanity check
   if (comps && comps.comps.length) {
     const top = comps.comps.slice(0, 3).map((c) => c.sentTotal).sort((a, b) => a - b), med = top[Math.floor(top.length / 2)];
     const cost = (est.sections || []).reduce((t, s) => t + s.lines.reduce((u, l) => u + Number(l.qty) * Number(l.rate || 0), 0), 0);
@@ -1328,65 +1351,389 @@ module.exports = { LAYOUT, INTERIOR_GROUPS, GRADING_GROUPS, assignRows, slotMap,
 },
 "./proposalData": function (module, exports, require) {
 "use strict";
-// The proposal's merge fields (Make master template v17) from a priced estimate + house style.
-// Pure (no file access), so the page's Proposal tab shows exactly what the .docx will say.
+// Proposal fields for A2Z's proposal template (A2Z_Proposal_Template.docx).
+// Pure (no file access) so the page's Proposal tab shows exactly what goes in the file.
+//
+// The template uses the same flat merge fields as the "Estimating" custom-field
+// group in GHL and the Estimating Desk's Proposal Details form:
+//   proposal_date, customer_company, job_address, estimate_number,
+//   estimator_name, estimator_phone, estimator_email (header)
+//   scope_name, scope_bullets1, scope_total1, scope_name2 ... scope_total3, exclusions, total_price
+// The template holds at most 3 scopes. Notes, the standard exclusions list, terms
+// and the signature block are fixed text in the template.
+//
+// proposalFields(p, style) -> { fields, doc, scopes, warnings }
+//   fields: the Desk / GHL values (same formats the Desk writes: whole-dollar totals,
+//           "• " bullets one per line, scope names / customer / address in caps)
+//   doc:    what goes into the .docx ({{scope_total1}} "$18,228.00", "Total: ${{total_price}}" "18,228.00")
+// proposalData(p, style) -> doc (kept for buildDocuments / fillProposal)
 const { money2 } = require("./common");
 
-// priced estimate + house style -> the template's data object.
-function proposalData(p, style) {
+const MAX_SCOPES = 3;
+const FIELD_KEYS = ["proposal_date", "customer_company", "scope_name", "scope_name2", "scope_name3",
+  "scope_bullets1", "scope_bullets2", "scope_bullets3", "total_price", "estimate_number", "exclusions",
+  "scope_total1", "scope_total2", "scope_total3", "job_address"];
+const UPPER = new Set(["scope_name", "scope_name2", "scope_name3", "customer_company", "job_address"]);
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+function proposalDate(v, now = new Date()) {
+  const s = String(v || "").trim();
+  let d = null;
+  let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) d = new Date(+m[1], +m[2] - 1, +m[3]);
+  else if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/))) d = new Date(+m[3] < 100 ? 2000 + +m[3] : +m[3], +m[1] - 1, +m[2]);
+  else if (s) { const t = Date.parse(s); if (!isNaN(t)) d = new Date(t); else return s; }
+  else d = now;
+  return `${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+
+const bullet = (line) => "• " + String(line).replace(/^\s*(?:[•·\-*]|\d+[.)])\s*/, "").trim();
+const bulletsText = (lines) => (lines || []).map((l) => String(l || "").trim()).filter(Boolean).map(bullet).join("\n");
+const whole = (n) => (n == null || n === "" || isNaN(Number(n)) ? "" : String(Math.round(Number(n))));
+
+function extraExclusions(p, style) {
+  if (p.exclusions_extra_text != null) return String(p.exclusions_extra_text).trim();
+  const base = String((style.template && style.template.exclusions_base) || style.exclusions || "").toLowerCase();
+  const extra = [...new Set((p.extra_exclusions || []).map((x) => String(x).trim()).filter(Boolean))]
+    .filter((x) => !base.includes(x.toLowerCase()));
+  if (!extra.length) return "";
+  const t = extra.join(", ");
+  return /[.!]$/.test(t) ? t : t + ".";
+}
+
+function proposalFields(p, style = {}, { now = new Date() } = {}) {
   const job = p.job || {};
   const est = (style.estimators || {})[job.estimator || ""] || {};
-  const scopes = (p.scopes || []).map((s) => ({ ...s }));
-  const base = scopes.filter((s) => !s.alternate);
-  if (!base.length) throw new Error("No scope sections to put on the proposal.");
-  if (base.length === 1 && base[0].price == null) base[0].price = p.final_price;
-  const missing = base.filter((s) => s.price == null).map((s) => s.name);
-  if (missing.length) throw new Error(`Give each scope a price when there are several scopes (missing: ${missing.join(", ")}).`);
-  const sum = base.reduce((t, s) => t + Number(s.price), 0);
-  if (Math.abs(sum - Number(p.final_price)) > 0.5) throw new Error("Scope prices don't add up to the final price.");
-  const sections = scopes.map((s) => {
-    const sec = { heading: s.name, body: (s.lines || []).join("\n") };
-    if (s.price != null) {
-      const label = s.amount_label || (s.alternate ? s.name.split(" - ")[0].toUpperCase() : s.name.toUpperCase()) + " TOTAL:";
-      Object.assign(sec, { amount_label: label, amount_display: money2(s.price) });
-    }
-    return sec;
-  });
-  return {
+  const warnings = [];
+  const all = (p.scopes || []).filter((s) => s && (s.name || (s.lines || []).length));
+  const alts = all.filter((s) => s.alternate);
+  const base = all.filter((s) => !s.alternate);
+  if (alts.length) warnings.push(`The proposal template has no alternate section, so ${alts.map((s) => s.name).join(", ")} is left off. Make it one of the scopes or a note.`);
+  if (base.length > MAX_SCOPES) warnings.push(`The proposal template holds ${MAX_SCOPES} scopes; ${base.slice(MAX_SCOPES).map((s) => s.name).join(", ")} won't print. Combine scopes.`);
+  const scopes = base.slice(0, MAX_SCOPES).map((s) => ({ ...s }));
+  if (scopes.length === 1 && scopes[0].price == null) scopes[0].price = p.final_price;
+  const total = p.final_price != null ? Number(p.final_price) : scopes.reduce((t, s) => t + Number(s.price || 0), 0);
+  if (scopes.length > 1 && scopes.some((s) => s.price == null)) warnings.push("Give each scope a price when there are several scopes.");
+  const sum = scopes.reduce((t, s) => t + Number(s.price || 0), 0);
+  if (scopes.length > 1 && Math.abs(sum - total) > 0.5) warnings.push("Scope prices don't add up to the total.");
+
+  const f = {
+    proposal_date: proposalDate(job.date, now),
+    customer_company: job.customer || "",
     estimate_number: job.estimate_number || "",
-    proposal_date: job.date || "",
-    customer_block: String(job.customer || "").toUpperCase(),
-    job_location_block: String(job.location || "").toUpperCase(),
+    exclusions: extraExclusions(p, style),
+    total_price: whole(total),
+    job_address: job.location || job.address || "",
+  };
+  const nameKey = (i) => (i === 0 ? "scope_name" : `scope_name${i + 1}`);
+  for (let i = 0; i < MAX_SCOPES; i++) {
+    const s = scopes[i];
+    f[nameKey(i)] = s ? String(s.name || "") : "";
+    f[`scope_bullets${i + 1}`] = s ? bulletsText(s.lines) : "";
+    f[`scope_total${i + 1}`] = s ? whole(s.price) : "";
+  }
+  for (const k of UPPER) f[k] = String(f[k] || "").toUpperCase();
+  const fields = {};
+  for (const k of FIELD_KEYS) fields[k] = f[k] == null ? "" : f[k];
+
+  const doc = {
+    ...fields,
     estimator_name: job.estimator || "",
     estimator_phone: job.estimator_phone || est.phone || "",
     estimator_email: job.estimator_email || est.email || "",
-    opening_paragraph: p.opening_paragraph || style.intro,
-    scope_sections: sections,
-    remain_groups: (p.remain || []).map((g) => ({ area: g.area, items_text: (g.items || []).join("\n") })),
-    notes: (p.notes || style.notes).map((text) => ({ text })),
-    exclusions_text: (() => {
-      const base = p.exclusions || style.exclusions;
-      const extra = (p.extra_exclusions || []).filter((x) => !base.toLowerCase().includes(String(x).toLowerCase()));
-      return extra.length ? `${base.replace(/\s+$/, "")} ${extra.join(", ")}.` : base;
-    })(),
-    subtotal_label: p.subtotal_label || "",
-    subtotal_display: p.subtotal != null ? money2(p.subtotal) : "",
-    grand_total_label: "TOTAL:",
-    grand_total_display: money2(p.final_price),
-    validity_text: p.validity_text || style.terms[0],
-    payment_terms: p.payment_terms || style.terms[1],
-    legal_footer: p.legal_footer || style.terms[2],
+    total_price: fields.total_price === "" ? "" : money2(Number(fields.total_price)).replace(/^\$/, ""),
+  };
+  for (let i = 1; i <= MAX_SCOPES; i++) doc[`scope_total${i}`] = fields[`scope_total${i}`] === "" ? "" : money2(Number(fields[`scope_total${i}`]));
+  return { fields, doc, scopes, warnings };
+}
+
+const proposalData = (p, style, opts) => proposalFields(p, style, opts).doc;
+
+module.exports = { proposalFields, proposalData, proposalDate, FIELD_KEYS, MAX_SCOPES };
+
+},
+"./learn": function (module, exports, require) {
+"use strict";
+// Training: learn A2Z's scope wording and cost line items from past proposals and
+// job costing sheets. Plain code, no AI, no file access (lib/learnFiles.js reads
+// .docx / .xlsx; the page reads PDFs with pdf.js and passes the text lines here).
+//
+//   proposalFromLines(lines)      -> proposal record { scopes: [{ name, bullets, total }], total, ... }
+//   costSheetFromCells(get)       -> cost sheet record { lines: [{ section, category, description, qty, rate }], ... }
+//   learnModel(records)           -> model { phrases, scopeNames, exclusions, lineItems, jobs, counts }
+//   applyLearned(est, model)      -> rewrites drafted scope lines and cost lines in A2Z's learned wording,
+//                                    returns { changed, flags } (flags are CHECK items)
+//   learnedJobs(model)            -> extra comps for findComps (library job shape)
+const C = require("./common");
+
+const norm = (s) => String(s == null ? "" : s).replace(/[ \t]/g, " ").replace(/[‘’]/g, "'").replace(/[“”]/g, "\"").replace(/\s+/g, " ").trim();
+const MONEY = /\$?\s*(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d{2}))?/;
+const moneyVal = (s) => { const m = String(s).match(MONEY); return m ? Number(m[1].replace(/,/g, "") + (m[2] ? "." + m[2] : "")) : null; };
+const BULLET = /^\s*(?:[•·▪●◦\-*–]|\d{1,2}[.)])\s+/;
+
+// ---------------------------------------------------------------- proposals
+const LABELS = /^(ESTIMATE\s*#?|DATE|CUSTOMER|JOB LOCATION|ESTIMATOR|SCOPE OF WORK|NOTES|EXCLUSIONS|TOTAL|SIGNATURE|SIGANATURE)\b/i;
+function headerValue(lines, re) {
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(re);
+    if (!m) continue;
+    const rest = norm(lines[i].slice(m.index + m[0].length)).replace(/^[:#\s]+/, "");
+    if (rest) return rest;
+    const next = (lines[i + 1] || "").trim();
+    if (next && !LABELS.test(next)) return next;
+  }
+  return "";
+}
+
+const isScopeName = (l) => {
+  const t = l.replace(/:$/, "");
+  if (t.length < 3 || t.length > 70 || /\$|\d{3,}/.test(t) || BULLET.test(l)) return false;
+  const letters = t.replace(/[^A-Za-z]/g, "");
+  return letters.length >= 3 && letters === letters.toUpperCase() && !/^(NOTES|EXCLUSIONS|SCOPE OF WORK|PROPOSAL|ESTIMATOR|CUSTOMER|JOB LOCATION|DATE)\b/.test(t);
+};
+
+function proposalFromLines(rawLines, meta = {}) {
+  const lines = rawLines.flatMap((l) => String(l).split(/\n/)).map(norm).filter(Boolean);
+  const rec = {
+    kind: "proposal", file: meta.file || "",
+    estimate_number: headerValue(lines, /ESTIMATE\s*#?\s*:?/i).split(/\s+/)[0] || "",
+    date: headerValue(lines, /^DATE\s*:/i),
+    customer: headerValue(lines, /^CUSTOMER\s*:/i),
+    job_address: "", estimator: headerValue(lines, /^ESTIMATOR\s*:/i),
+    scopes: [], total: null, exclusions_extra: "",
+  };
+  const li = lines.findIndex((l) => /^JOB LOCATION\s*:?/i.test(l));
+  if (li >= 0) {
+    const parts = [norm(lines[li].replace(/^JOB LOCATION\s*:?/i, ""))];
+    for (let k = li + 1; k < Math.min(li + 3, lines.length) && !LABELS.test(lines[k]) && !/^A2Z\b/i.test(lines[k]); k++) parts.push(lines[k]);
+    rec.job_address = parts.filter(Boolean).join(" ").trim();
+  }
+  // scope body: after "...to do the following:" (or "Scope of Work") up to NOTES / EXCLUSIONS
+  let start = lines.findIndex((l) => /the following:?\s*$/i.test(l));
+  if (start < 0) start = lines.findIndex((l) => /^scope of work\b/i.test(l));
+  let end = lines.findIndex((l, i) => i > start && /^(NOTES|EXCLUSIONS)\b/i.test(l));
+  if (end < 0) end = lines.length;
+  const body = lines.slice(start + 1, end);
+  const hasGlyphs = body.some((l) => BULLET.test(l));
+  const totalNames = new Set(body.map((l) => (l.match(/^(.*?)\s*\bTOTAL\s*:?\s*\$?\s*[\d,]+(?:\.\d{2})?\s*$/i) || [])[1]).filter(Boolean).map((x) => x.trim().toUpperCase()));
+  let cur = null;
+  const push = () => { if (cur && (cur.bullets.length || cur.total != null)) rec.scopes.push(cur); };
+  for (const l of body) {
+    const tm = l.match(/^(.*?)\bTOTAL\s*:?\s*(\$?\s*[\d,]+(?:\.\d{2})?)\s*$/i);
+    if (tm && cur) { cur.total = moneyVal(tm[2]); continue; }
+    if (/^\$?\s*[\d,]+(\.\d{2})?$/.test(l) && /[\d]{3,}|,/.test(l) && cur) { cur.total = moneyVal(l); continue; }
+    if (isScopeName(l) || totalNames.has(l.replace(/:$/, "").toUpperCase()) || (!cur && body.length > 1 && /^[A-Z][A-Za-z/&\- ]{2,40}$/.test(l) && l.split(" ").length <= 4)) { push(); cur = { name: l.replace(/:$/, ""), bullets: [], total: null, alternate: /ALTERNATE/i.test(l) }; continue; }
+    if (!cur) cur = { name: "", bullets: [], total: null, alternate: false };
+    const text = l.replace(BULLET, "").trim();
+    if (!text) continue;
+    if (hasGlyphs && !BULLET.test(l) && cur.bullets.length) cur.bullets[cur.bullets.length - 1] += (/-$/.test(cur.bullets[cur.bullets.length - 1]) ? "" : " ") + text;
+    else cur.bullets.push(text);
+  }
+  push();
+  // grand total
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const m = lines[i].match(/^(?:GRAND\s+)?TOTAL\s*:?\s*(\$?\s*[\d,]+(?:\.\d{2})?)\s*$/i);
+    if (m) { rec.total = moneyVal(m[1]); break; }
+  }
+  if (rec.total == null) { const s = rec.scopes.filter((x) => !x.alternate && x.total != null); if (s.length) rec.total = s.reduce((t, x) => t + x.total, 0); }
+  // job-specific exclusions: text after the standard list
+  const ei = lines.findIndex((l) => /^EXCLUSIONS\s*:/i.test(l));
+  if (ei >= 0) {
+    let t = lines[ei].replace(/^EXCLUSIONS\s*:\s*/i, "");
+    for (let k = ei + 1; k < lines.length && !/^(Proposal (&|and) price|Total\s*:|_{5,}|ESTIMATE|CUSTOMER|JOB LOCATION|A2Z CONSTRUCTION)/i.test(lines[k]) && k < ei + 6; k++) t += (/-$/.test(t) ? "" : " ") + lines[k];
+    const cut = t.search(/Any scope not listed within this proposal\.?/i);
+    rec.exclusions_extra = norm(cut >= 0 ? t.slice(cut).replace(/Any scope not listed within this proposal\.?/i, "") : "");
+  }
+  return rec;
+}
+
+// ---------------------------------------------------------------- cost sheets
+const SECTIONS = { INTERIOR: "Interior", EXTERIOR: "Exterior", GRADING: "Grading" };
+const CATS = new Set(["Labor", "Hotel", "Hauling", "Equipment", "Fuel", "Misc"]);
+// get(ref) -> cell value (string | number | null). Reads by the labels in column A, so older
+// worksheet versions with moved rows still read right.
+function costSheetFromCells(get, meta = {}) {
+  const rec = { kind: "costsheet", file: meta.file || "", job_name: String(get("C2") || get("B2") || ""), date: String(get("C3") || get("B3") || ""), lines: [], total_cost: null, markup: null };
+  let section = null, seen = 0;
+  for (let r = 1; r <= 120; r++) {
+    const a = norm(get(`A${r}`)).replace(/:$/, "");
+    if (!a) continue;
+    const head = a.toUpperCase();
+    if (SECTIONS[head]) { section = SECTIONS[head]; seen++; continue; }
+    if (/^TOTAL JOB COST/i.test(a)) rec.total_cost = Number(get(`E${r}`)) || null;
+    if (/^Markup/i.test(a)) rec.markup = Number(get(`E${r}`)) || null;
+    const cat = a.charAt(0).toUpperCase() + a.slice(1).toLowerCase();
+    if (!section || !CATS.has(cat)) continue;
+    const description = norm(get(`B${r}`)), qty = Number(get(`C${r}`)), rate = Number(get(`D${r}`));
+    if (!description && !qty && !rate) continue;
+    rec.lines.push({ section, category: cat, description, qty: isFinite(qty) ? qty : 0, rate: isFinite(rate) ? rate : 0 });
+  }
+  if (!seen) throw new Error("This doesn't look like a Job Costing Worksheet (no INTERIOR / EXTERIOR / GRADING sections in column A).");
+  if (rec.total_cost == null) rec.total_cost = rec.lines.reduce((t, l) => t + l.qty * l.rate, 0);
+  return rec;
+}
+
+// ---------------------------------------------------------------- phrase parsing
+const QTY_RE = /\(?\s*(?:approx(?:\.|imately)?|apprx\.?|~)\s*([\d,]+(?:\.\d+)?)\s*(SF|SQ\.?\s*FT\.?|SQFT|S\.F\.|LF|LIN\.?\s*FT\.?|L\.F\.|EA|EACH|CY|C\.Y\.|SY|LS|TONS?)\b\.?/i;
+const SHEET_RE = /,?\s*\(?\s*per (?:plans?|sheets?|drawings?)\s*([A-Z0-9][A-Z0-9.\-]*(?:\s*(?:,|&|and)\s*[A-Z0-9][A-Z0-9.\-]*)*)?\s*\)?/i;
+const VERBS = /^(properly\s+)?(saw\s*cut,?\s*(?:break\s*(?:and|&)\s*haul|and remove|& remove)|cut\s*(?:and|&)\s*(?:demo(?:lish)?|remove|cap)|demo(?:lish|lition of)?|remove(?:\s+and\s+dispose\s+of)?|removal of|haul(?:\s+off|\s+away)?|dispose of|tear\s*(?:out|off)|strip|scrape|grind|excavate|grade|rough grade|fine grade|export|import|clear(?:\s+and\s+grub)?|break(?:\s+and\s+haul)?|abate|cap|disconnect|salvage|protect|install|provide|furnish|moisture condition(?:\s+and\s+recompact)?|recompact|compact)\b/i;
+const STOP = new Set(["the", "a", "an", "of", "and", "&", "to", "in", "at", "on", "for", "with", "all", "any", "existing", "e", "per", "plans", "plan", "approx", "approximately", "as", "is", "be", "from", "by", "only", "area", "areas", "properly", "entire", "entirety", "including", "include", "required", "needed", "new"]);
+const stem = (w) => w.replace(/(ies)$/, "y").replace(/(es|s)$/, "").replace(/ing$/, "");
+const tokens = (s) => [...new Set(String(s).toLowerCase().replace(/\(e\)/g, " ").replace(/[^a-z0-9 ]+/g, " ").split(/\s+/).filter((w) => w && !STOP.has(w) && !/^\d+$/.test(w)).map(stem))];
+const UNIT = (u) => { const x = String(u || "").toUpperCase().replace(/[^A-Z]/g, ""); return /^(SF|SQFT)$/.test(x) ? "SF" : /^(LF|LINFT)$/.test(x) ? "LF" : /^(EA|EACH)$/.test(x) ? "EA" : x === "CY" ? "CY" : x === "SY" ? "SY" : x === "LS" ? "LS" : x.startsWith("TON") ? "TON" : x; };
+
+function parseLine(line) {
+  const t = norm(line).replace(BULLET, "");
+  const q = t.match(QTY_RE);
+  const s = t.match(SHEET_RE);
+  let core = t.replace(QTY_RE, " ").replace(SHEET_RE, " ").replace(/\(\s*[,;]?\s*\)/g, " ");
+  let depth = 0; core = [...core].filter((ch) => { if (ch === "(") depth++; else if (ch === ")") { if (!depth) return false; depth--; } return true; }).join("");
+  core = core.replace(/\(\s*[,;]?\s*$/, "").replace(/\s+,/g, ",").replace(/\s+/g, " ").replace(/[\s,;(]+$/, "").trim();
+  const vm = core.match(VERBS);
+  const verb = vm ? vm[0].replace(/^properly\s+/i, "").toLowerCase() : "";
+  const object = vm ? core.slice(vm[0].length).trim() : core;
+  return { text: t, core, verb, object, tokens: tokens(object), qty: q ? Number(q[1].replace(/,/g, "")) : null, unit: q ? UNIT(q[2]) : "", sheets: s && s[1] ? s[1].trim() : "" };
+}
+
+const jaccard = (a, b) => { if (!a.length || !b.length) return 0; const B = new Set(b); const i = a.filter((x) => B.has(x)).length; return i / (a.length + b.length - i); };
+
+// ---------------------------------------------------------------- learning
+function learnModel(records) {
+  const phrases = new Map(), names = new Map(), excl = new Map(), items = new Map(), jobs = [];
+  const bump = (m, k, v) => { const e = m.get(k) || { ...v, count: 0 }; e.count++; m.set(k, e); return e; };
+  let proposals = 0, costsheets = 0;
+  for (const r of records || []) {
+    if (r.kind === "proposal") {
+      proposals++;
+      const takeoff = [];
+      for (const s of r.scopes || []) {
+        if (s.name) bump(names, s.name.toUpperCase(), { name: s.name.toUpperCase(), kind: /GRAD|EXCAV|EARTH/i.test(s.name) ? "grading" : /DEMO/i.test(s.name) ? "demo" : "other" });
+        for (const b of s.bullets || []) {
+          const p = parseLine(b);
+          if (!p.core || p.core.length < 6 || !p.tokens.length) continue;
+          const key = p.core.toLowerCase();
+          const e = bump(phrases, key, { core: p.core, verb: p.verb, object: p.object, tokens: p.tokens, unit: p.unit, withQty: false, withSheets: false });
+          if (p.qty != null) { e.withQty = true; e.unit = e.unit || p.unit; takeoff.push({ item: p.object || p.core, qty: p.qty, unit: p.unit }); }
+          if (p.sheets) e.withSheets = true;
+        }
+      }
+      for (const x of String(r.exclusions_extra || "").split(/[,;]|\.\s/).map((x) => norm(x).replace(/\.$/, "")).filter((x) => x.length > 3)) bump(excl, x.toLowerCase(), { text: x });
+      if (r.total) jobs.push({ id: "trained:" + (r.estimate_number || r.file || jobs.length), name: (r.job_address || r.file || r.estimate_number || "Trained proposal").toUpperCase(), customer: r.customer || "",
+        date: r.date || "", sentTotal: r.total, priceSource: "training upload", outcome: "unknown",
+        scopeTotals: (r.scopes || []).filter((s) => s.total != null).map((s) => [s.name, s.total]),
+        scopeText: (r.scopes || []).map((s) => [s.name, ...(s.bullets || [])].join("\n")).join("\n\n"), takeoff });
+    } else if (r.kind === "costsheet") {
+      costsheets++;
+      const seenHere = new Set();
+      for (const l of r.lines || []) {
+        if (!l.description) continue;
+        const key = l.category + "|" + l.description.toLowerCase().replace(/\s+/g, " ");
+        const e = items.get(key) || { category: l.category, description: l.description, tokens: tokens(l.description), count: 0, sheets: 0, rates: [], sections: {} };
+        e.count++;
+        if (!seenHere.has(key)) { e.sheets++; seenHere.add(key); }
+        if (l.rate > 0) e.rates.push(l.rate);
+        e.sections[l.section] = (e.sections[l.section] || 0) + 1;
+        items.set(key, e);
+      }
+    }
+  }
+  const median = (a) => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y); const m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+  const lineItems = [...items.values()].map((e) => ({ ...e, rateMedian: median(e.rates), rates: e.rates.slice(-20) })).sort((a, b) => b.count - a.count);
+  return {
+    version: 1, updated: new Date().toISOString(), counts: { proposals, costsheets },
+    phrases: [...phrases.values()].sort((a, b) => b.count - a.count).slice(0, 2000),
+    scopeNames: [...names.values()].sort((a, b) => b.count - a.count),
+    exclusions: [...excl.values()].sort((a, b) => b.count - a.count).slice(0, 200),
+    lineItems: lineItems.slice(0, 1000),
+    jobs,
   };
 }
 
-module.exports = { proposalData };
+function learnedJobs(model) {
+  return ((model && model.jobs) || []).map((j) => ({ ...j, takeoff: (j.takeoff || []).map((t) => ({ ...t, unit: C.normUnit(t.unit), group: C.groupFor(t.item) })) }));
+}
+
+// ---------------------------------------------------------------- applying
+const MIN_SIM = 0.5;
+function bestPhrase(model, p) {
+  let best = null;
+  for (const ph of model.phrases || []) {
+    if (p.unit && ph.unit && ph.unit !== p.unit) continue;
+    const sim = jaccard(p.tokens, ph.tokens);
+    if (sim < MIN_SIM) continue;
+    const score = sim + Math.min(ph.count, 10) * 0.01 + (p.unit && ph.unit === p.unit ? 0.02 : 0);
+    if (!best || score > best.score) best = { ph, sim, score };
+  }
+  return best;
+}
+const fmtQty = (q) => Number(q).toLocaleString("en-US", { maximumFractionDigits: q < 10 ? 2 : 0 });
+function rewrite(ph, p) {
+  const parts = [];
+  if (p.qty != null) parts.push(`approx. ${fmtQty(p.qty)} ${p.unit}`);
+  if (p.sheets) parts.push(`per plans ${p.sheets}`);
+  let core = ph.core.charAt(0).toUpperCase() + ph.core.slice(1);
+  if (/^(remove|demolish|demo|saw cut|cut|haul|tear|strip|scrape|grind|break|disconnect|cap|salvage)\b/i.test(core) && /^Properly\b/.test(p.text)) core = "Properly " + core.charAt(0).toLowerCase() + core.slice(1);
+  return parts.length ? `${core} (${parts.join(", ")})` : core;
+}
+
+function applyLearned(est, model, { minSheets = 3 } = {}) {
+  const changed = [], flags = [];
+  if (!model || (!(model.phrases || []).length && !(model.lineItems || []).length)) return { changed, flags };
+  // scope wording
+  for (const s of est.scopes || []) {
+    if (!s.lines) continue;
+    s.lines = s.lines.map((line) => {
+      const p = parseLine(line);
+      if (!p.tokens.length) return line;
+      const hit = bestPhrase(model, p);
+      if (!hit || hit.ph.core.toLowerCase() === p.core.toLowerCase()) return line;
+      const out = rewrite(hit.ph, p);
+      if (out !== line) changed.push({ kind: "scope", from: line, to: out, basis: `worded like ${hit.ph.count} past proposal line${hit.ph.count === 1 ? "" : "s"}` });
+      return out;
+    });
+    // scope name: the most common learned name of the same kind
+    const kind = /GRAD|EXCAV/i.test(s.name || "") ? "grading" : /DEMO/i.test(s.name || "") ? "demo" : null;
+    const nm = kind && (model.scopeNames || []).find((n) => n.kind === kind && n.count >= 2);
+    if (nm && nm.name !== String(s.name).toUpperCase()) { changed.push({ kind: "scope_name", from: s.name, to: nm.name, basis: `${nm.count} past proposals` }); s.name = nm.name; }
+  }
+  // cost line items: equipment / misc / fuel wording + rate sanity
+  const sheets = (model.counts && model.counts.costsheets) || 0;
+  const present = [];
+  for (const sec of est.sections || []) for (const l of sec.lines || []) {
+    present.push(l);
+    if (!["Equipment", "Misc", "Fuel", "Hotel"].includes(l.category)) continue;
+    const tk = tokens(l.description);
+    let best = null;
+    for (const it of model.lineItems || []) {
+      if (it.category !== l.category) continue;
+      const sim = jaccard(tk, it.tokens);
+      if (sim >= 0.6 && (!best || sim + it.count * 0.01 > best.s)) best = { it, s: sim + it.count * 0.01 };
+    }
+    if (!best) continue;
+    if (best.it.description !== l.description) { changed.push({ kind: "line", from: l.description, to: best.it.description, basis: `${best.it.count} past cost sheet line${best.it.count === 1 ? "" : "s"}` }); l.description = best.it.description; }
+    const med = best.it.rateMedian;
+    if (med && best.it.rates.length >= 3 && Number(l.rate) > 0 && Math.abs(Number(l.rate) - med) / med > 0.25)
+      flags.push({ key: "learned_rate:" + best.it.description.toLowerCase(), level: "warn", message: `${best.it.description} is $${Number(l.rate).toLocaleString("en-US")}; past cost sheets used about $${Math.round(med).toLocaleString("en-US")} (${best.it.rates.length} sheets).` });
+  }
+  // items that most past cost sheets include
+  if (sheets >= minSheets) {
+    for (const it of model.lineItems || []) {
+      if (!["Misc", "Equipment", "Fuel"].includes(it.category) || it.sheets / sheets < 0.5) continue;
+      if (present.some((l) => l.category === it.category && jaccard(tokens(l.description), it.tokens) >= 0.5)) continue;
+      flags.push({ key: "learned_common:" + it.description.toLowerCase(), level: "warn", message: `${it.sheets} of ${sheets} past cost sheets include "${it.description}" (${it.category}). Add it if this job needs it.` });
+    }
+  }
+  return { changed, flags };
+}
+
+module.exports = { proposalFromLines, costSheetFromCells, learnModel, learnedJobs, applyLearned, parseLine, tokens };
 
 }
 };
 var cache = {};
 function req(n) { if (cache[n]) return cache[n].exports; var m = cache[n] = { exports: {} }; defs[n](m, m.exports, req); return m.exports; }
-var price = req("./price"), checks = req("./checks"), common = req("./common"), comps = req("./comps"), auto = req("./auto"), plans = req("./plans"), autopilot = req("./autopilot"), costsheet = req("./costsheet"), pd = req("./proposalData");
-window.A2ZEstimator = { computeEstimate: price.computeEstimate, checkEstimate: checks.checkEstimate, RULES: checks.RULES, parseStackCsv: common.parseStackCsv, prepareLibrary: common.prepareLibrary, findComps: comps.findComps, autoEstimate: auto.autoEstimate, analyzePlans: plans.analyzePlans, autopilot: autopilot.autopilot, slotMap: costsheet.slotMap, LAYOUT: costsheet.LAYOUT, proposalData: pd.proposalData };
+var price = req("./price"), checks = req("./checks"), common = req("./common"), comps = req("./comps"), auto = req("./auto"), plans = req("./plans"), autopilot = req("./autopilot"), costsheet = req("./costsheet"), pd = req("./proposalData"), learn = req("./learn");
+window.A2ZEstimator = { computeEstimate: price.computeEstimate, checkEstimate: checks.checkEstimate, RULES: checks.RULES, parseStackCsv: common.parseStackCsv, prepareLibrary: common.prepareLibrary, findComps: comps.findComps, autoEstimate: auto.autoEstimate, analyzePlans: plans.analyzePlans, autopilot: autopilot.autopilot, slotMap: costsheet.slotMap, LAYOUT: costsheet.LAYOUT, proposalData: pd.proposalData, proposalFields: pd.proposalFields, applyLearned: learn.applyLearned, proposalFromLines: learn.proposalFromLines, learnModel: learn.learnModel };
 })();
 </script>
 <script>
@@ -1396,6 +1743,7 @@ let STYLE = /*__STYLE__*/null;
 const INLINE_DATA = !!LIBRARY; // sandbox: data built in, no sign-in. Live site: data loads after sign-in.
 let DEFAULTS = /*__DEFAULTS__*/null || { markup: 1.3 };
 let PRODUCTION = /*__PRODUCTION__*/null;
+let LEARNED = null; // what Training learned (live site; loads with the data)
 const LIVE_DOCS = location.protocol === "https:" || location.hostname === "localhost"; // the Netlify site (or netlify dev) makes the .docx / .xlsx
 let LAST_DOCS_EST = "";
 let COMPS = null;
@@ -1528,29 +1876,36 @@ async function loadPdfJs() {
   await loadScript(PDFJS + "pdf.min.js");
   window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS + "pdf.worker.min.js";
 }
+// Text rows of one PDF page: items on the same baseline (within half a letter height) form a row,
+// and a row splits into pieces where there's a wide gap. Rows run top to bottom.
+function pdfRows(tc) {
+  const items = tc.items.filter((it) => it.str && it.str.trim()).map((it) => ({ x: it.transform[4], y: it.transform[5], w: it.width || 0, s: it.str, h: Math.abs(it.transform[3]) || it.height || 8 }));
+  items.sort((a, b) => b.y - a.y || a.x - b.x);
+  const rows = [];
+  for (const it of items) {
+    const r = rows.find((row) => Math.abs(row.y - it.y) <= Math.min(row.h, it.h) * 0.5);
+    if (r) r.items.push(it); else rows.push({ y: it.y, h: it.h, items: [it] });
+  }
+  rows.sort((a, b) => b.y - a.y);
+  return rows.map((r) => {
+    const its = r.items.sort((a, b) => a.x - b.x), segs = [];
+    let cur = { x: its[0].x, s: its[0].s }, end = its[0].x + its[0].w;
+    for (const t of its.slice(1)) {
+      const gap = t.x - end;
+      if (gap > t.h * 2.5) { segs.push(cur); cur = { x: t.x, s: t.s }; } else cur.s += (gap > t.h * 0.15 && !/\s$/.test(cur.s) ? " " : "") + t.s;
+      end = Math.max(end, t.x + t.w);
+    }
+    segs.push(cur);
+    return { y: r.y, segs };
+  });
+}
 async function readPdf(buf, onPage) {
   await loadPdfJs();
   const pdf = await window.pdfjsLib.getDocument({ data: buf }).promise;
   const N = Math.min(pdf.numPages, 300), pages = [];
   for (let n = 1; n <= N; n++) {
-    const page = await pdf.getPage(n), tc = await page.getTextContent(), rows = new Map();
-    for (const it of tc.items) {
-      if (!it.str || !it.str.trim()) continue;
-      const h = Math.abs(it.transform[3]) || it.height || 8, y = Math.round(it.transform[5] / Math.max(2, h * 0.4));
-      if (!rows.has(y)) rows.set(y, []);
-      rows.get(y).push({ x: it.transform[4], w: it.width || 0, s: it.str, h });
-    }
-    const lines = [];
-    for (const y of [...rows.keys()].sort((a, b) => b - a)) {
-      const r = rows.get(y).sort((a, b) => a.x - b.x);
-      let cur = r[0].s, end = r[0].x + r[0].w;
-      for (const t of r.slice(1)) {
-        const gap = t.x - end;
-        if (gap > t.h * 2.5) { lines.push(cur); cur = t.s; } else cur += (gap > t.h * 0.15 && !/\s$/.test(cur) ? " " : "") + t.s;
-        end = t.x + t.w;
-      }
-      lines.push(cur);
-    }
+    const page = await pdf.getPage(n), tc = await page.getTextContent();
+    const lines = pdfRows(tc).flatMap((r) => r.segs.map((g) => g.s));
     pages.push({ n, lines });
     page.cleanup();
     onPage(n, N);
@@ -1565,7 +1920,7 @@ async function takeCsv(f, text) {
     const items = E.parseStackCsv(raw);
     if (!items.length) throw new Error("No takeoff lines found in " + (f.name || "that file") + ". Export it from STACK as Reports, Takeoff Quantity, CSV.");
     TAKEOFF = { name: f.name || "takeoff.csv", items, text: raw };
-    est.job = {}; // a new takeoff starts a new job (plans added later keep what you typed)
+    est.job = est.opportunityId ? Object.assign({}, est._oppJob || {}) : {}; // a new takeoff starts a new job; a GHL job keeps its details
     autopilotRun();
   } catch (e) { setStatusError(e.message); }
 }
@@ -1592,8 +1947,9 @@ function autopilotRun() {
   }
   const lib = E.prepareLibrary(JSON.parse(JSON.stringify(LIBRARY)));
   const job = Object.assign({ name: TAKEOFF.name.replace(/\.csv$/i, "").replace(/[_-]+/g, " ").trim() }, keepJob.name ? keepJob : {});
-  const ap = E.autopilot({ items: TAKEOFF.items, pages, library: lib, rates: RATES, defaults: DEFAULTS, production: PRODUCTION, job });
-  est = normalize(ap.estimate);
+  const ap = E.autopilot({ items: TAKEOFF.items, pages, library: lib, rates: RATES, defaults: DEFAULTS, production: PRODUCTION, job, learned: LEARNED });
+  const link = {}; ["opportunityId", "pipeline", "opportunityName", "_oppJob", "_oppStage", "_id", "_version", "_savedAt", "_sentAt", "_sentVersion"].forEach((k) => { if (est[k] != null) link[k] = est[k]; });
+  est = Object.assign(normalize(ap.estimate), link);
   delete est.auto;
   COMPS = ap.comps ? ap.comps.comps.map((x) => ({ name: x.name, sentTotal: x.sentTotal, outcome: x.outcome, score: x.score, onlyInNew: x.onlyInNew })) : null;
   est._comps = COMPS;
@@ -1643,7 +1999,8 @@ function renderAutopilot() {
   body.innerHTML = `<div class="hint">Drafted ${esc(a.at)} from ${esc(a.takeoff)}${a.plans.length ? ` and ${a.plans.length} plan file${a.plans.length === 1 ? "" : "s"} (${a.pages} pages)` : " (no plans)"}. Crew-days, loads and equipment come from the starter production table; everything is marked DRAFT until confirmed.</div>
     ${p ? `<div class="totals"><div class="big"><span>Draft bid</span><span>${money(p.final_price)}</span></div></div>` : ""}
     <div class="hint">${n("block")} to fix, ${n("ask")} question${n("ask") === 1 ? "" : "s"}, ${n("warn")} check${n("warn") === 1 ? "" : "s"} in Checks below. Dropping new files rebuilds the draft and replaces edits.</div>
-    ${files}`;
+    ${est.learned ? `<div class="hint">Training: ${est.learned.changed.length ? `reworded ${est.learned.changed.length} line${est.learned.changed.length === 1 ? "" : "s"} the way A2Z writes them` : "nothing to reword"} (learned from ${est.learned.proposals} proposals, ${est.learned.costsheets} cost sheets).</div>` : ""}
+    ${files}${typeof sendBox === "function" ? sendBox() : ""}`;
 }
 function renderPlans() {
   const card = document.getElementById("planCard"), body = document.getElementById("planBody"), q = est.plan_qc;
@@ -1775,7 +2132,10 @@ document.addEventListener("click", (ev) => {
   }
   else if (b.dataset.confirm) { const card = b.closest(".issue"); const msg = card ? card.children[1].textContent : b.dataset.confirm; remember(b.dataset.confirm, msg.length > 60 ? msg.slice(0, 57) + "..." : msg); }
   else if (b.dataset.unconfirm) { est.confirmed = est.confirmed.filter((c) => c !== b.dataset.unconfirm); if (est.answered_notes) delete est.answered_notes[b.dataset.unconfirm]; }
-  else if (b.id === "btnNew") { if (!confirm("Clear this estimate?")) return; est = blank(); COMPS = null; PLAN_PAGES = null; TAKEOFF = null; PLAN_FILES = []; DOCS = null; renderUploads(); renderForm(); }
+  else if (b.id === "btnNew") {
+    if (b.dataset.arm !== "1") { b.dataset.arm = "1"; b.textContent = "Click again to clear"; setTimeout(() => { b.dataset.arm = ""; b.textContent = "New"; }, 3000); return; }
+    b.dataset.arm = ""; b.textContent = "New"; est = blank(); document.getElementById("opp").textContent = ""; COMPS = null; PLAN_PAGES = null; TAKEOFF = null; PLAN_FILES = []; DOCS = null; LAST_SAVED = ""; renderUploads(); renderForm();
+  }
   else if (b.id === "btnImport" && LIVE_SAVE) { showView("saved"); return; }
   else if (b.id === "btnExport" && LIVE_SAVE) { saveEstimate(); return; }
   else if (b.id === "btnImport") { document.getElementById("file").click(); return; }
@@ -1919,10 +2279,13 @@ async function afterSignIn() {
   lock("Loading...", "Getting the past jobs, rates and templates.");
   try {
     const d = await api("bot-data");
-    LIBRARY = d.library; RATES = d.rates; DEFAULTS = d.defaults || DEFAULTS; PRODUCTION = d.production; STYLE = d.style;
-    unlock(); startApp(); showView("estimate");
+    LIBRARY = d.library; RATES = d.rates; DEFAULTS = d.defaults || DEFAULTS; PRODUCTION = d.production; STYLE = d.style; LEARNED = d.learned || null;
+    unlock(); startApp();
     const qs = new URLSearchParams(location.search);
-    if (qs.get("estimate")) openSaved(qs.get("estimate"));
+    const oppId = qs.get("opportunityId") || qs.get("opportunity_id");
+    if (qs.get("estimate")) { showView("estimate"); openSaved(qs.get("estimate")); }
+    else if (oppId) { showView("jobs"); openJob(oppId); }   // opened from an opportunity in GHL
+    else showView(est._autopilot || est.opportunityId ? "estimate" : "jobs");
   } catch (e) { lock("Couldn't load the bot", e.message, { retry: true }); }
 }
 
@@ -1933,6 +2296,10 @@ function showView(v) {
   document.getElementById("viewEstimate").hidden = v !== "estimate";
   document.getElementById("viewSaved").hidden = v !== "saved";
   document.getElementById("viewAdmin").hidden = v !== "admin";
+  document.getElementById("viewJobs").hidden = v !== "jobs";
+  document.getElementById("viewTraining").hidden = v !== "training";
+  if (v === "jobs") loadJobs(false);
+  if (v === "training") { renderTraining(); loadTraining(); }
   document.querySelectorAll("#topnav button").forEach((b) => b.classList.toggle("on", b.dataset.nav === v));
   if (v === "saved") loadSaved();
   if (v === "admin") renderAdmin();
@@ -2006,6 +2373,8 @@ async function openSaved(id, ver) {
   try {
     const d = await api("estimates?id=" + encodeURIComponent(id) + (ver ? "&v=" + ver : ""));
     est = normalize(d.estimate); est._id = d.record.id; est._version = d.record.version; est._savedAt = d.record.updatedAt;
+    if (d.record.sentAt) { est._sentAt = d.record.sentAt; est._sentVersion = d.record.sentVersion; } else { delete est._sentAt; delete est._sentVersion; }
+    document.getElementById("opp").textContent = est.opportunityId ? `${est.pipeline === "change_orders" ? "Change order" : "GHL job"}: ${est.opportunityName || est.opportunityId}${est._oppStage ? " · " + est._oppStage : ""}` : "";
     TAKEOFF = null; PLAN_FILES = []; COMPS = est._comps || null; DOCS = null;
     LAST_SAVED = ver && Number(ver) !== d.record.version ? "" : snapshot();
     renderUploads(); renderForm(); run(); showView("estimate");
@@ -2020,7 +2389,7 @@ document.getElementById("viewSaved").addEventListener("click", async (ev) => {
     if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Click again to delete"; setTimeout(() => { b.dataset.armed = ""; b.textContent = "Delete"; }, 3000); return; }
     try { await api("estimates", { method: "POST", body: JSON.stringify({ action: "delete", id: b.dataset.svDel }) }); toast("Deleted " + b.dataset.name); if (est._id === b.dataset.svDel) { delete est._id; delete est._version; } loadSaved(); } catch (e) { toast(e.message); }
   }
-  else if (b.id === "svNew") { est = blank(); COMPS = null; TAKEOFF = null; PLAN_FILES = []; DOCS = null; LAST_SAVED = ""; renderUploads(); renderForm(); run(); showView("estimate"); }
+  else if (b.id === "svNew") { est = blank(); document.getElementById("opp").textContent = ""; COMPS = null; TAKEOFF = null; PLAN_FILES = []; DOCS = null; LAST_SAVED = ""; renderUploads(); renderForm(); run(); showView("estimate"); }
   else if (b.id === "svImport") document.getElementById("file").click();
   else if (b.id === "svExport") {
     const name = (est.job.name || "estimate").replace(/[^A-Za-z0-9 _-]+/g, "").trim() || "estimate";
@@ -2116,15 +2485,11 @@ document.getElementById("tabCost").addEventListener("click", (ev) => {
   renderForm(); run();
 });
 
-/* ---------- Proposal tab (Make master proposal v17) ---------- */
+/* ---------- Proposal tab (A2Z proposal template: same fields as GHL's Estimating custom fields) ---------- */
 const today = () => new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 function initials(name) { const w = String(name || "").trim().split(/\s+/); return w.length ? (w[0][0] + (w.length > 1 ? w[w.length - 1][0] : "")).toUpperCase() : ""; }
 function estNumber(name) { const d = new Date(); const mm = String(d.getMonth() + 1).padStart(2, "0"), dd = String(d.getDate()).padStart(2, "0"), yy = String(d.getFullYear()).slice(2); return mm + dd + yy + ((STYLE && STYLE.estimators[name] && STYLE.estimators[name].initials) || initials(name)); }
-function defaultExclusions() {
-  const base = est.exclusions || (STYLE && STYLE.exclusions) || "";
-  const extra = (est.extra_exclusions || []).filter((x) => !base.toLowerCase().includes(String(x).toLowerCase()));
-  return extra.length ? `${base.replace(/\s+$/, "")} ${extra.join(", ")}.` : base;
-}
+const MAX_SCOPES = 3;
 function renderProposal() {
   const el = document.getElementById("tabProposal");
   if (!STYLE) { el.innerHTML = '<div class="card hint">Loading the house style...</div>'; return; }
@@ -2134,45 +2499,49 @@ function renderProposal() {
   if (!j.estimate_number && j.estimator) j.estimate_number = estNumber(j.estimator);
   const ei = STYLE.estimators[j.estimator] || {};
   const chk = E.checkEstimate(est, { rates: RATES }), p = chk.priced;
-  const base = est.scopes.filter((x) => !x.alternate);
+  const tpl = STYLE.template || { intro: STYLE.intro, notes: STYLE.notes, exclusions_base: STYLE.exclusions, terms: (STYLE.terms || []).join(" ") };
+  const pf = p ? E.proposalFields(p, STYLE) : null;
+  const base = est.scopes.filter((x) => !x.alternate), alts = est.scopes.filter((x) => x.alternate);
   const multi = base.length > 1;
   const co = STYLE.company;
-  const scopes = est.scopes.map((sc, i) => `
-    <h4><input data-ps="${i}|name" value="${esc(sc.name)}" aria-label="Scope heading"><button class="link x" data-ps-del="${i}" title="Remove this scope">Remove</button></h4>
+  const scopes = est.scopes.map((sc, i) => sc.alternate ? "" : `
+    <h4><input data-ps="${i}|name" value="${esc(sc.name)}" aria-label="Scope name" style="text-transform:uppercase"><button class="link x" data-ps-del="${i}" title="Remove this scope">Remove</button></h4>
     <textarea data-ps="${i}|lines" rows="${Math.max(3, (sc.lines || []).length + 1)}" aria-label="Scope lines, one per line">${esc((sc.lines || []).join("\n"))}</textarea>
-    <div class="amt"><span>${esc((sc.alternate ? String(sc.name).split(" - ")[0] : sc.name).toUpperCase())} TOTAL:</span>${multi || sc.alternate ? `<input type="number" step="1" data-ps="${i}|price" value="${sc.price != null ? esc(sc.price) : ""}" aria-label="Scope total">` : `<span>${p ? money(p.final_price) : "-"}</span>`}</div>`).join("");
+    <div class="amt">${multi ? `<input type="number" step="1" data-ps="${i}|price" value="${sc.price != null ? esc(sc.price) : ""}" aria-label="Scope total">` : `<span>${p ? money(p.final_price) : "-"}</span>`}</div>`).join("");
+  const altNote = alts.length ? `<div class="issue warn"><div class="tag">CHECK</div><div>The proposal template has no alternate section, so ${alts.map((a) => esc(a.name)).join(", ")} won't print.</div><div class="fixes">${est.scopes.map((x, i) => x.alternate ? `<button data-ps-unalt="${i}">Make "${esc(x.name)}" a scope</button>` : "").join("")}</div></div>` : "";
   el.innerHTML = `${docToolbar("proposal")}
     <div class="paper">
       <div class="co"><b>${esc(co.name)}</b><div>${esc(co.taglines.join(" · "))}</div><div>${esc(co.address.join(", "))} · TEL ${esc(co.tel)} · ${esc(co.license)}</div></div>
       <div class="hd">
         <span>ESTIMATE #</span><input data-pf="job.estimate_number" value="${esc(j.estimate_number || "")}" aria-label="Estimate number">
-        <span>DATE</span><input data-pf="job.date" value="${esc(j.date || "")}" aria-label="Date">
-        <span>CUSTOMER</span><input data-pf="job.customer" value="${esc(j.customer || "")}" placeholder="Customer company" aria-label="Customer">
-        <span>JOB LOCATION</span><input data-pf="job.location" value="${esc(j.location || "")}" placeholder="Job address" aria-label="Job location">
-        <span>ESTIMATOR</span><span style="font-weight:400"><select data-pf="job.estimator" aria-label="Estimator"><option value="">Pick...</option>${Object.keys(STYLE.estimators).map((n) => `<option ${n === j.estimator ? "selected" : ""}>${esc(n)}</option>`).join("")}</select> ${esc(ei.phone || "")} ${esc(ei.email || "")}</span>
+        <span>DATE</span><input data-pf="job.date" value="${esc(pf ? pf.fields.proposal_date : j.date || "")}" aria-label="Date">
+        <span>CUSTOMER</span><input data-pf="job.customer" value="${esc(j.customer || "")}" placeholder="Customer company" aria-label="Customer" style="text-transform:uppercase">
+        <span>JOB LOCATION</span><input data-pf="job.location" value="${esc(j.location || "")}" placeholder="Job address" aria-label="Job location" style="text-transform:uppercase">
+        <span>ESTIMATOR</span><span style="font-weight:400"><select data-pf="job.estimator" aria-label="Estimator"><option value="">Pick...</option>${[...new Set([...Object.keys(STYLE.estimators), j.estimator].filter(Boolean))].map((n) => `<option ${n === j.estimator ? "selected" : ""}>${esc(n)}</option>`).join("")}</select> c:${esc(j.estimator_phone || ei.phone || "")} e:${esc(j.estimator_email || ei.email || "")}</span>
       </div>
-      <textarea data-pf="opening_paragraph" rows="2" aria-label="Opening paragraph">${esc(est.opening_paragraph || STYLE.intro)}</textarea>
+      <div class="lbl">Scope of Work</div><p class="fixed">${esc(tpl.intro)}</p>
       ${scopes}
-      <div class="addrow"><button class="link" data-ps-add="scope">+ Add scope</button><button class="link" data-ps-add="alt">+ Add alternate</button></div>
-      <div class="grand"><span>TOTAL:</span><span>${p ? money(p.final_price) : "-"}</span></div>
-      <div class="lbl">Notes (one per line)</div><textarea data-pf="notes" rows="${(est.notes || STYLE.notes).length + 1}" aria-label="Notes">${esc((est.notes || STYLE.notes).join("\n"))}</textarea>
-      <div class="lbl">Exclusions</div><textarea data-pf="exclusions" rows="3" aria-label="Exclusions">${esc(defaultExclusions())}</textarea>
-      <div class="lbl">Validity</div><textarea data-pf="validity_text" rows="1" aria-label="Validity">${esc(est.validity_text || STYLE.terms[0])}</textarea>
-      <div class="lbl">Payment terms</div><textarea data-pf="payment_terms" rows="3" aria-label="Payment terms">${esc(est.payment_terms || STYLE.terms[1])}</textarea>
-      <div class="lbl">Legal</div><textarea data-pf="legal_footer" rows="3" aria-label="Legal footer">${esc(est.legal_footer || STYLE.terms[2])}</textarea>
+      <div class="addrow">${base.length < MAX_SCOPES ? '<button class="link" data-ps-add="scope">+ Add scope</button>' : '<span class="hint">The template holds 3 scopes.</span>'}</div>
+      ${altNote}
+      <div class="lbl">Notes</div><ul class="fixed">${tpl.notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
+      <div class="lbl">Exclusions</div><p class="fixed">${esc(tpl.exclusions_base)}</p>
+      <label class="lbl" for="pfExcl">Added exclusions for this job (one per line, printed after the standard list)</label>
+      <textarea id="pfExcl" data-pf="extra_exclusions" rows="${Math.max(2, (est.extra_exclusions || []).length + 1)}" aria-label="Added exclusions">${esc((est.extra_exclusions || []).join("\n"))}</textarea>
+      <p class="fixed" style="margin-top:10px">${esc(tpl.terms)}</p>
+      <div class="grand"><span>Total:</span><span>${p ? money(p.final_price) : "-"}</span></div>
+      <p class="hint">Notes, the standard exclusions and the terms are fixed in A2Z's template. Scope names, customer and job location print in capitals.</p>
     </div>`;
 }
 document.getElementById("tabProposal").addEventListener("input", (ev) => {
   const el = ev.target;
   if (el.dataset.pf) {
     const k = el.dataset.pf;
-    if (k === "notes") est.notes = el.value.split("\n").map((x) => x.trim()).filter(Boolean);
-    else if (k === "exclusions") { est.exclusions = el.value; est.extra_exclusions = []; }
+    if (k === "extra_exclusions") est.extra_exclusions = el.value.split("\n").map((x) => x.trim()).filter(Boolean);
     else set(est, k, el.value);
-    if (k === "job.estimator" && el.value && (!est.job.estimate_number || /^\d{6}[A-Z]*$/.test(est.job.estimate_number))) est.job.estimate_number = estNumber(el.value);
+    if (k === "job.estimator") { delete est.job.estimator_phone; delete est.job.estimator_email; if (el.value && (!est.job.estimate_number || /^\d{6}[A-Z]*$/.test(est.job.estimate_number))) est.job.estimate_number = estNumber(el.value); }
   } else if (el.dataset.ps) {
     const [i, f] = el.dataset.ps.split("|"); const sc = est.scopes[Number(i)];
-    if (f === "lines") sc.lines = el.value.split("\n").map((x) => x.trim()).filter(Boolean);
+    if (f === "lines") sc.lines = el.value.split("\n").map((x) => x.replace(/^\s*[•·\-*]\s*/, "").trim()).filter(Boolean);
     else if (f === "price") sc.price = el.value === "" ? null : Number(el.value);
     else sc[f] = el.value;
   }
@@ -2181,16 +2550,214 @@ document.getElementById("tabProposal").addEventListener("input", (ev) => {
 document.getElementById("tabProposal").addEventListener("change", () => keepFocus(() => { _renderForm(); renderProposal(); }));
 document.getElementById("tabProposal").addEventListener("click", (ev) => {
   const b = ev.target.closest("button"); if (!b) return;
-  if (b.dataset.psAdd) { est.scopes.push(b.dataset.psAdd === "alt" ? { name: `ALTERNATE #${est.scopes.filter((x) => x.alternate).length + 1} - `, lines: [], price: null, alternate: true } : { name: "", lines: [], price: null }); renderProposal(); renderForm(); run(); }
+  if (b.dataset.psAdd) { if (est.scopes.filter((x) => !x.alternate).length >= MAX_SCOPES) return; est.scopes.push({ name: "", lines: [], price: null }); renderProposal(); renderForm(); run(); }
   else if (b.dataset.psDel !== undefined) { est.scopes.splice(Number(b.dataset.psDel), 1); renderProposal(); renderForm(); run(); }
+  else if (b.dataset.psUnalt !== undefined) { const sc = est.scopes[Number(b.dataset.psUnalt)]; sc.alternate = false; sc.name = String(sc.name).replace(/^ALTERNATE\s*#?\d*\s*-\s*/i, ""); renderProposal(); renderForm(); run(); }
 });
 
 function docToolbar(which) {
   const fileBtns = LIVE_DOCS
     ? `<button data-doc="proposal">${which === "proposal" ? "Download this proposal (.docx)" : "Download proposal (.docx)"}</button><button data-doc="costing">${which === "cost" ? "Download this cost sheet (.xlsx)" : "Download job costing (.xlsx)"}</button>`
     : `<span class="hint">Downloads are made on the live site.</span>`;
-  return `<div class="toolbar">${fileBtns}${LIVE_SAVE ? '<button class="primary" data-doc="save">Save estimate</button>' : ""}<span class="hint">Files are built from what you see here, in A2Z's own templates. They're named DRAFT while questions are open.</span></div>`;
+  return `<div class="toolbar">${fileBtns}${LIVE_SAVE ? '<button data-doc="save">Save estimate</button>' : ""}<span class="hint">Files are built from what you see here, in A2Z's own templates. They're named DRAFT while questions are open.</span></div>${sendBox()}`;
 }
+
+/* ---------- Send: cost sheet (.xlsx) + proposal (.docx) to Make, GHL opportunity to Generate Proposal ---------- */
+let SEND_BUSY = false, SEND_ARMED = false;
+function sendBox() {
+  if (!LIVE_SAVE) return "";
+  const chk = E.checkEstimate(est, { rates: RATES });
+  const open = chk.issues.filter((i) => i.level === "block" || i.level === "ask");
+  const fix = open.filter((i) => i.level === "block").length, qs = open.length - fix;
+  const linked = est.opportunityId ? `GHL job: <b>${esc(est.opportunityName || est.job.name || est.opportunityId)}</b>${est._oppStage ? " · " + esc(est._oppStage) : ""}` : "Not linked to a GHL job (open it from Jobs to link it). The files still go to Make.";
+  const sent = est._sentAt ? `<div class="hint">Last sent ${esc(fmtWhen(est._sentAt))}${est._sentVersion ? " (v" + est._sentVersion + ")" : ""}.</div>` : "";
+  const what = est.opportunityId ? (est.pipeline === "change_orders" ? "moves the change order to Generate" : "writes the proposal fields to the opportunity and moves it to Generate Proposal") : "";
+  const btn = !chk.priced || open.length
+    ? `<button disabled title="Clear every FIX and QUESTION first">Send to Make</button><span class="hint">Locked: ${fix ? fix + " to fix" + (qs ? ", " : "") : ""}${qs ? qs + " question" + (qs === 1 ? "" : "s") : ""}${!chk.priced ? "the estimate can't be priced yet" : ""} open. Clear them in Builder, Checks.</span>`
+    : `<button class="primary" data-send>${SEND_BUSY ? "Sending..." : SEND_ARMED ? "Click again to send" : "Send to Make"}</button><span class="hint">Saves, then sends the cost sheet (costData) and proposal (genProp)${what ? " and " + what : ""}.</span>`;
+  return `<div class="sendbox ${open.length ? "" : "ready"}"><div class="hint">${linked}</div><div class="toolbar" style="margin:6px 0 0">${btn}</div>${sent}</div>`;
+}
+async function sendEstimate() {
+  if (SEND_BUSY) return;
+  SEND_BUSY = true; SEND_ARMED = false; renderActiveTab(); renderAutopilot();
+  try {
+    if (!est._id || snapshot() !== LAST_SAVED) await saveEstimate();
+    if (!est._id) throw new Error("Couldn't save first");
+    const out = await api("estimate-send", { method: "POST", body: JSON.stringify({ id: est._id, takeoffCsv: TAKEOFF ? TAKEOFF.text : undefined, name: est.job.name || "" }) });
+    est._sentAt = out.sentAt; est._sentVersion = out.version;
+    if (out.ghl && out.ghl.ok !== false && out.ghl.stage) est._oppStage = out.ghl.stage;
+    let msg = `Sent v${out.version} to Make`;
+    if (out.ghl) msg += out.ghl.ok === false ? `. GHL wasn't updated: ${out.ghl.error}` : ` · GHL: ${out.ghl.stage}${out.ghl.unresolvedFields && out.ghl.unresolvedFields.length ? " (no GHL field for " + out.ghl.unresolvedFields.join(", ") + ")" : ""}`;
+    toast(msg); JOBS = null;
+  } catch (e) { toast("Not sent: " + e.message); }
+  SEND_BUSY = false; renderActiveTab(); renderAutopilot(); run();
+}
+document.addEventListener("click", (ev) => {
+  const b = ev.target.closest("button[data-send]"); if (!b) return;
+  if (!SEND_ARMED) { SEND_ARMED = true; b.textContent = "Click again to send"; setTimeout(() => { if (SEND_ARMED) { SEND_ARMED = false; renderActiveTab(); renderAutopilot(); } }, 4000); return; }
+  sendEstimate();
+});
+
+/* ---------- Jobs (GHL pipeline, like the Estimating Desk) ---------- */
+let JOBS = null, JOBS_ERR = "", JOBS_FILTER = "estimating", JOBS_Q = "", JOBS_BUSY = false;
+const JOB_FILTERS = { estimating: ["new_lead", "proposal_in_progress", "generate_proposal"], waiting: ["proposal_sent", "in_negotiation", "pending_decision"] };
+async function loadJobs(force) {
+  if (JOBS_BUSY || (JOBS && !force)) return renderJobs();
+  JOBS_BUSY = true; JOBS_ERR = ""; renderJobs();
+  try { JOBS = await api("jobs"); } catch (e) { JOBS_ERR = e.message; }
+  JOBS_BUSY = false; renderJobs();
+}
+function jobRows() {
+  if (!JOBS) return [];
+  const list = JOBS_FILTER === "change_orders" ? JOBS.changeOrders : JOBS.jobs.filter((j) => JOB_FILTERS[JOBS_FILTER].includes(j.stageKey));
+  const q = JOBS_Q.trim().toLowerCase();
+  return list.filter((j) => !q || [j.name, j.projectName, j.customer, j.address, j.estimator, j.stageName].join(" ").toLowerCase().includes(q));
+}
+function renderJobs() {
+  const v = document.getElementById("viewJobs");
+  const count = (k) => !JOBS ? "" : k === "change_orders" ? JOBS.changeOrders.length : JOBS.jobs.filter((j) => JOB_FILTERS[k].includes(j.stageKey)).length;
+  const filters = [["estimating", "Estimating"], ["waiting", "Sent / waiting"], ["change_orders", "Change orders"]].map(([k, l]) => `<button data-jf="${k}" class="${JOBS_FILTER === k ? "on" : ""}">${l}${JOBS ? " (" + count(k) + ")" : ""}</button>`).join("");
+  const rows = jobRows();
+  let body;
+  if (JOBS_ERR) body = `<div class="status bad">Couldn't load the GHL pipeline: ${esc(JOBS_ERR)}</div><p class="hint">You can still build an estimate from the Estimate tab; it just won't be linked to an opportunity.</p>`;
+  else if (!JOBS) body = '<div class="hint">Loading the pipeline from GHL...</div>';
+  else if (!rows.length) body = `<div class="hint">${JOBS_Q ? "No matches." : "Nothing in these stages."}</div>`;
+  else body = `<table class="dt"><thead><tr><th>Job</th><th>Customer</th><th>Estimator</th><th>Stage</th><th>Bot estimate</th><th></th></tr></thead><tbody>${rows.map((j) => `<tr>
+    <td><b>${esc(j.projectName || j.name)}</b>${j.projectName && j.projectName !== j.name ? `<div class="hint">${esc(j.name)}</div>` : ""}<div class="hint">${esc(j.address || "No address")}</div></td>
+    <td>${esc(j.customer || "-")}</td><td>${esc(j.estimator || "Unassigned")}</td>
+    <td><span class="pill stage">${esc(j.stageName || j.stageKey)}</span></td>
+    <td>${j.saved ? `v${j.saved.version}${j.saved.bid != null ? " · " + money(j.saved.bid).replace(/\.00$/, "") : ""}${j.saved.sentAt ? '<div><span class="pill sent">SENT</span> <span class="hint">' + esc(fmtWhen(j.saved.sentAt)) + "</span></div>" : ""}` : '<span class="hint">None yet</span>'}</td>
+    <td><button class="primary" data-job="${esc(j.id)}">${j.saved ? "Open estimate" : "Start estimate"}</button></td></tr>`).join("")}</tbody></table>`;
+  v.innerHTML = `<div class="list-head"><h2>Jobs</h2><input type="search" id="jobsQ" placeholder="Search job, customer, address..." value="${esc(JOBS_Q)}" aria-label="Search jobs"><span class="sp" style="flex:1"></span><button data-jreload>${JOBS_BUSY ? "Loading..." : "Refresh"}</button></div>
+    <div class="jobfilters">${filters}</div><div class="card tablewrap">${body}</div>
+    <p class="hint">From GHL, same pipeline as the Estimating Desk. Starting an estimate moves a New Lead to Proposal In Progress (a change order to CO In Progress). Sending moves it to Generate Proposal.</p>`;
+}
+function findJob(id) { return JOBS && [...JOBS.jobs, ...JOBS.changeOrders].find((j) => j.id === id); }
+async function openJob(id) {
+  if (!JOBS) await loadJobs(true);
+  const j = findJob(id);
+  if (!j) return toast("That opportunity isn't in an estimating stage.");
+  if (j.saved) { await openSaved(j.saved.id); }
+  else {
+    est = blank(); COMPS = null; TAKEOFF = null; PLAN_FILES = []; DOCS = null; LAST_SAVED = "";
+    const inStyle = STYLE && STYLE.estimators[j.estimator];
+    est._oppJob = { name: j.projectName || j.name, customer: j.customer, location: j.address, estimator: j.estimator || "",
+      ...(j.estimator && !inStyle ? { estimator_phone: j.estimatorPhone || "", estimator_email: j.estimatorEmail || "" } : {}) };
+    est.job = Object.assign({}, est._oppJob);
+    renderUploads(); renderForm(); run();
+  }
+  Object.assign(est, { opportunityId: j.id, pipeline: j.pipeline, opportunityName: j.name, _oppStage: j.stageName, _oppJob: est._oppJob || { name: j.projectName || j.name, customer: j.customer, location: j.address, estimator: j.estimator || "" } });
+  document.getElementById("opp").textContent = `${j.pipeline === "change_orders" ? "Change order" : "GHL job"}: ${j.name} · ${j.stageName}`;
+  showView("estimate"); showTab("builder");
+  try {
+    const r = await api("jobs", { method: "POST", body: JSON.stringify({ action: "start", opportunityId: j.id, name: j.name }) });
+    if (r.moved) { est._oppStage = r.stage; j.stageName = r.stage; document.getElementById("opp").textContent = `${j.pipeline === "change_orders" ? "Change order" : "GHL job"}: ${j.name} · ${r.stage}`; toast("Moved to " + r.stage + " in GHL"); }
+  } catch (e) { toast("Opened, but GHL wasn't updated: " + e.message); }
+  renderActiveTab(); renderAutopilot();
+}
+document.getElementById("viewJobs").addEventListener("click", (ev) => {
+  const b = ev.target.closest("button"); if (!b) return;
+  if (b.dataset.jf) { JOBS_FILTER = b.dataset.jf; renderJobs(); }
+  else if (b.dataset.jreload !== undefined) loadJobs(true);
+  else if (b.dataset.job) openJob(b.dataset.job);
+});
+document.getElementById("viewJobs").addEventListener("input", (ev) => { if (ev.target.id === "jobsQ") { JOBS_Q = ev.target.value; const pos = ev.target.selectionStart; renderJobs(); const el = document.getElementById("jobsQ"); el.focus(); el.setSelectionRange(pos, pos); } });
+
+/* ---------- Training: past proposals + cost sheets in bulk ---------- */
+let TRAIN = null, TRAIN_ERR = "", TRAIN_FILES = [], TRAIN_BUSY = false;
+async function loadTraining() {
+  try { TRAIN = await api("training"); TRAIN_ERR = ""; } catch (e) { TRAIN_ERR = e.message; }
+  renderTraining();
+}
+// PDF text by column, so a proposal's left sidebar (estimate #, customer, job location) doesn't mix into the scope lines
+async function readPdfColumns(buf) {
+  await loadPdfJs();
+  const pdf = await window.pdfjsLib.getDocument({ data: buf }).promise;
+  const out = [];
+  for (let n = 1; n <= Math.min(pdf.numPages, 20); n++) {
+    const page = await pdf.getPage(n), tc = await page.getTextContent(), W = page.view[2] || 612;
+    const rows = pdfRows(tc);
+    // a left sidebar shows up as many rows whose second piece starts at about the same x
+    const seconds = rows.filter((r) => r.segs.length > 1).map((r) => r.segs[1].x).filter((x) => x < W * 0.6).sort((a, b) => a - b);
+    const B = seconds.length >= 4 ? seconds[0] - 4 : null; // the main column starts where the earliest of those pieces does
+    const main = [], side = [];
+    for (const r of rows) for (const g of r.segs) (B && g.x < B ? side : main).push(g.s);
+    out.push(...main, ...side);
+    page.cleanup();
+  }
+  return out;
+}
+const b64OfBuf = (buf) => { const u = new Uint8Array(buf); let s = ""; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); };
+async function trainFiles(files) {
+  if (!SESSION.isAdmin) return toast("Only admins can train the bot.");
+  const list = [...files].filter((f) => /\.(pdf|docx|xlsx)$/i.test(f.name));
+  const skipped = files.length - list.length;
+  if (!list.length) return toast("Drop .pdf or .docx proposals and .xlsx cost sheets.");
+  TRAIN_BUSY = true;
+  TRAIN_FILES = list.map((f) => ({ name: f.name, st: "Waiting", cls: "" })).concat(skipped ? [{ name: `${skipped} other file${skipped === 1 ? "" : "s"}`, st: "Skipped (not .pdf, .docx or .xlsx)", cls: "bad" }] : []);
+  renderTraining();
+  let added = 0;
+  for (let k = 0; k < list.length; k++) {
+    const f = list[k], row = TRAIN_FILES[k];
+    try {
+      row.st = "Reading..."; renderTrainList();
+      const buf = await f.arrayBuffer();
+      const body = /\.pdf$/i.test(f.name) ? { action: "add", name: f.name, lines: await readPdfColumns(buf) } : { action: "add", name: f.name, base64: b64OfBuf(buf) };
+      row.st = "Learning..."; renderTrainList();
+      const out = await api("training", { method: "POST", body: JSON.stringify(body) });
+      row.st = out.record.kind === "proposal" ? "Proposal: " + out.record.what : "Cost sheet: " + out.record.what;
+      if (out.record.warnings && out.record.warnings.length) row.st += " · " + out.record.warnings.join(" ");
+      row.cls = out.record.warnings && out.record.warnings.length ? "" : "ok"; added++;
+    } catch (e) { row.st = e.message; row.cls = "bad"; }
+    renderTrainList();
+  }
+  if (added) { try { await api("training", { method: "POST", body: JSON.stringify({ action: "rebuild" }) }); } catch (e) { toast("Couldn't rebuild: " + e.message); } }
+  TRAIN_BUSY = false;
+  await loadTraining();
+  try { const d = await api("bot-data"); LEARNED = d.learned; } catch (e) {}
+  toast(`Learned from ${added} of ${list.length} file${list.length === 1 ? "" : "s"}`);
+}
+function renderTrainList() {
+  const el = document.getElementById("trainList"); if (!el) return;
+  el.innerHTML = TRAIN_FILES.map((r) => `<li class="${r.cls}"><span>${esc(r.name)}</span><span class="st">${esc(r.st)}</span></li>`).join("");
+}
+function renderTraining() {
+  const v = document.getElementById("viewTraining");
+  const m = TRAIN && TRAIN.model, recs = (TRAIN && TRAIN.records) || [];
+  const c = (m && m.counts) || { proposals: 0, costsheets: 0 };
+  const drop = SESSION.isAdmin
+    ? `<section class="drop big" id="dropTrain"><b>Drop past proposals and job costing sheets here</b><div class="hint">Proposals: .pdf or .docx (A2Z's own). Cost sheets: .xlsx (Job Costing Worksheet). Many at once is fine.</div><button id="btnTrain"${TRAIN_BUSY ? " disabled" : ""}>Choose files</button><input type="file" id="trainFile" accept=".pdf,.docx,.xlsx" multiple hidden><ul class="tl" id="trainList"></ul></section>`
+    : '<div class="card hint">Only admins can upload training files. Here is what the bot has learned so far.</div>';
+  const table = (head, rows) => rows.length ? `<table class="dt"><thead><tr>${head.map((h) => `<th${/^(Times|Sheets|Typical)/.test(h) ? ' class="num"' : ""}>${h}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table>` : '<div class="hint">Nothing yet.</div>';
+  const learned = m ? `<div class="learn-grid">
+      <div class="card"><h2>Scope wording</h2>${table(["How A2Z writes it", "Times"], m.phrases.slice(0, 30).map((p) => `<tr><td>${esc(p.text)}${p.unit ? ` <span class="hint">(approx. qty ${esc(p.unit)})</span>` : ""}</td><td class="num">${p.count}</td></tr>`))}<p class="hint">Autopilot rewrites its scope lines in this wording when the item matches.</p></div>
+      <div class="card"><h2>Cost line items</h2>${table(["Type", "Description", "Sheets", "Typical rate"], m.lineItems.slice(0, 30).map((i) => `<tr><td>${esc(i.category)}</td><td>${esc(i.description)}</td><td class="num">${i.sheets}</td><td class="num">${i.rate ? money(i.rate).replace(/\.00$/, "") : "-"}</td></tr>`))}<p class="hint">Equipment and misc lines take A2Z's usual wording; a rate far from past sheets, or an item most jobs include, shows as a CHECK.</p></div>
+      <div class="card"><h2>Scope names</h2>${table(["Name", "Times"], m.scopeNames.map((n) => `<tr><td>${esc(n.name)}</td><td class="num">${n.count}</td></tr>`))}</div>
+      <div class="card"><h2>Added exclusions</h2>${table(["Exclusion", "Times"], m.exclusions.map((x) => `<tr><td>${esc(x.text)}</td><td class="num">${x.count}</td></tr>`))}<p class="hint">For reference; autopilot only adds exclusions the plans call out.</p></div>
+    </div>` : "";
+  v.innerHTML = `<div class="list-head"><h2>Training</h2><span class="hint">${m ? `Learned from ${c.proposals} proposal${c.proposals === 1 ? "" : "s"} and ${c.costsheets} cost sheet${c.costsheets === 1 ? "" : "s"} · ${m.jobs} added as comps · updated ${esc(fmtWhen(m.updated))}` : "Nothing learned yet."}</span><span class="sp" style="flex:1"></span><button data-treload>Refresh</button></div>
+    ${TRAIN_ERR ? `<div class="card"><div class="status bad">Couldn't load: ${esc(TRAIN_ERR)}</div></div>` : ""}
+    ${drop}${learned}
+    <div class="card tablewrap"><h2>Uploaded files (${recs.length})</h2>${recs.length ? `<table class="dt"><thead><tr><th>File</th><th>Job</th><th>What it read</th><th>Added</th><th></th></tr></thead><tbody>${recs.map((r) => `<tr><td>${esc(r.file)}</td><td>${esc(r.job || "-")}</td><td>${esc(r.what)}${r.warnings && r.warnings.length ? `<div class="hint">${esc(r.warnings.join(" "))}</div>` : ""}</td><td>${esc(fmtWhen(r.at))}<div class="hint">${esc((r.by && r.by.name) || "")}</div></td><td>${SESSION.isAdmin ? `<button class="link" data-tdel="${esc(r.id)}">Remove</button>` : ""}</td></tr>`).join("")}</tbody></table>` : '<div class="hint">No files yet.</div>'}
+    <p class="hint">Code reads the files, no AI: scope lines, scope names and totals from proposals; descriptions, quantities and rates from cost sheets. Scanned PDFs have no text and are skipped. Uploading the same job twice counts it twice; remove one copy.</p></div>`;
+  renderTrainList();
+  if (SESSION.isAdmin) {
+    const dz = document.getElementById("dropTrain");
+    ["dragover", "dragenter"].forEach((t) => dz.addEventListener(t, (e) => { e.preventDefault(); dz.classList.add("over"); }));
+    ["dragleave", "drop"].forEach((t) => dz.addEventListener(t, () => dz.classList.remove("over")));
+    dz.addEventListener("drop", (e) => { e.preventDefault(); e.stopPropagation(); if (!TRAIN_BUSY) trainFiles(e.dataTransfer.files); });
+    document.getElementById("trainFile").addEventListener("change", (e) => { const fs = e.target.files; if (fs.length && !TRAIN_BUSY) trainFiles(fs); });
+  }
+}
+document.getElementById("viewTraining").addEventListener("click", async (ev) => {
+  const b = ev.target.closest("button"); if (!b) return;
+  if (b.id === "btnTrain") document.getElementById("trainFile").click();
+  else if (b.dataset.treload !== undefined) loadTraining();
+  else if (b.dataset.tdel) {
+    if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Click again to remove"; setTimeout(() => { b.dataset.armed = ""; b.textContent = "Remove"; }, 3000); return; }
+    try { await api("training", { method: "POST", body: JSON.stringify({ action: "delete", id: b.dataset.tdel }) }); toast("Removed"); loadTraining(); } catch (e) { toast(e.message); }
+  }
+});
 document.addEventListener("click", async (ev) => {
   const b = ev.target.closest("button[data-doc]"); if (!b) return;
   if (b.dataset.doc === "save") return saveEstimate();
@@ -2264,7 +2831,7 @@ function adminAudit(d) {
       <td>${e.ok ? "OK" : `<span style="color:var(--block);font-weight:700">Failed</span><div class="hint">${esc(e.error || "")}</div>${e.ack ? `<div class="hint">Acknowledged by ${esc(e.ack.name || "admin")}</div>` : `<button class="link" data-aack="${esc(e.key)}">Acknowledge</button>`}`}</td><td class="hint">${esc(det(e.detail))}</td></tr>`).join("")}</tbody></table>` : '<div class="hint">No matching entries.</div>'}</div>`;
 }
 function adminTeam(d) {
-  const cols = [["autopilots", "Autopilot drafts"], ["files", "Files made"], ["saves", "Estimates saved"], ["signins", "Sign-ins"]];
+  const cols = [["autopilots", "Autopilot drafts"], ["files", "Files made"], ["saves", "Estimates saved"], ["sends", "Sent to Make"], ["signins", "Sign-ins"]];
   const tot = (k) => d.byUser.reduce((n, r) => n + (r[k] || 0), 0);
   return `<div class="card tablewrap"><table class="dt"><thead><tr><th>Person</th>${cols.map(([, l]) => `<th class="num">${l}</th>`).join("")}</tr></thead><tbody>${d.byUser.map((r) => `<tr><td><b>${esc(r.name || r.email)}</b><div class="hint">${String(r.email).startsWith("passcode") ? "Passcode sign-in" : esc(r.email)}${r.lastSignin ? " · last in " + esc(fmtWhen(r.lastSignin)) : ""}</div></td>${cols.map(([k]) => `<td class="num">${r[k] || 0}</td>`).join("")}</tr>`).join("")}</tbody>
     <tfoot><tr><td>Team total</td>${cols.map(([k]) => `<td class="num">${tot(k)}</td>`).join("")}</tr></tfoot></table><p class="hint">Last ${d.days} days. Passcode users show under the name they typed.</p></div>`;
@@ -2315,11 +2882,10 @@ if (LIVE_SAVE) {
   const _ap = autopilotRun;
   autopilotRun = function () { _ap(); if (TAKEOFF && SESSION.signedIn) api("admin", { method: "POST", body: JSON.stringify({ action: "client_event", name: "Ran autopilot", target: (est.job && est.job.name) || TAKEOFF.name, detail: { plans: PLAN_FILES.length, bid: (E.checkEstimate(est, { rates: RATES }).priced || {}).final_price || "" } }) }).catch(() => {}); };
   const qs = new URLSearchParams(location.search);
-  if (qs.get("opportunityId")) est.opportunityId = qs.get("opportunityId");
   initSession().then((ok) => { if (ok) afterSignIn(); });
 } else {
   document.getElementById("topnav").hidden = false;
-  document.querySelector('#topnav [data-nav="saved"]').hidden = true;
+  ["saved", "jobs", "training"].forEach((k) => { document.querySelector(`#topnav [data-nav="${k}"]`).hidden = true; });
   renderSaveState();
 }
 </script>

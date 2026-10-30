@@ -1,6 +1,6 @@
 // Team activity for Admin: per-user counts and sign-in history (same as the Estimating Desk).
 // All in the Netlify Blobs store "a2z-estimating-bot-admin":
-//   stats/<YYYY-MM>/<key>      per-user daily counters (autopilot drafts, files made, saves)
+//   stats/<YYYY-MM>/<key>      per-user daily counters (autopilot drafts, files made, saves, sends)
 //   signins/<YYYY-MM-DD>/...   one blob per sign-in (repeat loads within 30 min are skipped)
 
 const crypto = require("node:crypto");
@@ -41,6 +41,7 @@ const METRICS = {
   autopilots: "Autopilot drafts",
   saves: "Estimates saved",
   files: "Proposal + job costing files made",
+  sends: "Sent to Make",
 };
 
 // Which audit entries count toward which metric (successful ones only).
@@ -49,6 +50,7 @@ function metricFor(entry) {
   if (entry.action === "Ran autopilot") return "autopilots";
   if (entry.action === "Saved estimate") return "saves";
   if (entry.action === "Made files") return "files";
+  if (entry.action === "Sent to Make") return "sends";
   return null;
 }
 

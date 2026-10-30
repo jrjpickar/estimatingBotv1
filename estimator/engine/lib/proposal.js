@@ -1,10 +1,10 @@
 "use strict";
-// Fill A2Z's Make master proposal template (docxtemplater, {{ }} tags) with the same
+// Fill A2Z's proposal template (A2Z_Proposal_Template.docx, docxtemplater {{ }} tags) with the same
 // engine Make's template step uses. Buffer in, buffer out (no file system).
 const PizZip = require("../vendor/docx-vendor").PizZip;
 const Docxtemplater = require("../vendor/docx-vendor").Docxtemplater;
 
-const { proposalData } = require("./proposalData");
+const { proposalData, proposalFields } = require("./proposalData");
 
 function fillProposal(templateBuffer, data) {
   const zip = new PizZip(templateBuffer);
@@ -33,4 +33,4 @@ function fillProposal(templateBuffer, data) {
   return filled.generate({ type: "nodebuffer", compression: "DEFLATE" });
 }
 
-module.exports = { proposalData, fillProposal };
+module.exports = { proposalData, proposalFields, fillProposal };

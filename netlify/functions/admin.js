@@ -135,6 +135,7 @@ async function timed(fn) {
   catch (e) { return { ok: false, ms: Date.now() - t, error: String(e.message || e) }; }
 }
 
+const fmtPT = (iso) => new Date(iso).toLocaleString("en-US", { timeZone: "America/Los_Angeles", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 function check(id, label, status, summary, items = []) { return { id, label, status, summary, items }; }
 const item = (label, status, value) => ({ label, status, value });
 
@@ -148,6 +149,9 @@ async function healthView(event) {
     blobsCheck(event),
     engineCheck(),
     estimatesCheck(event),
+    pipelineCheck(),
+    webhookCheck(),
+    trainingCheck(event),
   ]);
   const openErrors = audit.filter(isOpenError);
   const recent = openErrors.filter((e) => Date.parse(e.at) >= since24h).length;
@@ -200,7 +204,7 @@ function engineCheck() {
     return check("engine", "Estimating engine data", "ok", `Loaded · ${a.library.jobs.length} past jobs · default markup ${Math.round(a.defaults.markup * 100)}%`, [
       item("Job library", "ok", `${a.library.jobs.length} priced bids (${a.library.version || "?"})`),
       item("Production table", "ok", "Starter numbers (estimator/data/production.json)"),
-      item("Templates", "ok", "Make master proposal v17 · Job Costing Worksheet V3"),
+      item("Templates", "ok", "A2Z proposal template (3 scopes) · Job Costing Worksheet V3"),
     ]);
   } catch (e) {
     return check("engine", "Estimating engine data", "bad", String(e.message || e));
@@ -210,6 +214,28 @@ function engineCheck() {
 async function estimatesCheck(event) {
   const r = await timed(async () => (await estimateStore(event).list({ prefix: "estimates/" })).blobs.length);
   return check("estimates", "Saved estimates", r.ok ? "ok" : "bad", r.ok ? `${r.value} saved estimate${r.value === 1 ? "" : "s"}` : r.error);
+}
+
+async function pipelineCheck() {
+  if (!envSet("GHL_PIT_TOKEN")) return check("pipeline", "GHL pipeline (Jobs)", "warn", "GHL_PIT_TOKEN not set - the Jobs list and stage moves are off", []);
+  const r = await timed(() => require("../lib/ghl").listEstimatingJobs());
+  return check("pipeline", "GHL pipeline (Jobs)", r.ok ? "ok" : "bad", r.ok ? `Connected · ${r.value.jobs.length} jobs, ${r.value.changeOrders.length} change orders · ${r.ms} ms` : r.error,
+    [item("Opening a job", "ok", "New Lead -> Proposal In Progress (like Start Estimate)"), item("Send", "ok", "Writes the proposal fields, moves to Generate Proposal")]);
+}
+
+function webhookCheck() {
+  const custom = envSet("MAKE_BOT_WEBHOOK_URL");
+  const url = String(process.env.MAKE_BOT_WEBHOOK_URL || "https://hook.us2.make.com/srx3k2i5fbmy9y68ls9gkoa9h1jji7tt").trim();
+  return check("webhook", "Make webhook (Send)", "ok", custom ? "Custom URL from MAKE_BOT_WEBHOOK_URL" : "Default A2Z webhook",
+    [item("URL", "ok", url.replace(/^(https:\/\/[^/]+\/)(.{4}).*$/, "$1$2...")), item("Sends", "ok", "costData (.xlsx), genProp (.docx), jobAddress, proposal fields")]);
+}
+
+async function trainingCheck(event) {
+  const r = await timed(async () => require("../lib/training").readModel(event));
+  if (!r.ok) return check("training", "Training", "bad", r.error);
+  const c = (r.value && r.value.counts) || {};
+  return check("training", "Training", r.value ? "ok" : "warn", r.value ? `Learned from ${c.proposals || 0} proposals and ${c.costsheets || 0} cost sheets` : "Nothing uploaded yet - autopilot uses its built-in wording",
+    r.value ? [item("Scope phrasings", "ok", String((r.value.phrases || []).length)), item("Line items", "ok", String((r.value.lineItems || []).length)), item("Comps added", "ok", String((r.value.jobs || []).length))] : []);
 }
 
 async function blobsCheck(event) {

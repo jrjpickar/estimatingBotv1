@@ -6,6 +6,7 @@
 "use strict";
 const { protect, resOk } = require("../lib/auth");
 const { E, getAssets, json, parse } = require("../lib/engine");
+const { readModel } = require("../lib/training");
 async function inner(event) {
   try {
     const { takeoffCsv, planPages, inputs, job, markup, facts: given } = parse(event);
@@ -24,7 +25,7 @@ async function inner(event) {
     // no inputs -> AUTOPILOT: code drafts crew-days, loads and equipment (estimator/data/production.json)
     let estimate;
     if (!inputs || !inputs.lines || !inputs.lines.length) {
-      const ap = E.autopilot({ items, pages: planPages, library: assets.library, rates: assets.rates, defaults: assets.defaults, production: assets.production, job: job || {}, markup: markup == null ? null : markup });
+      const ap = E.autopilot({ items, pages: planPages, library: assets.library, rates: assets.rates, defaults: assets.defaults, production: assets.production, job: job || {}, markup: markup == null ? null : markup, learned: await readModel(event) });
       estimate = ap.estimate; planCheck = ap.planCheck || planCheck;
     } else {
       estimate = E.autoEstimate({ items, facts, inputs, job: job || {}, defaults: assets.defaults, rates: assets.rates, markup: markup == null ? null : markup });

@@ -33,6 +33,8 @@ const RULES = {
   markup_format: { level: "block", lesson: "Markup is a decimal on cost (1.4 = 140%)." },
   scope_sum: { level: "block", lesson: "Scope line items must add up exactly to the total bid." },
   scope_prices: { level: "block", lesson: "With several base scopes, every scope needs its own price." },
+  template_scopes: { level: "block", lesson: "A2Z's proposal template holds 3 scopes." },
+  template_alternates: { level: "warn", lesson: "A2Z's proposal template has no alternate section." },
   below_cost: { level: "block", lesson: "Final price is below cost." },
   bid_vs_markup: { level: "ask", lesson: "Keep cost, price at markup and final bid separate; say why the bid differs." },
   low_markup: { level: "ask", lesson: "A2Z usually marks up 100%+; a lower markup needs a reason." },
@@ -97,6 +99,8 @@ function checkEstimate(est, opts = {}) {
 
   const base = scopes.filter((s) => !s.alternate);
   if (base.length > 1 && base.some((s) => s.price == null || s.price === "")) add("scope_prices", "scopes", "Several base scopes, but not all have a price.");
+  if (base.length > 3) add("template_scopes", "scopes", `${base.length} scopes, but the proposal template holds 3. Combine ${base.slice(3).map((s) => s.name).join(", ")} into another scope.`);
+  if (scopes.some((s) => s.alternate)) add("template_alternates", "scopes", `The proposal template has no alternate section, so ${scopes.filter((s) => s.alternate).map((s) => s.name).join(", ")} won't print. Make it a scope or a note, or remove it.`);
 
   let priced = null;
   if (!lineProblem && (hasMarkup || est.final_price)) {

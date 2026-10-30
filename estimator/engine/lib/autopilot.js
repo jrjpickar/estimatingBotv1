@@ -7,6 +7,7 @@
 // Comps are an automatic sanity check: a bid far from the closest past jobs is flagged.
 
 const { autoEstimate, draftScopes } = require("./auto");
+const { applyLearned, learnedJobs } = require("./learn");
 const { analyzePlans } = require("./plans");
 const { findComps } = require("./comps");
 
@@ -86,8 +87,11 @@ function draftInputs(items, facts = {}, prod, extraCallouts = []) {
   return { lines };
 }
 
-function autopilot({ items, pages = null, library = null, rates, defaults, production, job = {}, markup = null }) {
-  const comps = library && items.length ? findComps(items, library, { top: 5 }) : null;
+function autopilot({ items, pages = null, library = null, rates, defaults, production, job = {}, markup = null, learned = null }) {
+  // jobs learned from training uploads count as comps too
+  const extra = learned ? learnedJobs(learned) : [];
+  const lib = extra.length ? { ...(library || {}), jobs: [...((library && library.jobs) || []), ...extra] } : library;
+  const comps = lib && items.length ? findComps(items, lib, { top: 5 }) : null;
   const planCheck = pages && pages.length ? analyzePlans(pages, items) : null;
   const facts = planCheck ? { ...planCheck.facts, plan_flags: planCheck.flags } : {};
   if (planCheck && planCheck.flags.some((f) => f.kind === "condition" && /occupied/i.test(f.message))) facts.occupied = true;
@@ -109,8 +113,14 @@ function autopilot({ items, pages = null, library = null, rates, defaults, produ
   }
   if (facts.exclusions && facts.exclusions.length) est.extra_exclusions = facts.exclusions.slice();
 
-  // comps sanity check
+  // A2Z's own wording and line items, learned from past proposals and cost sheets (Training)
   const auto_flags = [];
+  if (learned) {
+    const { changed, flags } = applyLearned(est, learned);
+    est.learned = { changed, proposals: (learned.counts || {}).proposals || 0, costsheets: (learned.counts || {}).costsheets || 0 };
+    for (const f of flags) auto_flags.push({ ...f, sheet: "" });
+  }
+  // comps sanity check
   if (comps && comps.comps.length) {
     const top = comps.comps.slice(0, 3).map((c) => c.sentTotal).sort((a, b) => a - b), med = top[Math.floor(top.length / 2)];
     const cost = (est.sections || []).reduce((t, s) => t + s.lines.reduce((u, l) => u + Number(l.qty) * Number(l.rate || 0), 0), 0);

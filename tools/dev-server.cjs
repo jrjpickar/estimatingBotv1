@@ -1,6 +1,7 @@
 // Local test server: serves public/ and runs the real Netlify functions with in-memory Blobs.
 //   node tools/dev-server.cjs [port]      then open http://localhost:8888/
 //   http://localhost:8888/__ghl-frame?user=jesse   fakes the GHL custom-page frame (auto sign-in)
+//   GHL's pipeline and the Make webhook are faked too (tests/fake-ghl.cjs); /__fake shows what the bot sent
 // Uses the test passcode / secrets from tests/helpers.cjs. For testing only, never deploy this.
 const http = require("node:http"), fs = require("node:fs"), path = require("node:path");
 const H = require("../tests/helpers.cjs");
@@ -10,9 +11,9 @@ const USERS = {
   stranger: { id: "OUTSIDER000000000001", name: "Not Listed", email: "nobody@a2zcs.net" },
 };
 process.env.GHL_PIT_TOKEN = "pit";
-const realFetch = global.fetch;
-global.fetch = async (url, opts) => (String(url).includes("/users/?locationId=")
-  ? { ok: true, status: 200, json: async () => ({ users: Object.values(USERS) }) } : realFetch(url, opts));
+// fake GHL pipeline + Make webhook (tests/fake-ghl.cjs); GET /__fake shows what was sent
+const fake = require("../tests/fake-ghl.cjs").makeFake();
+global.fetch = fake.fetch;
 const port = Number(process.argv[2] || 8888);
 http.createServer(async (req, res) => {
   const u = new URL(req.url, "http://localhost");
@@ -22,6 +23,10 @@ http.createServer(async (req, res) => {
     let handler; try { handler = require(path.join(__dirname, "../netlify/functions", m[1] + ".js")).handler; } catch (e) { res.writeHead(404); return res.end("no function"); }
     const out = await handler({ httpMethod: req.method, headers: req.headers, body, queryStringParameters: Object.fromEntries(u.searchParams) });
     res.writeHead(out.statusCode, out.headers || {}); return res.end(out.body);
+  }
+  if (u.pathname === "/__fake") {
+    res.writeHead(200, { "content-type": "application/json" });
+    return res.end(JSON.stringify({ hooks: fake.hooks.map((h) => ({ ...h.body, genProp: (h.body.genProp || "").length, costData: (h.body.costData || "").length })), puts: fake.puts, opps: fake.opps.map((o) => ({ id: o.id, stage: o.pipelineStageId })) }));
   }
   if (u.pathname === "/__ghl-frame") {
     const user = USERS[u.searchParams.get("user") || "jesse"];

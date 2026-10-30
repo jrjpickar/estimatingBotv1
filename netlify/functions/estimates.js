@@ -24,6 +24,7 @@ function summarize(estimate) {
     estimator: String(job.estimator || "").slice(0, 60),
     estimateNumber: String(job.estimate_number || "").slice(0, 40),
     opportunityId: String(estimate.opportunityId || "").slice(0, 60),
+    pipeline: String(estimate.pipeline || "").slice(0, 20),
     bid: chk.priced ? chk.priced.final_price : null,
     cost: chk.priced ? chk.priced.total_cost : null,
     fix: count("block"), questions: count("ask"), checks: count("warn"),
@@ -84,6 +85,7 @@ async function inner(event) {
       id, version, ...sum,
       createdAt: prev ? prev.createdAt : now, createdBy: prev ? prev.createdBy : who,
       updatedAt: now, updatedBy: who, versions, estimate: clean,
+      ...(prev && prev.sentAt ? { sentAt: prev.sentAt, sentBy: prev.sentBy, sentVersion: prev.sentVersion, sends: prev.sends } : {}),
     };
     await store.setJSON(`versions/${id}/${version}`, clean);
     await store.setJSON(`estimates/${id}`, record);

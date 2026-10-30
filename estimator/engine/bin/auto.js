@@ -3,7 +3,7 @@
 // checks, review sheet, and draft proposal + job costing files. No questions asked along the way.
 //
 // Usage: node bin/auto.js TAKEOFF.csv --outdir OUT [--plans A.pdf,B.pdf] [--facts plan_facts.json] [--inputs inputs.json]
-//                         [--job job.json] [--markup 1.3] [--exclude "<address>"]
+//                         [--job job.json] [--markup 1.3] [--exclude "<address>"] [--learned learned.json]
 // AUTOPILOT: without --inputs, crew-days, loads and equipment are drafted by code (data/production.json)
 // and --plans are read and checked by code (pdftotext). No AI needed.
 // Writes OUT/comps.json, OUT/estimate.json, OUT/priced.json, OUT/review.md,
@@ -14,7 +14,7 @@ const path = require("path");
 const E = require("..");
 const A = require("../lib/auto");
 const args = process.argv.slice(2);
-const flags = ["--outdir", "--facts", "--inputs", "--job", "--markup", "--exclude", "--plans"];
+const flags = ["--outdir", "--facts", "--inputs", "--job", "--markup", "--exclude", "--plans", "--learned"];
 const val = (k) => (args.includes(k) ? args[args.indexOf(k) + 1] : null);
 const csv = args.find((a, i) => !a.startsWith("--") && !flags.includes(args[i - 1]));
 if (!csv) { console.error("Usage: node bin/auto.js TAKEOFF.csv --outdir OUT [--facts f.json] [--inputs i.json] [--job j.json] [--markup 1.3]"); process.exit(2); }
@@ -41,8 +41,9 @@ try {
         for (const p of E.pagesFromPdftotext(t)) pages.push({ n: pages.length + 1, lines: p.lines });
       }
     }
-    const ap = E.autopilot({ items, pages, library: assets.library, rates: assets.rates, defaults, production: assets.production, job: readJson(val("--job")), markup: val("--markup") });
+    const ap = E.autopilot({ items, pages, library: assets.library, rates: assets.rates, defaults, production: assets.production, job: readJson(val("--job")), markup: val("--markup"), learned: val("--learned") ? readJson(val("--learned")) : null });
     est = ap.estimate;
+    if (est.learned && est.learned.changed.length) console.log(`Training: reworded ${est.learned.changed.length} lines from ${est.learned.proposals} proposals / ${est.learned.costsheets} cost sheets.`);
     if (ap.planCheck) { facts = { ...ap.planCheck.facts, ...facts }; console.log(`Plans: read ${ap.planCheck.stats.readable} of ${ap.planCheck.stats.pages} pages, ${ap.planCheck.stats.callouts} demo callouts, ${ap.planCheck.stats.matched} matched.`); }
   } else {
     est = A.autoEstimate({ items, facts, inputs: readJson(val("--inputs")), job: readJson(val("--job")), defaults, rates: assets.rates, markup: val("--markup") });

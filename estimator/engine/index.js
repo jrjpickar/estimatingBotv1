@@ -8,12 +8,14 @@ const path = require("path");
 const common = require("./lib/common");
 const { findComps, formatComps } = require("./lib/comps");
 const { computeEstimate, formatEstimate, STANDARD_RATES } = require("./lib/price");
-const { proposalData, fillProposal } = require("./lib/proposal");
+const { proposalData, proposalFields, fillProposal } = require("./lib/proposal");
 const { fillJobCosting } = require("./lib/jobCosting");
 const { checkEstimate, formatIssues, RULES } = require("./lib/checks");
 const { autoEstimate, reviewSheet } = require("./lib/auto");
 const { analyzePlans, pagesFromPdftotext } = require("./lib/plans");
 const { autopilot } = require("./lib/autopilot");
+const learn = require("./lib/learn");
+const learnFiles = require("./lib/learnFiles");
 
 const DATA = path.join(__dirname, "..", "data");
 
@@ -23,7 +25,7 @@ function loadAssets(dir = DATA) {
     library: common.prepareLibrary(JSON.parse(fs.readFileSync(path.join(dir, "job_library.json"), "utf8"))),
     style: JSON.parse(fs.readFileSync(path.join(dir, "house_style.json"), "utf8")),
     rates: JSON.parse(fs.readFileSync(path.join(dir, "rates.json"), "utf8")),
-    proposalTemplate: fs.readFileSync(path.join(dir, "templates", "A2Z_Make_Master_Proposal_Template_v17.docx")),
+    proposalTemplate: fs.readFileSync(path.join(dir, "templates", "A2Z_Proposal_Template.docx")),
     costingTemplate: fs.readFileSync(path.join(dir, "templates", "Job_Costing_Worksheet_V3.xlsx")),
     defaults: JSON.parse(fs.readFileSync(path.join(dir, "defaults.json"), "utf8")),
     production: JSON.parse(fs.readFileSync(path.join(dir, "production.json"), "utf8")),
@@ -40,5 +42,7 @@ function buildDocuments(priced, comps, assets) {
 module.exports = {
   loadAssets, buildDocuments, STANDARD_RATES,
   parseStackCsv: common.parseStackCsv, findComps, formatComps,
-  computeEstimate, formatEstimate, checkEstimate, formatIssues, RULES, autoEstimate, reviewSheet, analyzePlans, pagesFromPdftotext, autopilot, proposalData, fillProposal, fillJobCosting,
+  computeEstimate, formatEstimate, checkEstimate, formatIssues, RULES, autoEstimate, reviewSheet, analyzePlans, pagesFromPdftotext, autopilot, proposalData, proposalFields, fillProposal, fillJobCosting,
+  learnModel: learn.learnModel, applyLearned: learn.applyLearned, learnedJobs: learn.learnedJobs, proposalFromLines: learn.proposalFromLines,
+  proposalFromDocx: learnFiles.proposalFromDocx, costSheetFromXlsx: learnFiles.costSheetFromXlsx,
 };
