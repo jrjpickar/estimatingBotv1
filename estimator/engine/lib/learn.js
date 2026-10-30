@@ -4,7 +4,9 @@
 // .docx / .xlsx; the page reads PDFs with pdf.js and passes the text lines here).
 //
 //   proposalFromLines(lines)      -> proposal record { scopes: [{ name, bullets, total }], total, ... }
-//   costSheetFromCells(get)       -> cost sheet record { lines: [{ section, category, description, qty, rate }], ... }
+//   costSheetFromCells(get)       -> cost sheet record from Job Costing Worksheet V3 { lines: [{ section, category, description, qty, rate }], ... }
+//   costSheetFromGrid(rows)       -> the same from any other layout (older templates, Google Sheets, CSV)
+//   costSheetFromSheets(sheets)   -> the best reading of a whole workbook
 //   learnModel(records)           -> model { phrases, scopeNames, exclusions, lineItems, jobs, counts }
 //   applyLearned(est, model)      -> rewrites drafted scope lines and cost lines in A2Z's learned wording,
 //                                    returns { changed, flags } (flags are CHECK items)
@@ -116,6 +118,157 @@ function costSheetFromCells(get, meta = {}) {
   if (!seen) throw new Error("This doesn't look like a Job Costing Worksheet (no INTERIOR / EXTERIOR / GRADING sections in column A).");
   if (rec.total_cost == null) rec.total_cost = rec.lines.reduce((t, l) => t + l.qty * l.rate, 0);
   return rec;
+}
+
+// Any other cost sheet layout (older A2Z templates, Google Sheets exports, CSV):
+// rows = [[cell, cell, ...], ...] for one sheet. Finds the description / qty / rate / total
+// columns from a header row when there is one, otherwise from the numbers themselves, and
+// works out each line's type from its wording.
+const CAT_WORDS = [
+  ["Hotel", /\b(hotel|lodging|motel|per diem)\b/i],
+  ["Fuel", /^\W*(fuel|gas|diesel)\b/i],
+  ["Hauling", /\b(haul\w*|loads?|dump\w*|truck\w*|trucking|containers?|bins?|roll ?offs?|disposal|tipping|low ?boy|super ?10|transfer|debris removal)\b/i],
+  ["Labor", /\b(labor|labour|laborers?|workers?|guys|men|man|crew|man ?days?|worker ?days?|hours?|hrs|hr|operators?|supervisor|foreman|superintendent|down ?time)\b/i],
+  ["Equipment", /\b(equip\w*|lifts?|excavators?|skid ?steers?|bobcat|loaders?|scrapers?|saws?|breakers?|rental|forklift|compactors?|mini ?ex|tractor|dozer|backhoe|generators?|jack ?hammers?|chipping|delivery|pick ?up|scissor|boom|grinder)\b/i],
+  ["Fuel", /\b(fuel|gas|diesel)\b/i],
+];
+function categoryOf(text) {
+  const t = String(text || "");
+  for (const [cat, re] of CAT_WORDS) if (re.test(t)) return cat;
+  return "Misc";
+}
+const CAT_NAMES = { labor: "Labor", labour: "Labor", hotel: "Hotel", lodging: "Hotel", hauling: "Hauling", haul: "Hauling", trucking: "Hauling", dump: "Hauling", disposal: "Hauling", equipment: "Equipment", rental: "Equipment", fuel: "Fuel", misc: "Misc", miscellaneous: "Misc", material: "Misc", materials: "Misc", other: "Misc", subcontract: "Misc", sub: "Misc" };
+function sectionOf(text) {
+  const t = String(text || "").toLowerCase();
+  if (/grad|excavat|earth|soil|dirt/.test(t)) return "Grading";
+  if (/exterior|site|hardscape|concrete|flatwork|asphalt|paving|outside/.test(t)) return "Exterior";
+  if (/interior|inside|demo|ti\b|tenant/.test(t)) return "Interior";
+  return null;
+}
+const cellText = (v) => (v == null ? "" : String(v)).replace(/\s+/g, " ").trim();
+function cellNum(v) {
+  if (typeof v === "number") return isFinite(v) ? v : null;
+  const t = cellText(v);
+  if (!t) return null;
+  const m = t.match(/^\(?-?\$?\s*-?\d[\d,]*(\.\d+)?\)?%?$/);
+  if (!m) return null;
+  let n = Number(t.replace(/[$,()%\s]/g, ""));
+  if (/^\(.*\)$/.test(t)) n = -n;
+  if (/%$/.test(t)) n = n / 100;
+  return isFinite(n) ? n : null;
+}
+const SKIP_ROW = /\b(sub ?total|total|markup|mark up|profit|overhead|margin|grand|tax|contingency|price to customer|bid price|contract price|sell(ing)? price|commission)\b/i;
+const HEAD = {
+  desc: /\b(desc(ription)?|item|items|scope|task|work|line item|details?|notes?)\b/i,
+  cat: /\b(categor(y|ies)|type|trade|class|cost code|code)\b/i,
+  qty: /\b(qty|quan(tity)?|count|units|days|hours|hrs|loads|no\.?|#)\b/i,
+  unit: /^\s*(unit|uom|u\/m|per)\s*$/i,
+  rate: /\b(rate|unit (cost|price)|cost ?\/ ?unit|price each|each|per unit|cost each|unit \$|\$ ?\/)\b/i,
+  total: /\b(total|amount|ext(ended)?|line total|sum|cost)\b/i,
+};
+function findHeader(row) {
+  const cols = {};
+  row.forEach((v, i) => {
+    const t = cellText(v);
+    if (!t || t.length > 40 || cellNum(v) != null) return;
+    // "Description" beats "Item": an Item column next to a Description column is the line's label / type
+    if (/^desc(ription)?\b/i.test(t)) { if (cols.desc != null && cols.cat == null) cols.cat = cols.desc; cols.desc = i; return; }
+    for (const k of ["unit", "rate", "qty", "cat", "desc", "total"]) if (cols[k] == null && HEAD[k].test(t) && !Object.values(cols).includes(i)) { cols[k] = i; break; }
+  });
+  const hits = ["qty", "rate", "total"].filter((k) => cols[k] != null).length;
+  return cols.desc != null && hits >= 1 ? cols : null;
+}
+
+function costSheetFromGrid(rows, meta = {}) {
+  const rec = { kind: "costsheet", file: meta.file || "", sheet: meta.sheet || "", layout: "other", job_name: "", date: "", lines: [], total_cost: null, markup: null, final_price: null };
+  // job name / date from labels near the top
+  for (const row of rows.slice(0, 10)) row.forEach((v, i) => {
+    const t = cellText(v);
+    const next = () => { for (let k = i + 1; k < row.length; k++) { const x = cellText(row[k]); if (x) return x; } return ""; };
+    if (!rec.job_name && /^(job( name)?|project( name)?|job address|address|location|site)\s*:?$/i.test(t)) rec.job_name = next();
+    if (!rec.date && /^date\s*:?$/i.test(t)) rec.date = next();
+  });
+  let cols = null, section = null;
+  for (const row of rows) {
+    const texts = row.map(cellText);
+    const filled = texts.filter(Boolean);
+    if (!filled.length) continue;
+    const h = findHeader(row);
+    if (h) { cols = h; continue; }
+    const nums = row.map(cellNum);
+    const numIdx = nums.map((n, i) => (n != null && texts[i] ? i : -1)).filter((i) => i >= 0);
+    const textIdx = texts.map((t, i) => (t && nums[i] == null ? i : -1)).filter((i) => i >= 0);
+    const label = textIdx.length ? texts[textIdx[0]] : "";
+    // totals and markup
+    if (SKIP_ROW.test(label)) {
+      const val = numIdx.length ? nums[numIdx[numIdx.length - 1]] : null;
+      if (val != null) {
+        if (/markup|mark up/i.test(label)) rec.markup = val > 5 ? val / 100 : val;
+        else if (/total (job )?cost|cost total|total costs?$/i.test(label)) rec.total_cost = val;
+        else if (/price|bid|contract|customer|grand total/i.test(label)) rec.final_price = val;
+      }
+      continue;
+    }
+    // a section heading: one short text cell, no numbers
+    if (!numIdx.length && textIdx.length === 1 && label.length <= 40) { const sec = sectionOf(label); if (sec) { section = sec; continue; } }
+    let description = "", category = null, qty = null, rate = null, total = null;
+    if (cols) {
+      description = texts[cols.desc] || "";
+      if (cols.cat != null && texts[cols.cat]) {
+        const c = CAT_NAMES[texts[cols.cat].toLowerCase().replace(/[^a-z]/g, "")];
+        if (c) category = c; else if (!description) description = texts[cols.cat]; else description = texts[cols.cat] + " - " + description;
+      }
+      // a category label in another text column (e.g. "Labor" in column A with no header)
+      if (!category) for (const i of textIdx) { const c = CAT_NAMES[texts[i].toLowerCase().replace(/[^a-z]/g, "")]; if (c && i !== cols.desc) { category = c; break; } }
+      qty = cols.qty != null ? nums[cols.qty] : null;
+      rate = cols.rate != null ? nums[cols.rate] : null;
+      total = cols.total != null ? nums[cols.total] : null;
+      if (!description) { const other = textIdx.find((i) => i !== cols.unit && i !== cols.cat && !CAT_NAMES[texts[i].toLowerCase().replace(/[^a-z]/g, "")]); description = other != null ? texts[other] : category || ""; }
+    } else {
+      if (!textIdx.length) continue;
+      const cat = textIdx.map((i) => CAT_NAMES[texts[i].toLowerCase().replace(/[^a-z]/g, "")]).find(Boolean);
+      if (cat) category = cat;
+      description = textIdx.map((i) => texts[i]).filter((t) => !CAT_NAMES[t.toLowerCase().replace(/[^a-z]/g, "")]).join(" ") || (cat || "");
+      const n = numIdx.map((i) => nums[i]).filter((x) => x > 0);
+      if (n.length >= 3 && Math.abs(n[0] * n[1] - n[n.length - 1]) <= Math.max(1, n[n.length - 1] * 0.01)) { qty = n[0]; rate = n[1]; total = n[n.length - 1]; }
+      else if (n.length === 2) { qty = n[0]; rate = n[1]; }
+      else if (n.length) total = n[n.length - 1];
+    }
+    if (!description && !category) continue;
+    // dollar amounts written into the description ("6 guys 2 weeks at $85/hr $40,800")
+    if (qty == null && rate == null && total == null) {
+      const dollars = [...description.matchAll(/\$\s?(\d[\d,]*(?:\.\d{2})?)/g)].map((m) => Number(m[1].replace(/,/g, "")));
+      if (dollars.length) total = dollars[dollars.length - 1];
+    }
+    if (qty == null && rate == null && total == null) continue;
+    if (qty != null && rate != null) { /* as is */ }
+    else if (total != null && qty != null && qty > 0) rate = Math.round((total / qty) * 100) / 100;
+    else if (total != null && rate != null && rate > 0) qty = Math.round((total / rate) * 100) / 100;
+    else if (total != null) { qty = 1; rate = total; }
+    else if (rate != null) qty = 1;
+    else continue;
+    if (!(qty > 0) || !(rate > 0)) continue;
+    rec.lines.push({ section: section || "Interior", category: category || categoryOf(description), description, qty, rate });
+  }
+  if (rec.total_cost == null && rec.lines.length) rec.total_cost = rec.lines.reduce((t, l) => t + l.qty * l.rate, 0);
+  if (rec.markup == null && rec.final_price && rec.total_cost) rec.markup = Math.round((rec.final_price / rec.total_cost - 1) * 10000) / 10000;
+  return rec;
+}
+
+// Best reading of a workbook: the Job Costing Worksheet V3 by its labels when it is one,
+// otherwise the sheet with the most cost lines read the loose way.
+// sheets: [{ name, rows, get }] (get(ref) for the V3 reader)
+function costSheetFromSheets(sheets, meta = {}) {
+  const tries = [];
+  for (const sh of sheets) {
+    if (/raw takeoff|takeoffs?$|reference|comp job|instructions|lists?$|dropdown/i.test(sh.name)) continue;
+    if (sh.get) { try { const r = costSheetFromCells(sh.get, { ...meta }); if (r.lines.length) { r.layout = "v3"; r.sheet = sh.name; tries.push(r); continue; } } catch (e) { /* not V3 */ } }
+    const r = costSheetFromGrid(sh.rows, { ...meta, sheet: sh.name });
+    if (r.lines.length) tries.push(r);
+  }
+  if (!tries.length) throw new Error("No cost lines found. Expected rows with a description and a quantity, rate or total.");
+  tries.sort((a, b) => (b.layout === "v3") - (a.layout === "v3") || b.lines.length - a.lines.length);
+  return tries[0];
 }
 
 // ---------------------------------------------------------------- phrase parsing
@@ -271,4 +424,4 @@ function applyLearned(est, model, { minSheets = 3 } = {}) {
   return { changed, flags };
 }
 
-module.exports = { proposalFromLines, costSheetFromCells, learnModel, learnedJobs, applyLearned, parseLine, tokens };
+module.exports = { proposalFromLines, costSheetFromCells, costSheetFromGrid, costSheetFromSheets, categoryOf, learnModel, learnedJobs, applyLearned, parseLine, tokens };

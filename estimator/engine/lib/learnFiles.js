@@ -2,7 +2,7 @@
 // Read training files: proposal .docx -> text lines, job costing .xlsx -> cells.
 // Buffer in, record out (lib/learn.js does the parsing). Node only (uses the bundled PizZip).
 const PizZip = require("../vendor/docx-vendor").PizZip;
-const { proposalFromLines, costSheetFromCells } = require("./learn");
+const { proposalFromLines, costSheetFromCells, costSheetFromGrid, costSheetFromSheets } = require("./learn");
 
 const decode = (s) => s.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, "\"").replace(/&apos;/g, "'").replace(/&#(\d+);/g, (_, n) => String.fromCharCode(+n)).replace(/&amp;/g, "&");
 
@@ -33,31 +33,60 @@ function docxLines(buffer) {
 
 const proposalFromDocx = (buffer, meta) => proposalFromLines(docxLines(buffer), meta);
 
-// cells of the "Job Costing" sheet (or the first sheet)
-function xlsxCells(buffer, wanted = /job\s*cost/i) {
+// every sheet of a workbook: { name, cells: { A1: value }, rows: [[...]] }
+const colIndex = (ref) => [...ref.match(/^[A-Z]+/)[0]].reduce((n, ch) => n * 26 + ch.charCodeAt(0) - 64, 0) - 1;
+function xlsxSheets(buffer) {
   const zip = new PizZip(buffer);
   const read = (n) => (zip.file(n) ? zip.file(n).asText() : "");
+  if (!read("xl/workbook.xml")) throw new Error("This isn't an .xlsx workbook. Save old .xls files as .xlsx (or export Google Sheets as .xlsx) and try again.");
   const shared = [...read("xl/sharedStrings.xml").matchAll(/<si>([\s\S]*?)<\/si>/g)].map((m) => decode([...m[1].matchAll(/<t[^>]*>([^<]*)<\/t>/g)].map((x) => x[1]).join("")));
   const wb = read("xl/workbook.xml"), rels = read("xl/_rels/workbook.xml.rels");
-  const sheets = [...wb.matchAll(/<sheet\b[^>]*name="([^"]*)"[^>]*r:id="([^"]*)"/g)].map((m) => ({ name: decode(m[1]), rid: m[2] }));
-  const pick = sheets.find((s) => wanted.test(s.name)) || sheets[0];
-  let path = "xl/worksheets/sheet1.xml";
-  if (pick) { const r = rels.match(new RegExp(`Id="${pick.rid}"[^>]*Target="([^"]+)"`)) || rels.match(new RegExp(`Target="([^"]+)"[^>]*Id="${pick.rid}"`)); if (r) path = "xl/" + r[1].replace(/^\/?xl\//, ""); }
-  const xml = read(path);
-  const cells = {};
-  for (const m of xml.matchAll(/<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g)) {
-    const ref = (m[1].match(/\br="([A-Z]+\d+)"/) || [])[1];
-    if (!ref || !m[2]) continue;
-    const type = (m[1].match(/\bt="([^"]+)"/) || [])[1];
-    const v = (m[2].match(/<v>([\s\S]*?)<\/v>/) || [])[1];
-    if (type === "s") cells[ref] = shared[Number(v)] ?? "";
-    else if (type === "inlineStr") cells[ref] = decode([...m[2].matchAll(/<t[^>]*>([^<]*)<\/t>/g)].map((x) => x[1]).join(""));
-    else if (type === "str" || type === "e") cells[ref] = v != null ? decode(v) : "";
-    else if (v != null) cells[ref] = Number(v);
+  const out = [];
+  for (const m of wb.matchAll(/<sheet\b([^>]*)\/?>/g)) {
+    const name = decode((m[1].match(/name="([^"]*)"/) || [])[1] || ""), rid = (m[1].match(/r:id="([^"]*)"/) || [])[1];
+    if (/state="(hidden|veryHidden)"/.test(m[1])) continue;
+    const r = rels.match(new RegExp(`Id="${rid}"[^>]*Target="([^"]+)"`)) || rels.match(new RegExp(`Target="([^"]+)"[^>]*Id="${rid}"`));
+    if (!r) continue;
+    const xml = read("xl/" + r[1].replace(/^\/?xl\//, ""));
+    const cells = {}, rows = [];
+    for (const c of xml.matchAll(/<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g)) {
+      const ref = (c[1].match(/\br="([A-Z]+\d+)"/) || [])[1];
+      if (!ref || !c[2]) continue;
+      const type = (c[1].match(/\bt="([^"]+)"/) || [])[1];
+      const v = (c[2].match(/<v>([\s\S]*?)<\/v>/) || [])[1];
+      let val;
+      if (type === "s") val = shared[Number(v)] ?? "";
+      else if (type === "inlineStr") val = decode([...c[2].matchAll(/<t[^>]*>([^<]*)<\/t>/g)].map((x) => x[1]).join(""));
+      else if (type === "str" || type === "e") val = v != null ? decode(v) : "";
+      else if (type === "b") val = v === "1";
+      else if (v != null) val = Number(v);
+      else continue;
+      cells[ref] = val;
+      const ri = Number(ref.match(/\d+$/)[0]) - 1, ci = colIndex(ref);
+      if (ri < 2000 && ci < 60) { (rows[ri] = rows[ri] || [])[ci] = val; }
+    }
+    out.push({ name, cells, rows: Array.from(rows, (r) => Array.from(r || [], (x) => (x === undefined ? null : x))) });
   }
-  return { cells, sheet: pick ? pick.name : "" };
+  return out;
 }
 
-const costSheetFromXlsx = (buffer, meta) => { const { cells } = xlsxCells(buffer); return costSheetFromCells((ref) => (ref in cells ? cells[ref] : null), meta); };
+// cells of the "Job Costing" sheet (or the first sheet)
+function xlsxCells(buffer, wanted = /job\s*cost/i) {
+  const sheets = xlsxSheets(buffer);
+  const pick = sheets.find((s) => wanted.test(s.name)) || sheets[0] || { cells: {}, name: "" };
+  return { cells: pick.cells, sheet: pick.name };
+}
 
-module.exports = { docxLines, proposalFromDocx, xlsxCells, costSheetFromXlsx };
+// Job costing sheet, any layout: V3 by its labels, otherwise read loosely (lib/learn.js costSheetFromGrid)
+function costSheetFromXlsx(buffer, meta) {
+  const sheets = xlsxSheets(buffer).map((s) => ({ ...s, get: (ref) => (ref in s.cells ? s.cells[ref] : null) }));
+  return costSheetFromSheets(sheets, meta);
+}
+// CSV export of a cost sheet (Google Sheets: File, Download, .csv)
+function costSheetFromCsv(text, meta) {
+  const C = require("./common");
+  const rows = C.parseCsv(String(text), { raw: true });
+  return costSheetFromGrid(rows, { ...meta, sheet: "csv" });
+}
+
+module.exports = { docxLines, proposalFromDocx, xlsxCells, xlsxSheets, costSheetFromXlsx, costSheetFromCsv };

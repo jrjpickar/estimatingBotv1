@@ -44,5 +44,5 @@ module.exports = {
   parseStackCsv: common.parseStackCsv, findComps, formatComps,
   computeEstimate, formatEstimate, checkEstimate, formatIssues, RULES, autoEstimate, reviewSheet, analyzePlans, pagesFromPdftotext, autopilot, proposalData, proposalFields, fillProposal, fillJobCosting,
   learnModel: learn.learnModel, applyLearned: learn.applyLearned, learnedJobs: learn.learnedJobs, proposalFromLines: learn.proposalFromLines,
-  proposalFromDocx: learnFiles.proposalFromDocx, costSheetFromXlsx: learnFiles.costSheetFromXlsx,
+  proposalFromDocx: learnFiles.proposalFromDocx, costSheetFromXlsx: learnFiles.costSheetFromXlsx, costSheetFromCsv: learnFiles.costSheetFromCsv,
 };

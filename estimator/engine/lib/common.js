@@ -42,7 +42,7 @@ function normUnit(u) {
 }
 
 // RFC 4180 CSV parser (quoted fields, embedded commas/quotes/newlines).
-function parseCsv(text) {
+function parseCsv(text, { raw = false } = {}) {
   text = String(text).replace(/^﻿/, "");
   const rows = [];
   let row = [], field = "", i = 0, q = false;
@@ -62,6 +62,7 @@ function parseCsv(text) {
     field += c; i++;
   }
   if (field !== "" || row.length) { row.push(field); rows.push(row); }
+  if (raw) return rows;
   if (!rows.length) return [];
   const hdr = rows[0].map((h) => h.trim());
   return rows.slice(1).filter((r) => r.some((v) => v !== "")).map((r) => Object.fromEntries(hdr.map((h, k) => [h, r[k] ?? ""])));

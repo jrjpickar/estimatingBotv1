@@ -74,3 +74,24 @@ test("learns wording, scope names and line items, then applies them", () => {
   const comps = E.findComps(items, { jobs: L.learnedJobs(model) });
   assert.ok(comps.comps.length > 0);
 });
+
+test("older cost sheet layouts read loosely (header row, sections, Google Sheets text, CSV)", () => {
+  const fs = require("node:fs"), path = require("node:path");
+  const old = LF.costSheetFromXlsx(fs.readFileSync(path.join(__dirname, "fixtures/old-cost-sheet.xlsx")), { file: "old.xlsx" });
+  assert.equal(old.layout, "other");
+  assert.equal(old.job_name, "123 Main St, Tustin");
+  assert.deepEqual(old.lines.map((l) => [l.section, l.category, l.description, l.qty, l.rate]), [
+    ["Interior", "Labor", "4 guys 5 days", 20, 400], ["Interior", "Hauling", "Dump truck - Super 10 loads", 6, 850],
+    ["Interior", "Equipment", "Skid steer w/ breaker", 3, 450], ["Interior", "Fuel", "Fuel", 1, 300], ["Interior", "Misc", "Dump fees", 1, 250],
+    ["Exterior", "Labor", "Saw cut crew 2 days", 8, 400], ["Exterior", "Equipment", "Concrete saw", 2, 175]]);
+  assert.equal(old.final_price, 29500);
+  const g = LF.costSheetFromXlsx(fs.readFileSync(path.join(__dirname, "fixtures/gsheet-cost-sheet.xlsx")));
+  assert.deepEqual(g.lines.map((l) => [l.category, l.qty, l.rate]), [["Labor", 1, 40800], ["Labor", 1, 10400], ["Hauling", 5, 850], ["Equipment", 1, 1500]]);
+  assert.equal(g.markup, 1);
+  const c = LF.costSheetFromCsv("Item,Qty,Rate,Total\nLabor 4 guys 2 days,8,400,3200\nDump truck,2,850,1700\nTotal,,,4900");
+  assert.deepEqual(c.lines.map((l) => [l.category, l.qty, l.rate]), [["Labor", 8, 400], ["Hauling", 2, 850]]);
+  // the V3 worksheet still reads by its labels
+  const p = E.computeEstimate({ job, markup: 1.3, sections: [{ name: "Interior", lines: [{ category: "Misc", description: "Dump fees", qty: 1, rate: 300 }] }], scopes: [{ name: "Demolition", lines: ["x"] }] });
+  assert.equal(LF.costSheetFromXlsx(E.fillJobCosting(assets.costingTemplate, p, null).buffer).layout, "v3");
+  assert.throws(() => LF.costSheetFromXlsx(Buffer.from("not a zip")));
+});

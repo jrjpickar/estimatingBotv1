@@ -1143,11 +1143,11 @@ async function readPdfColumns(buf) {
 const b64OfBuf = (buf) => { const u = new Uint8Array(buf); let s = ""; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); };
 async function trainFiles(files) {
   if (!SESSION.isAdmin) return toast("Only admins can train the bot.");
-  const list = [...files].filter((f) => /\.(pdf|docx|xlsx)$/i.test(f.name));
+  const list = [...files].filter((f) => /\.(pdf|docx|xlsx|xls|csv)$/i.test(f.name));
   const skipped = files.length - list.length;
-  if (!list.length) return toast("Drop .pdf or .docx proposals and .xlsx cost sheets.");
+  if (!list.length) return toast("Drop .pdf or .docx proposals and .xlsx or .csv cost sheets.");
   TRAIN_BUSY = true;
-  TRAIN_FILES = list.map((f) => ({ name: f.name, st: "Waiting", cls: "" })).concat(skipped ? [{ name: `${skipped} other file${skipped === 1 ? "" : "s"}`, st: "Skipped (not .pdf, .docx or .xlsx)", cls: "bad" }] : []);
+  TRAIN_FILES = list.map((f) => ({ name: f.name, st: "Waiting", cls: "" })).concat(skipped ? [{ name: `${skipped} other file${skipped === 1 ? "" : "s"}`, st: "Skipped (not .pdf, .docx, .xlsx or .csv)", cls: "bad" }] : []);
   renderTraining();
   let added = 0;
   for (let k = 0; k < list.length; k++) {
@@ -1179,7 +1179,7 @@ function renderTraining() {
   const m = TRAIN && TRAIN.model, recs = (TRAIN && TRAIN.records) || [];
   const c = (m && m.counts) || { proposals: 0, costsheets: 0 };
   const drop = SESSION.isAdmin
-    ? `<section class="drop big" id="dropTrain"><b>Drop past proposals and job costing sheets here</b><div class="hint">Proposals: .pdf or .docx (A2Z's own). Cost sheets: .xlsx (Job Costing Worksheet). Many at once is fine.</div><button id="btnTrain"${TRAIN_BUSY ? " disabled" : ""}>Choose files</button><input type="file" id="trainFile" accept=".pdf,.docx,.xlsx" multiple hidden><ul class="tl" id="trainList"></ul></section>`
+    ? `<section class="drop big" id="dropTrain"><b>Drop past proposals and job costing sheets here</b><div class="hint">Proposals: .pdf or .docx (A2Z's own). Cost sheets: .xlsx or .csv, the Job Costing Worksheet V3 or any older layout (Google Sheets: File, Download, .xlsx). Many at once is fine.</div><button id="btnTrain"${TRAIN_BUSY ? " disabled" : ""}>Choose files</button><input type="file" id="trainFile" accept=".pdf,.docx,.xlsx,.csv" multiple hidden><ul class="tl" id="trainList"></ul></section>`
     : '<div class="card hint">Only admins can upload training files. Here is what the bot has learned so far.</div>';
   const table = (head, rows) => rows.length ? `<table class="dt"><thead><tr>${head.map((h) => `<th${/^(Times|Sheets|Typical)/.test(h) ? ' class="num"' : ""}>${h}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table>` : '<div class="hint">Nothing yet.</div>';
   const learned = m ? `<div class="learn-grid">
@@ -1191,8 +1191,8 @@ function renderTraining() {
   v.innerHTML = `<div class="list-head"><h2>Training</h2><span class="hint">${m ? `Learned from ${c.proposals} proposal${c.proposals === 1 ? "" : "s"} and ${c.costsheets} cost sheet${c.costsheets === 1 ? "" : "s"} · ${m.jobs} added as comps · updated ${esc(fmtWhen(m.updated))}` : "Nothing learned yet."}</span><span class="sp" style="flex:1"></span><button data-treload>Refresh</button></div>
     ${TRAIN_ERR ? `<div class="card"><div class="status bad">Couldn't load: ${esc(TRAIN_ERR)}</div></div>` : ""}
     ${drop}${learned}
-    <div class="card tablewrap"><h2>Uploaded files (${recs.length})</h2>${recs.length ? `<table class="dt"><thead><tr><th>File</th><th>Job</th><th>What it read</th><th>Added</th><th></th></tr></thead><tbody>${recs.map((r) => `<tr><td>${esc(r.file)}</td><td>${esc(r.job || "-")}</td><td>${esc(r.what)}${r.warnings && r.warnings.length ? `<div class="hint">${esc(r.warnings.join(" "))}</div>` : ""}</td><td>${esc(fmtWhen(r.at))}<div class="hint">${esc((r.by && r.by.name) || "")}</div></td><td>${SESSION.isAdmin ? `<button class="link" data-tdel="${esc(r.id)}">Remove</button>` : ""}</td></tr>`).join("")}</tbody></table>` : '<div class="hint">No files yet.</div>'}
-    <p class="hint">Code reads the files, no AI: scope lines, scope names and totals from proposals; descriptions, quantities and rates from cost sheets. Scanned PDFs have no text and are skipped. Uploading the same job twice counts it twice; remove one copy.</p></div>`;
+    <div class="card tablewrap"><h2>Uploaded files (${recs.length})</h2>${recs.length ? `<table class="dt"><thead><tr><th>File</th><th>Job</th><th>What it read</th><th>Added</th><th></th></tr></thead><tbody>${recs.map((r) => `<tr><td>${esc(r.file)}</td><td>${esc(r.job || "-")}</td><td>${esc(r.what)}${r.warnings && r.warnings.length ? `<div class="hint">${esc(r.warnings.join(" "))}</div>` : ""}${r.lines && r.lines.length ? `<details><summary class="hint">Lines it read</summary><table class="dt"><tbody>${r.lines.map((l) => `<tr><td>${esc(l.section)}</td><td>${esc(l.category)}</td><td>${esc(l.description)}</td><td class="num">${esc(l.qty)}</td><td class="num">${money(l.rate)}</td></tr>`).join("")}</tbody></table></details>` : ""}</td><td>${esc(fmtWhen(r.at))}<div class="hint">${esc((r.by && r.by.name) || "")}</div></td><td>${SESSION.isAdmin ? `<button class="link" data-tdel="${esc(r.id)}">Remove</button>` : ""}</td></tr>`).join("")}</tbody></table>` : '<div class="hint">No files yet.</div>'}
+    <p class="hint">Code reads the files, no AI: scope lines, scope names and totals from proposals; descriptions, quantities and rates from cost sheets. Older cost sheet layouts are read by their column headers (description, qty, rate, total) and each line's type comes from its wording (guys / hours = Labor, loads / dump / truck = Hauling, lift / skid steer / saw = Equipment), so open "Lines it read" to check them. Scanned PDFs have no text and are skipped. Uploading the same job twice counts it twice; remove one copy.</p></div>`;
   renderTrainList();
   if (SESSION.isAdmin) {
     const dz = document.getElementById("dropTrain");

@@ -1,7 +1,7 @@
 // Training: upload past proposals and job costing sheets in bulk; the bot learns A2Z's
 // scope wording, scope names and cost line items from them (code, no AI: estimator/engine/lib/learn.js).
 //   GET                                   -> { counts, model summary, records }          (any signed-in user)
-//   POST { action: "add", name, base64 }  -> parse a .docx proposal or .xlsx cost sheet   (admins)
+//   POST { action: "add", name, base64 }  -> parse a .docx proposal or a .xlsx / .csv cost sheet (any layout)   (admins)
 //   POST { action: "add", name, lines }   -> parse a PDF proposal (text lines read in the browser with pdf.js)
 //   POST { action: "rebuild" }            -> rebuild the model from every record (send once after a batch)
 //   POST { action: "delete", id }         -> remove one record and rebuild
@@ -15,7 +15,8 @@ function describe(r) {
   if (r.kind === "proposal") return `${r.scopes.length} scope${r.scopes.length === 1 ? "" : "s"}, ${r.scopes.reduce((t, s) => t + s.bullets.length, 0)} lines${r.total ? `, $${Math.round(r.total).toLocaleString("en-US")}` : ""}`;
   return `${r.lines.length} cost line${r.lines.length === 1 ? "" : "s"}${r.total_cost ? `, cost $${Math.round(r.total_cost).toLocaleString("en-US")}` : ""}`;
 }
-const summary = (r) => ({ id: r.id, kind: r.kind, file: r.file, at: r.at, by: r.by, what: describe(r),
+const summary = (r) => ({ id: r.id, kind: r.kind, file: r.file, at: r.at, by: r.by, what: describe(r), layout: r.layout || "",
+  lines: r.kind === "costsheet" ? (r.lines || []).slice(0, 40).map((l) => ({ section: l.section, category: l.category, description: l.description, qty: l.qty, rate: l.rate })) : undefined,
   job: r.kind === "proposal" ? (r.job_address || r.customer || r.estimate_number || "") : (r.job_name || ""), warnings: r.warnings || [] });
 function modelSummary(m) {
   if (!m) return null;
@@ -51,13 +52,21 @@ async function inner(event) {
     if (Array.isArray(body.lines)) rec = E.proposalFromLines(body.lines.map(String).slice(0, 5000), meta);
     else if (/^docx$/i.test(ext)) rec = E.proposalFromDocx(Buffer.from(String(body.base64 || ""), "base64"), meta);
     else if (/^xlsx$/i.test(ext)) rec = E.costSheetFromXlsx(Buffer.from(String(body.base64 || ""), "base64"), meta);
-    else return authJson(400, { error: `${name}: use .pdf or .docx proposals and .xlsx cost sheets.` });
+    else if (/^csv$/i.test(ext)) {
+      const text = Buffer.from(String(body.base64 || ""), "base64").toString("utf8");
+      let stack = []; try { stack = E.parseStackCsv(text); } catch (e) { stack = []; }
+      if (stack.length) return authJson(400, { error: `${name}: that's a STACK takeoff, not a cost sheet. Takeoffs go on the Estimate page.` });
+      rec = E.costSheetFromCsv(text, meta);
+    }
+    else if (/^xls$/i.test(ext)) return authJson(400, { error: `${name}: old .xls files can't be read. Open it and save it as .xlsx.` });
+    else return authJson(400, { error: `${name}: use .pdf or .docx proposals and .xlsx or .csv cost sheets.` });
     const warnings = [];
     if (rec.kind === "proposal") {
       if (!rec.scopes.length) warnings.push("No scope lines found. Is this an A2Z proposal?");
       else if (!rec.total) warnings.push("No total found; it won't count as a comp.");
       if (body.lines && body.lines.length < 5) warnings.push("Almost no text (scanned PDF?).");
     } else if (!rec.lines.length) warnings.push("No cost lines found.");
+    else if (rec.layout === "other") warnings.push(`Older layout${rec.sheet && rec.sheet !== "csv" ? ` (sheet "${rec.sheet}")` : ""}: read by column headers and wording. Check the lines in the list below.`);
     const id = T.newRecordId();
     const record = { ...rec, id, at: new Date().toISOString(), by: who, warnings };
     if (rec.kind === "proposal" && !rec.scopes.length) return authJson(422, { error: `${name}: no scope lines found. Is this an A2Z proposal?`, record: summary(record) });
