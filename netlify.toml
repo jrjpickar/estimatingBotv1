@@ -4,6 +4,8 @@
   functions = "netlify/functions"
 
 [build.environment]
+  # Node.js 24 LTS (security support until April 2028). Matches .nvmrc.
+  NODE_VERSION = "24"
   # The minified Word library is ~150 KB of short random-looking strings, so a short passcode
   # can show up in it by chance. Skip only that file; the rest of the repo and the build output
   # are still scanned for the passcode.
@@ -12,3 +14,11 @@
 [functions]
   node_bundler = "esbuild"
   included_files = ["estimator/data/**"]
+
+# Baseline security headers (Nov 2026 audit). No frame restrictions on purpose: the
+# app is embedded in GHL as a Custom Page.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

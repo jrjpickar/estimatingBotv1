@@ -241,6 +241,9 @@ async function currentSession(event) {
   if (headerCode && passcodeValue() && sameText(headerCode, passcodeValue())) {
     return { uid: "webhook", name: "Webhook (passcode)", email: "", via: "passcode_header", role: "estimator", senior: false };
   }
+  // A wrong header passcode waits like a wrong sign-in does, so the header can't be
+  // used to guess the passcode at full speed (Nov 2026 security update).
+  if (headerCode) await new Promise((r) => setTimeout(r, 600));
   const payload = verifySession(tokenFromEvent(event));
   if (!payload) return null;
   if (payload.via === "passcode") {
