@@ -1,0 +1,19 @@
+{
+  "supported": {
+    "0": {
+      "wall": {"LF": 12},
+      "floor": {"SF": 80},
+      "ceiling": {"SF": 60},
+      "slab": {"SF": 24, "CY": 0.4444444444444444},
+      "door": {"EA": 1},
+      "fixture": {"EA": 1},
+      "sawcut": {"LF": 10},
+      "millwork": {"LF": 5}
+    },
+    "1": {"wall": {"LF": 8}}
+  },
+  "manual_only": {
+    "2": {"intended_raster_wall_strokes": 2},
+    "3": {"intended_unbound_wall_strokes": 1}
+  }
+}
